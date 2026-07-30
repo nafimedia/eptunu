@@ -1,14 +1,6 @@
 import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 import { ZodError } from 'zod';
-
-export interface StandardErrorResponse {
-  success: false;
-  error: {
-    code: string;
-    message: string;
-    details?: any;
-  };
-}
+import { ApiResponse } from '../types/api-response';
 
 export function globalErrorHandler(
   error: FastifyError | Error,
@@ -24,12 +16,25 @@ export function globalErrorHandler(
       message: err.message,
     }));
 
-    return reply.status(400).send({
+    const response: ApiResponse = {
       success: false,
       error: {
         code: 'VALIDATION_ERROR',
-        message: 'Invalid request payload or parameters',
+        message: 'Format payload atau parameter tidak valid',
         details: formattedDetails,
+      },
+    };
+
+    return reply.status(400).send(response);
+  }
+
+  // Handle Fastify Empty JSON Body Error
+  if ((error as FastifyError).code === 'FST_ERR_CTP_EMPTY_JSON_BODY') {
+    return reply.status(400).send({
+      success: false,
+      error: {
+        code: 'EMPTY_JSON_BODY',
+        message: 'Body request JSON tidak boleh kosong',
       },
     });
   }
@@ -42,7 +47,7 @@ export function globalErrorHandler(
       success: false,
       error: {
         code: 'UNAUTHORIZED',
-        message: error.message || 'Authentication required',
+        message: error.message || 'Sesi habis atau token tidak valid',
       },
     });
   }
@@ -52,7 +57,7 @@ export function globalErrorHandler(
       success: false,
       error: {
         code: 'FORBIDDEN',
-        message: error.message || 'You do not have permission to access this resource',
+        message: error.message || 'Akses ditolak untuk role pengguna ini',
       },
     });
   }
@@ -62,7 +67,7 @@ export function globalErrorHandler(
       success: false,
       error: {
         code: 'NOT_FOUND',
-        message: error.message || 'Resource not found',
+        message: error.message || 'Halaman atau resource tidak ditemukan',
       },
     });
   }
@@ -72,7 +77,7 @@ export function globalErrorHandler(
       success: false,
       error: {
         code: 'RATE_LIMIT_EXCEEDED',
-        message: 'Too many requests, please try again later.',
+        message: 'Terlalu banyak permintaan. Silakan tunggu beberapa saat.',
       },
     });
   }
@@ -82,7 +87,7 @@ export function globalErrorHandler(
     success: false,
     error: {
       code: (error as FastifyError).code || 'INTERNAL_SERVER_ERROR',
-      message: statusCode === 500 ? 'An internal server error occurred' : error.message,
+      message: statusCode === 500 ? 'Terjadi kesalahan pada server' : error.message,
     },
   });
 }

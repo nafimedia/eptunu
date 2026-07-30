@@ -1,35 +1,27 @@
-import { prisma } from '@starter-kit/database';
-
 export async function createAuditLog({
   userId,
+  userName,
+  userRole,
   action,
   entity,
+  targetModule,
   entityId,
   details,
   ipAddress,
   userAgent,
 }: {
   userId?: string;
+  userName?: string;
+  userRole?: string;
   action: string;
-  entity: string;
+  entity?: string;
+  targetModule?: string;
   entityId?: string;
-  details?: Record<string, any>;
+  details?: Record<string, any> | string;
   ipAddress?: string;
   userAgent?: string;
 }) {
-  try {
-    await prisma.auditLog.create({
-      data: {
-        userId,
-        action,
-        entity,
-        entityId,
-        details: details || {},
-        ipAddress,
-        userAgent,
-      },
-    });
-  } catch (error) {
-    console.error('❌ Failed to log audit event:', error);
-  }
+  const mod = entity || targetModule || 'System';
+  const detailStr = typeof details === 'string' ? details : JSON.stringify(details || {});
+  console.log(`[AUDIT] [${action}] user:${userName || userId || 'anonymous'} (${userRole || ''}) module:${mod}:${entityId || ''} - ${detailStr}`);
 }

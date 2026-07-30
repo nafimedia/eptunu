@@ -64,6 +64,95 @@
     --input: 215 27.9% 16.9%;
     --ring: 239 84% 67%;
   }
+
+  /* Global form control accessibility & theme contrast rules */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+  select,
+  textarea {
+    color: inherit;
+  }
+
+  .bg-white input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+  .bg-white select,
+  .bg-white textarea,
+  .bg-slate-50 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+  .bg-slate-50 select,
+  .bg-slate-50 textarea,
+  .bg-slate-100 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+  .bg-slate-100 select,
+  .bg-slate-100 textarea,
+  input.bg-white, select.bg-white, textarea.bg-white,
+  input.bg-slate-50, select.bg-slate-50, textarea.bg-slate-50,
+  input.bg-slate-100, select.bg-slate-100, textarea.bg-slate-100 {
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+  }
+
+  .bg-white input::placeholder,
+  .bg-slate-50 input::placeholder,
+  .bg-slate-100 input::placeholder,
+  input.bg-white::placeholder,
+  input.bg-slate-50::placeholder,
+  input.bg-slate-100::placeholder {
+    color: #64748b !important;
+  }
+
+  select option {
+    background-color: #ffffff;
+    color: #0f172a;
+  }
+
+  .bg-slate-900 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+  .bg-slate-900 select,
+  .bg-slate-900 textarea,
+  .bg-slate-950 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+  .bg-slate-950 select,
+  .bg-slate-950 textarea,
+  .bg-indigo-950 input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+  .bg-indigo-950 select,
+  .bg-indigo-950 textarea,
+  input.bg-slate-900, select.bg-slate-900, textarea.bg-slate-900,
+  input.bg-slate-950, select.bg-slate-950, textarea.bg-slate-950,
+  input.bg-slate-800, select.bg-slate-800, textarea.bg-slate-800,
+  input.bg-indigo-950, select.bg-indigo-950, textarea.bg-indigo-950 {
+    color: #ffffff !important;
+    background-color: #020617 !important;
+  }
+
+  .bg-slate-900 input::placeholder,
+  .bg-slate-950 input::placeholder,
+  input.bg-slate-900::placeholder,
+  input.bg-slate-950::placeholder,
+  input.bg-slate-800::placeholder {
+    color: #94a3b8 !important;
+  }
+
+  .bg-slate-900 select option,
+  .bg-slate-950 select option,
+  select.bg-slate-900 option,
+  select.bg-slate-950 option {
+    background-color: #0f172a !important;
+    color: #ffffff !important;
+  }
+
+  /* Browser Autofill Overrides (Chrome/Edge/Safari) */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-text-fill-color: #ffffff !important;
+    -webkit-box-shadow: 0 0 0px 1000px #020617 inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+  }
+
+  input.bg-white:-webkit-autofill,
+  input.bg-white:-webkit-autofill:hover,
+  input.bg-white:-webkit-autofill:focus,
+  input.bg-white:-webkit-autofill:active,
+  .bg-white input:-webkit-autofill {
+    -webkit-text-fill-color: #0f172a !important;
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  }
 }
 
 body {

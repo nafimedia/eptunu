@@ -1,36 +1,47 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-
-export function hasPermission(requiredPermission: string) {
-  return async (request: FastifyRequest, reply: FastifyReply) => {
-    if (!request.user) {
-      return reply.status(401).send({ message: 'Unauthorized' });
-    }
-
-    const { roleName, permissions } = request.user;
-
-    // Superadmin bypasses permission checks
-    if (roleName === 'SUPER_ADMIN') {
-      return;
-    }
-
-    if (!permissions || !permissions.includes(requiredPermission)) {
-      return reply.status(403).send({
-        message: `Forbidden: You lack required permission '${requiredPermission}'`,
-      });
-    }
-  };
-}
+import { ROLE_DETAILS } from '../modules/roles/roles.routes';
 
 export function hasRole(allowedRoles: string[]) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     if (!request.user) {
-      return reply.status(401).send({ message: 'Unauthorized' });
+      return reply.status(401).send({ success: false, message: 'Unauthorized: Token missing or invalid' });
     }
 
-    if (!allowedRoles.includes(request.user.roleName || '')) {
+    const userRole = request.user.role || '';
+
+    // SUPER_ADMIN always has full access
+    if (userRole === 'SUPER_ADMIN') {
+      return;
+    }
+
+    if (!allowedRoles.includes(userRole)) {
       return reply.status(403).send({
-        message: `Forbidden: Requires one of roles: [${allowedRoles.join(', ')}]`,
+        success: false,
+        message: `Akses ditolak: Role '${userRole}' tidak diizinkan. Membutuhkan salah satu dari: [${allowedRoles.join(', ')}]`,
       });
     }
   };
 }
+
+export function hasPermission(requiredPermission: string) {
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    if (!request.user) {
+      return reply.status(401).send({ success: false, message: 'Unauthorized: Token missing or invalid' });
+    }
+
+    const userRole = request.user.role || '';
+
+    if (userRole === 'SUPER_ADMIN') {
+      return;
+    }
+
+    const roleInfo = ROLE_DETAILS[userRole];
+    if (!roleInfo || !roleInfo.permissions.includes(requiredPermission)) {
+      return reply.status(403).send({
+        success: false,
+        message: `Akses ditolak: Anda tidak memiliki izin '${requiredPermission}'`,
+      });
+    }
+  };
+}
+

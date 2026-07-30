@@ -25,7 +25,7 @@
     try {
       const res = await apiFetch('/auth/me');
       if (res.success && res.user) {
-        name = res.user.name || '';
+        name = res.user.fullName || res.user.name || '';
         email = res.user.email || '';
         role = res.user.role || '';
         avatarUrl = res.user.avatarUrl || '';
@@ -248,7 +248,7 @@
             id="profileName"
             type="text"
             bind:value={name}
-            class="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+            class="w-full px-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
             required
           />
         </div>
@@ -280,7 +280,7 @@
             type="url"
             bind:value={avatarUrl}
             placeholder="https://example.com/avatar.jpg"
-            class="w-full px-4 py-2.5 bg-muted/30 border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+            class="w-full px-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
           />
         </div>
 
@@ -317,7 +317,7 @@
               type="password"
               bind:value={currentPassword}
               placeholder="••••••••"
-              class="w-full pl-9 pr-4 py-2.5 bg-muted/30 border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+              class="w-full pl-9 pr-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
               required
             />
           </div>
@@ -332,7 +332,7 @@
               type="password"
               bind:value={newPassword}
               placeholder="••••••••"
-              class="w-full pl-9 pr-4 py-2.5 bg-muted/30 border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+              class="w-full pl-9 pr-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
               required
             />
           </div>
@@ -347,7 +347,7 @@
               type="password"
               bind:value={confirmPassword}
               placeholder="••••••••"
-              class="w-full pl-9 pr-4 py-2.5 bg-muted/30 border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+              class="w-full pl-9 pr-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
               required
             />
           </div>

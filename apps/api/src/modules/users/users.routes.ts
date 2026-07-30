@@ -2,255 +2,217 @@ import { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { prisma } from '@starter-kit/database';
 import { authenticate } from '../../middleware/auth';
-import { hasPermission } from '../../middleware/rbac';
-import { hashPassword, comparePassword } from '../../services/hash';
-import { createAuditLog } from '../../middleware/audit';
+import { hashPassword } from '../../services/hash';
+
+const db = prisma as any;
 
 const updateProfileSchema = z.object({
-  name: z.string().min(2, 'Nama minimal 2 karakter'),
-  avatarUrl: z.string().optional().nullable(),
-});
-
-const changePasswordSchema = z.object({
-  currentPassword: z.string().min(1, 'Password saat ini wajib diisi'),
-  newPassword: z.string().min(6, 'Password baru minimal 6 karakter'),
+  fullName: z.string().min(2, 'Nama minimal 2 karakter'),
+  prodi: z.string().optional().nullable(),
+  faculty: z.string().optional().nullable(),
 });
 
 export async function usersRoutes(fastify: FastifyInstance) {
   fastify.addHook('preHandler', authenticate);
 
-  // 1. UPDATE OWN PROFILE (SELF SERVICE)
+  // 1. UPDATE USER PROFILE (Self)
   fastify.put('/profile', async (request, reply) => {
     const userId = request.user?.userId;
     const body = updateProfileSchema.parse(request.body);
 
-    const user = await prisma.user.findUnique({ where: { id: userId } });
+    const user = await db.user.findUnique({ where: { id: userId } });
     if (!user) {
       return reply.status(404).send({ success: false, message: 'Pengguna tidak ditemukan' });
     }
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await db.user.update({
       where: { id: userId },
       data: {
-        name: body.name,
-        avatarUrl: body.avatarUrl !== undefined ? body.avatarUrl : user.avatarUrl,
+        fullName: body.fullName,
+        prodi: body.prodi,
+        faculty: body.faculty,
       },
-      include: { role: true },
-    });
-
-    await createAuditLog({
-      userId: user.id,
-      action: 'UPDATE_PROFILE',
-      entity: 'User',
-      entityId: user.id,
-      details: { name: updatedUser.name },
-      ipAddress: request.ip,
     });
 
     return reply.send({
       success: true,
       message: 'Profil berhasil diperbarui!',
-      user: {
-        id: updatedUser.id,
-        name: updatedUser.name,
-        email: updatedUser.email,
-        role: updatedUser.role.name,
-        avatarUrl: updatedUser.avatarUrl,
-      },
+      user: updatedUser,
     });
   });
 
-  // 2. CHANGE OWN PASSWORD (SELF SERVICE)
-  fastify.put('/profile/password', async (request, reply) => {
-    const userId = request.user?.userId;
-    const body = changePasswordSchema.parse(request.body);
-
-    const user = await prisma.user.findUnique({ where: { id: userId } });
-    if (!user) {
-      return reply.status(404).send({ success: false, message: 'Pengguna tidak ditemukan' });
+  // 2. LIST USERS WITH PAGINATION & FILTERS
+  fastify.get('/', async (request, reply) => {
+    const userRole = request.user?.role || '';
+    const allowed = ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN', 'PROCTOR', 'EXECUTIVE'];
+    if (!allowed.includes(userRole)) {
+      return reply.status(403).send({ success: false, message: 'Akses ditolak' });
     }
 
-    const { isValid } = await comparePassword(body.currentPassword, user.passwordHash);
-    if (!isValid) {
-      return reply.status(400).send({
-        success: false,
-        message: 'Password saat ini yang Anda masukkan salah.',
-      });
-    }
-
-    const newPasswordHash = await hashPassword(body.newPassword);
-
-    await prisma.user.update({
-      where: { id: userId },
-      data: { passwordHash: newPasswordHash },
-    });
-
-    await createAuditLog({
-      userId: user.id,
-      action: 'CHANGE_PASSWORD',
-      entity: 'User',
-      entityId: user.id,
-      details: { message: 'Password successfully updated' },
-      ipAddress: request.ip,
-    });
-
-    return reply.send({
-      success: true,
-      message: 'Password berhasil diubah! Silakan gunakan password baru pada login berikutnya.',
-    });
-  });
-
-  // 3. LIST USERS WITH PAGINATION, SEARCH, FILTER
-  fastify.get('/', { preHandler: [hasPermission('users:read')] }, async (request, reply) => {
     const { search, role, page = '1', limit = '10' } = request.query as any;
-    const pageNum = parseInt(page, 10);
-    const limitNum = parseInt(limit, 10);
+    const pageNum = parseInt(page, 10) || 1;
+    const limitNum = parseInt(limit, 10) || 10;
     const skip = (pageNum - 1) * limitNum;
 
     const where: any = {};
     if (search) {
       where.OR = [
-        { name: { contains: search } },
+        { identityNumber: { contains: search } },
+        { fullName: { contains: search } },
         { email: { contains: search } },
       ];
     }
     if (role) {
-      where.role = { name: role };
+      where.role = role;
     }
 
-    const [data, total] = await Promise.all([
-      prisma.user.findMany({
+    const [users, total] = await Promise.all([
+      db.user.findMany({
         where,
         skip,
         take: limitNum,
         orderBy: { createdAt: 'desc' },
-        include: { role: true },
+        select: {
+          id: true,
+          identityNumber: true,
+          fullName: true,
+          email: true,
+          role: true,
+          prodi: true,
+          faculty: true,
+          createdAt: true,
+        },
       }),
-      prisma.user.count({ where }),
+      db.user.count({ where }),
     ]);
 
     return reply.send({
       success: true,
-      data: data.map((u: any) => ({
-        id: u.id,
-        name: u.name,
-        email: u.email,
-        role: u.role.name,
-        roleId: u.roleId,
-        isActive: u.isActive,
-        isSystem: u.isSystem,
-        createdAt: u.createdAt,
-      })),
+      data: users,
       pagination: {
         page: pageNum,
         limit: limitNum,
         total,
-        totalPages: Math.ceil(total / limitNum),
+        totalPages: Math.ceil(total / limitNum) || 1,
       },
     });
   });
 
-  // 4. CREATE USER
-  fastify.post('/', { preHandler: [hasPermission('users:create')] }, async (request, reply) => {
-    const { name, email, password, roleId, isActive } = request.body as any;
-
-    if (!name || !email || !password || !roleId) {
-      return reply.status(400).send({ success: false, message: 'Name, email, password, and roleId are required' });
+  // 3. CREATE NEW USER (Admin)
+  fastify.post('/', async (request, reply) => {
+    const userRole = request.user?.role || '';
+    const allowed = ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN'];
+    if (!allowed.includes(userRole)) {
+      return reply.status(403).send({ success: false, message: 'Akses ditolak' });
     }
 
-    const existing = await prisma.user.findUnique({ where: { email } });
+    const { identityNumber, fullName, email, password, role, prodi, faculty } = request.body as any;
+
+    if (!identityNumber || !fullName || !email || !password) {
+      return reply.status(400).send({ success: false, message: 'NIM/NIP, Nama, Email, dan Password wajib diisi' });
+    }
+
+    // Check unique NIM/NIP & email
+    const existing = await db.user.findFirst({
+      where: { OR: [{ identityNumber }, { email }] },
+    });
     if (existing) {
-      return reply.status(400).send({ success: false, message: 'Email already exists' });
+      return reply.status(400).send({ success: false, message: 'NIM/NIP atau Email sudah terdaftar' });
     }
 
     const passwordHash = await hashPassword(password);
 
-    const user = await prisma.user.create({
+    const user = await db.user.create({
       data: {
-        name,
+        identityNumber,
+        fullName,
         email,
         passwordHash,
-        roleId,
-        isActive: isActive ?? true,
+        role: role || 'STUDENT',
+        prodi,
+        faculty,
       },
-      include: { role: true },
     });
 
-    await createAuditLog({
-      userId: request.user?.userId,
-      action: 'CREATE_USER',
-      entity: 'User',
-      entityId: user.id,
-      details: { email: user.email, role: user.role.name },
-      ipAddress: request.ip,
-    });
-
-    return reply.status(201).send({ success: true, message: 'User created successfully', data: user });
+    return reply.status(201).send({ success: true, message: 'Pengguna berhasil dibuat', data: user });
   });
 
-  // 5. UPDATE USER
-  fastify.put('/:id', { preHandler: [hasPermission('users:update')] }, async (request, reply) => {
-    const { id } = request.params as any;
-    const { name, email, roleId, isActive, password } = request.body as any;
+  // 4. UPDATE USER DETAILS (Admin)
+  fastify.put('/:id', async (request, reply) => {
+    const userRole = request.user?.role || '';
+    const allowed = ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN'];
+    if (!allowed.includes(userRole)) {
+      return reply.status(403).send({ success: false, message: 'Akses ditolak' });
+    }
 
-    const user = await prisma.user.findUnique({ where: { id } });
+    const { id } = request.params as { id: string };
+    const { fullName, email, role, prodi, faculty } = request.body as any;
+
+    const user = await db.user.findUnique({ where: { id } });
     if (!user) {
-      return reply.status(404).send({ success: false, message: 'User not found' });
+      return reply.status(404).send({ success: false, message: 'Pengguna tidak ditemukan' });
     }
 
-    const dataToUpdate: any = {
-      name,
-      email,
-      roleId,
-      isActive,
-    };
-
-    if (password && password.trim() !== '') {
-      dataToUpdate.passwordHash = await hashPassword(password);
-    }
-
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await db.user.update({
       where: { id },
-      data: dataToUpdate,
-      include: { role: true },
+      data: {
+        fullName: fullName || user.fullName,
+        email: email || user.email,
+        role: role || user.role,
+        prodi: prodi !== undefined ? prodi : user.prodi,
+        faculty: faculty !== undefined ? faculty : user.faculty,
+      },
     });
 
-    await createAuditLog({
-      userId: request.user?.userId,
-      action: 'UPDATE_USER',
-      entity: 'User',
-      entityId: user.id,
-      details: { email: updatedUser.email },
-      ipAddress: request.ip,
-    });
-
-    return reply.send({ success: true, message: 'User updated successfully', data: updatedUser });
+    return reply.send({ success: true, message: 'Data pengguna berhasil diperbarui', data: updatedUser });
   });
 
-  // 6. DELETE USER
-  fastify.delete('/:id', { preHandler: [hasPermission('users:delete')] }, async (request, reply) => {
-    const { id } = request.params as any;
+  // 5. RESET USER PASSWORD (Admin)
+  fastify.post('/:id/reset-password', async (request, reply) => {
+    const userRole = request.user?.role || '';
+    const allowed = ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN'];
+    if (!allowed.includes(userRole)) {
+      return reply.status(403).send({ success: false, message: 'Akses ditolak' });
+    }
 
-    const user = await prisma.user.findUnique({ where: { id } });
+    const { id } = request.params as { id: string };
+    const { newPassword = 'password123' } = (request.body as any) || {};
+
+    const user = await db.user.findUnique({ where: { id } });
     if (!user) {
-      return reply.status(404).send({ success: false, message: 'User not found' });
+      return reply.status(404).send({ success: false, message: 'Pengguna tidak ditemukan' });
     }
 
-    if (user.isSystem) {
-      return reply.status(400).send({ success: false, message: 'System users cannot be deleted' });
-    }
+    const passwordHash = await hashPassword(newPassword);
 
-    await prisma.user.delete({ where: { id } });
-
-    await createAuditLog({
-      userId: request.user?.userId,
-      action: 'DELETE_USER',
-      entity: 'User',
-      entityId: id,
-      details: { email: user.email },
-      ipAddress: request.ip,
+    await db.user.update({
+      where: { id },
+      data: { passwordHash },
     });
 
-    return reply.send({ success: true, message: 'User deleted successfully' });
+    return reply.send({
+      success: true,
+      message: `Password pengguna ${user.fullName} berhasil di-reset ke '${newPassword}'`,
+    });
+  });
+
+  // 6. DELETE USER (Admin)
+  fastify.delete('/:id', async (request, reply) => {
+    const userRole = request.user?.role || '';
+    const allowed = ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN'];
+    if (!allowed.includes(userRole)) {
+      return reply.status(403).send({ success: false, message: 'Akses ditolak' });
+    }
+
+    const { id } = request.params as { id: string };
+
+    const user = await db.user.findUnique({ where: { id } });
+    if (!user) {
+      return reply.status(404).send({ success: false, message: 'Pengguna tidak ditemukan' });
+    }
+
+    await db.user.delete({ where: { id } });
+
+    return reply.send({ success: true, message: `Pengguna ${user.fullName} berhasil dihapus` });
   });
 }

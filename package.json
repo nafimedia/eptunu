@@ -11,6 +11,7 @@
     "dev": "npx concurrently -k -n \"API,WEB\" -c \"indigo,pink\" \"npm run dev:api\" \"npm run dev:web\"",
     "dev:api": "npm run dev --workspace=apps/api",
     "dev:web": "npm run dev --workspace=apps/web",
+    "check": "npm run check --workspace=apps/web && npm run build --workspace=apps/api && npm run build --workspace=packages/database",
     "build": "npm run build --workspaces --if-present",
     "db:generate": "npm run db:generate --workspace=packages/database",
     "db:push": "npm run db:push --workspace=packages/database",

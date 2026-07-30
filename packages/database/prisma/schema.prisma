@@ -7,102 +7,277 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN_EPT
+  QUESTION_AUTHOR
+  VALIDATOR
+  PROCTOR
+  STUDENT
+  EXECUTIVE
+}
+
+enum ExamStatus {
+  SCHEDULED
+  IN_PROGRESS
+  SUBMITTED
+  FORCE_SUBMITTED
+  EXPIRED
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum SectionType {
+  LISTENING
+  STRUCTURE
+  READING
+}
+
+enum DifficultyLevel {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum QuestionStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  REJECTED
+}
+
+enum ListeningPart {
+  PART_A
+  PART_B
+  PART_C
+}
+
 model User {
-  id           String         @id @default(uuid())
-  name         String
-  email        String         @unique
-  passwordHash String
-  avatarUrl    String?
-  roleId       String
-  isActive     Boolean        @default(true)
-  isSystem     Boolean        @default(false)
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  id              String        @id @default(uuid())
+  identityNumber  String        @unique // NIM or NIP
+  fullName        String
+  email           String        @unique
+  passwordHash    String
+  role            Role          @default(STUDENT)
+  prodi           String?
+  faculty         String?
+  questions       Question[]
+  supervisedExams ExamSession[] @relation("ExamProctor")
+  studentExams    StudentExam[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
 
-  role          Role           @relation(fields: [roleId], references: [id])
-  refreshTokens RefreshToken[]
-  auditLogs     AuditLog[]
-  notifications Notification[]
-
-  @@map("users")
+  @@index([identityNumber, role])
 }
 
-model Role {
-  id          String           @id @default(uuid())
-  name        String           @unique
+model Passage {
+  id        String     @id @default(uuid())
+  title     String?
+  content   String     @db.Text
+  questions Question[]
+  createdAt DateTime   @default(now())
+}
+
+model Question {
+  id            String          @id @default(uuid())
+  section       SectionType
+  listeningPart ListeningPart?
+  passageId     String?
+  passage       Passage?        @relation(fields: [passageId], references: [id], onDelete: SetNull)
+  audioUrl      String?         // For Section 1: Listening MP3
+  questionText  String          @db.Text
+  options       Json            // [{ "id": "A", "text": "..." }, ...]
+  correctOption String          // "A", "B", "C", or "D". NEVER exposed to client APIs during exam.
+  explanation   String?         @db.Text
+  skillTag      String?         // e.g. "Main Idea", "Subject-Verb Agreement"
+  difficulty    DifficultyLevel @default(MEDIUM)
+  status        QuestionStatus  @default(APPROVED)
+  authorId      String?
+  author        User?           @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  reviewNotes   String?         @db.Text
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([section, status, difficulty])
+}
+
+model ExamSession {
+  id           String        @id @default(uuid())
+  title        String        // e.g., "EPT Regular Periode Juli 2026"
+  token        String        @unique // 6-character uppercase dynamic token
+  startTime    DateTime
+  endTime      DateTime
+  durationMin  Int           @default(110)
+  room         String?       @default("Lab Komputer 1 UNU Purwokerto")
+  quota        Int           @default(35)
+  proctorId    String?
+  proctor      User?         @relation("ExamProctor", fields: [proctorId], references: [id], onDelete: SetNull)
+  isActive     Boolean       @default(true)
+  studentExams StudentExam[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model StudentExam {
+  id                 String             @id @default(uuid())
+  userId             String
+  user               User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  examSessionId      String
+  examSession        ExamSession        @relation(fields: [examSessionId], references: [id], onDelete: Cascade)
+  status             ExamStatus         @default(SCHEDULED)
+  verificationStatus VerificationStatus @default(PENDING)
+  paymentProofUrl    String?
+  verificationNotes  String?            @db.Text
+  registrationNo     String?            @unique
+  ipAddress          String?            @default("127.0.0.1")
+  userAgent          String?            @db.Text
+  lastHeartbeat      DateTime?          @default(now())
+  isOnline           Boolean            @default(false)
+  startedAt          DateTime?
+  submittedAt        DateTime?
+  scoreListening     Int?               // Scaled score (31 - 68)
+  scoreStructure     Int?               // Scaled score (31 - 68)
+  scoreReading       Int?               // Scaled score (31 - 67)
+  totalScore         Int?               // Scaled total (310 - 677)
+  violationCount     Int                @default(0)
+  answers            AnswerLog[]
+  activityLogs       ExamActivityLog[]
+  certificate        Certificate?
+  createdAt          DateTime           @default(now())
+
+  @@unique([userId, examSessionId])
+  @@index([examSessionId, status, verificationStatus])
+}
+
+model ExamActivityLog {
+  id            String      @id @default(uuid())
+  studentExamId String
+  studentExam   StudentExam @relation(fields: [studentExamId], references: [id], onDelete: Cascade)
+  action        String      // e.g. "ONLINE", "OFFLINE", "TAB_SWITCH", "EXIT_FULLSCREEN", "COPY_PASTE", "FORCE_SUBMIT"
+  details       String?     @db.Text
+  ipAddress     String?
+  createdAt     DateTime    @default(now())
+
+  @@index([studentExamId])
+}
+
+model AnswerLog {
+  id             String      @id @default(uuid())
+  studentExamId  String
+  studentExam    StudentExam @relation(fields: [studentExamId], references: [id], onDelete: Cascade)
+  questionId     String
+  selectedOption String?     // "A", "B", "C", "D", or null
+  isFlagged      Boolean     @default(false)
+  updatedAt      DateTime    @updatedAt
+
+  @@unique([studentExamId, questionId])
+  @@index([studentExamId])
+}
+
+model ScoreConversion {
+  id          String      @id @default(uuid())
+  section     SectionType
+  rawScore    Int         // 0 to 50
+  scaledScore Int         // Equivalent scaled EPT score
+
+  @@unique([section, rawScore])
+}
+
+model Certificate {
+  id               String      @id @default(uuid())
+  certificateNo   String      @unique // e.g., "EPT/UNUPWT/2026/07/0042"
+  studentExamId    String      @unique
+  studentExam      StudentExam @relation(fields: [studentExamId], references: [id])
+  issuedAt         DateTime    @default(now())
+  validUntil       DateTime
+  signerName       String      // e.g., "Kepala UPT Bahasa UNU Purwokerto"
+  verificationHash String      // SHA-256 integrity signature
+  pdfPath          String
+}
+
+model SystemSetting {
+  id                String   @id @default("default")
+  institution       String   @default("Universitas Nahdlatul Ulama Purwokerto")
+  uptName           String   @default("UPT Bahasa UNU Purwokerto")
+  logoUrl           String?  @default("/logo.png")
+  contactEmail      String   @default("uptbahasa@unupurwokerto.ac.id")
+  address           String   @default("Jl. Sultan Agung No. 42, Purwokerto, Jawa Tengah")
+  passingScore      Int      @default(450)
+  maxViolations     Int      @default(3)
+  defaultDuration   Int      @default(110)
+  signerName        String   @default("Kepala UPT Bahasa UNU Purwokerto")
+  signerNip         String   @default("198504152010121002")
+  signerSignatureUrl String? @db.LongText
+  certValidityYears Int      @default(2)
+  maintenanceMode   Boolean  @default(false)
+
+  // Email SMTP Settings
+  enableEmailNotif  Boolean  @default(true)
+  smtpHost          String?  @default("smtp.gmail.com")
+  smtpPort          Int?     @default(587)
+  smtpUser          String?  @default("unupurwokerto@gmail.com")
+  smtpPass          String?  @default("app_password_secret")
+  smtpSenderName    String?  @default("UPT Bahasa UNU Purwokerto")
+
+  // WhatsApp Gateway Settings
+  enableWaNotif     Boolean  @default(true)
+  waProvider        String?  @default("Fonnte / Wablas")
+  waApiKey          String?  @default("FONNTE_API_TOKEN_SAMPLE")
+  waSenderNumber    String?  @default("081234567890")
+  waEndpointUrl     String?  @default("https://api.fonnte.com/send")
+
+  updatedAt         DateTime @updatedAt
+}
+
+model Faculty {
+  id            String         @id @default(uuid())
+  code          String         @unique
+  name          String
+  description   String?
+  studyPrograms StudyProgram[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model StudyProgram {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  facultyId   String
+  faculty     Faculty  @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([facultyId])
+}
+
+model Institution {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  isInternal  Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ParticipantType {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
   description String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-
-  users       User[]
-  permissions RolePermission[]
-
-  @@map("roles")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
-model Permission {
-  id          String           @id @default(uuid())
-  name        String           @unique // e.g. users:read, users:create
-  action      String           // e.g. read, create, update, delete
-  resource    String           // e.g. users, roles, audit_logs
-  description String?
-  createdAt   DateTime         @default(now())
-
-  roles       RolePermission[]
-
-  @@map("permissions")
-}
-
-model RolePermission {
-  roleId       String
-  permissionId String
-
-  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
-
-  @@id([roleId, permissionId])
-  @@map("role_permissions")
-}
-
-model RefreshToken {
-  id        String   @id @default(uuid())
-  userId    String
-  token     String   @unique @db.VarChar(500)
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("refresh_tokens")
-}
-
-model AuditLog {
-  id        String   @id @default(uuid())
-  userId    String?
-  action    String   // e.g. LOGIN, CREATE_USER, UPDATE_ROLE
-  entity    String   // e.g. User, Role, Auth
-  entityId  String?
-  details   Json?
-  ipAddress String?
-  userAgent String?
-  createdAt DateTime @default(now())
-
-  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  @@map("audit_logs")
-}
-
-model Notification {
-  id        String   @id @default(uuid())
-  userId    String
-  title     String
-  message   String   @db.Text
-  type      String   @default("info") // info, success, warning, error
-  isRead    Boolean  @default(false)
-  link      String?
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("notifications")
+model AcademicYear {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  isCurrent   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
