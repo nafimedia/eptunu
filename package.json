@@ -1,0 +1,34 @@
+{
+  "name": "starter-kit-modern",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Modern Fullstack Starter Kit with Fastify, SvelteKit 5, Prisma, MySQL, Shadcn UI, and RBAC",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npx concurrently -k -n \"API,WEB\" -c \"indigo,pink\" \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "npm run dev --workspace=apps/api",
+    "dev:web": "npm run dev --workspace=apps/web",
+    "build": "npm run build --workspaces --if-present",
+    "db:generate": "npm run db:generate --workspace=packages/database",
+    "db:push": "npm run db:push --workspace=packages/database",
+    "db:seed": "npm run db:seed --workspace=packages/database",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "g:module": "npx tsx scripts/generate-module.ts"
+  },
+  "keywords": [
+    "sveltekit",
+    "fastify",
+    "prisma",
+    "mysql",
+    "tailwind",
+    "shadcn",
+    "rbac",
+    "typescript"
+  ],
+  "author": "StarterKit Team",
+  "license": "MIT"
+}

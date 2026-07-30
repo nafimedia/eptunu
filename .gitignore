@@ -1,0 +1,15 @@
+node_modules
+.env
+.env.*
+!.env.example
+.svelte-kit
+dist
+build
+
+# Ignore internal markdown docs, keep main README.md
+*.md
+!README.md
+
+# Uploads
+apps/api/uploads/*
+!apps/api/uploads/.gitkeep
