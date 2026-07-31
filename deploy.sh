@@ -12,6 +12,9 @@ npm install
 
 # 3. Synchronize Database schema
 echo "🗄️ Pushing database schema..."
+if [ -f .env ] && [ ! -f packages/database/.env ]; then
+  cp .env packages/database/.env
+fi
 npm run db:push
 
 # 4. Build Monorepo Workspaces
