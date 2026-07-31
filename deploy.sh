@@ -21,7 +21,7 @@ npm run build
 # 5. Reload PM2 Process Manager
 echo "🔄 Reloading PM2 Service Instances..."
 if command -v pm2 &> /dev/null; then
-  pm2 reload ecosystem.config.js --env production || pm2 start ecosystem.config.js --env production
+  pm2 start ecosystem.config.js --update-env || pm2 reload ecosystem.config.js --update-env
   pm2 save
   echo "✅ PM2 Services updated successfully!"
 else
