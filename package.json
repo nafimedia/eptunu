@@ -13,6 +13,8 @@
     "dev:web": "npm run dev --workspace=apps/web",
     "check": "npm run check --workspace=apps/web && npm run build --workspace=apps/api && npm run build --workspace=packages/database",
     "build": "npm run build --workspaces --if-present",
+    "start": "node server.js",
+    "start:aapanel": "node server.js",
     "opt": "npm run db:push && npm run build",
     "prod": "pm2 start ecosystem.config.js",
     "start:prod": "pm2 start ecosystem.config.js",
