@@ -6,18 +6,18 @@ console.log('🚀 Starting EPTUNU Monorepo Production Server in aaPanel Node Man
 const apiScript = path.join(__dirname, 'apps/api/dist/index.js');
 const webScript = path.join(__dirname, 'apps/web/build/index.js');
 
-const apiPort = process.env.API_PORT || '3001';
-let webPort = process.env.WEB_PORT || process.env.PORT || '3000';
+let webPort = process.env.PORT || process.env.WEB_PORT || '3001';
+let apiPort = process.env.API_PORT || '3002';
 
-// Prevent port collision if aaPanel passes PORT=3001 to process.env.PORT
-if (webPort === apiPort) {
-  webPort = '3000';
+// Ensure Web and API never collide on the same port
+if (apiPort === webPort) {
+  apiPort = (parseInt(webPort, 10) + 1).toString();
 }
 
-console.log(`📡 API Backend target port: ${apiPort}`);
 console.log(`🌐 Web Frontend target port: ${webPort}`);
+console.log(`📡 API Backend target port: ${apiPort}`);
 
-// 1. Launch Fastify API Backend (Port 3001)
+// 1. Launch Fastify API Backend (Port 3002)
 const apiProcess = fork(apiScript, [], {
   env: {
     ...process.env,
@@ -27,7 +27,7 @@ const apiProcess = fork(apiScript, [], {
   }
 });
 
-// 2. Launch SvelteKit Web Frontend (Port 3000)
+// 2. Launch SvelteKit Web Frontend (Port 3001)
 const webProcess = fork(webScript, [], {
   env: {
     ...process.env,

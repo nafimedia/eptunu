@@ -9,7 +9,7 @@ module.exports = {
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'production',
-        PORT: 3001,
+        PORT: 3002,
         HOST: '0.0.0.0'
       }
     },
@@ -22,7 +22,7 @@ module.exports = {
       max_memory_restart: '1G',
       env: {
         NODE_ENV: 'production',
-        PORT: 5173,
+        PORT: 3001,
         HOST: '0.0.0.0'
       }
     }
