@@ -10,11 +10,12 @@ git pull origin main
 echo "📥 Installing dependencies..."
 npm install
 
-# 3. Synchronize Database schema
-echo "🗄️ Pushing database schema..."
+# 3. Generate Prisma Client & Synchronize Database schema
+echo "⚙️ Generating Prisma Client & Pushing database schema..."
 if [ -f .env ]; then
   cp -f .env packages/database/.env
 fi
+npm run db:generate
 npm run db:push
 
 # 4. Build Monorepo Workspaces
