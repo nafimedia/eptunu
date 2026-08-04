@@ -236,8 +236,8 @@
           <!-- Glassmorphism Outer Frame -->
           <div class="relative rounded-3xl overflow-hidden border-2 border-emerald-500/30 shadow-2xl shadow-emerald-950/50 bg-gradient-to-b from-emerald-950/40 to-slate-950/80 backdrop-blur-xl">
             <img
-              src="/hero_islamic_student.png"
-              alt="Mahasiswa UNU Purwokerto EPT"
+              src="/unu_building.jpg"
+              alt="Gedung UNU Purwokerto"
               class="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700"
             />
 
@@ -246,10 +246,10 @@
 
             <div class="absolute bottom-0 inset-x-0 p-6 text-white space-y-1">
               <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold uppercase tracking-wider">
-                <CheckCircle2 class="w-3 h-3 text-emerald-400" /> Mahasiswa UNU Purwokerto
+                <CheckCircle2 class="w-3 h-3 text-emerald-400" /> Kampus UNU Purwokerto
               </div>
-              <h3 class="text-base font-extrabold">Sertifikasi EPT Terstandarisasi</h3>
-              <p class="text-xs text-slate-300">Siap untuk kelulusan, wisuda, & syarat beasiswa internasional.</p>
+              <h3 class="text-base font-extrabold">Gedung Universitas Nahdlatul Ulama</h3>
+              <p class="text-xs text-slate-300">Pusat Layanan Tes & Sertifikasi Bahasa (UPT Bahasa).</p>
             </div>
           </div>
 
