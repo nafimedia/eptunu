@@ -44,6 +44,13 @@ const webProcess = fork(webScript, [], {
 apiProcess.on('error', (err) => console.error('❌ Fastify API Error:', err));
 webProcess.on('error', (err) => console.error('❌ SvelteKit Web Error:', err));
 
+apiProcess.on('exit', (code, signal) => {
+  console.error(`⚠️ Fastify API process exited with code: ${code}, signal: ${signal}`);
+});
+webProcess.on('exit', (code, signal) => {
+  console.error(`⚠️ SvelteKit Web process exited with code: ${code}, signal: ${signal}`);
+});
+
 process.on('SIGINT', () => {
   apiProcess.kill();
   webProcess.kill();
