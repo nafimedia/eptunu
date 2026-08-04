@@ -7,11 +7,11 @@ const apiScript = path.join(__dirname, 'apps/api/dist/index.js');
 const webScript = path.join(__dirname, 'apps/web/build/index.js');
 
 let webPort = process.env.PORT || process.env.WEB_PORT || '3001';
-let apiPort = process.env.API_PORT || '3002';
+let apiPort = process.env.API_PORT || '3005';
 
 // Ensure Web and API never collide on the same port
 if (apiPort === webPort) {
-  apiPort = (parseInt(webPort, 10) + 1).toString();
+  apiPort = (parseInt(webPort, 10) + 5).toString();
 }
 
 console.log(`🌐 Web Frontend target port: ${webPort}`);
