@@ -12,8 +12,8 @@ npm install
 
 # 3. Synchronize Database schema
 echo "🗄️ Pushing database schema..."
-if [ -f .env ] && [ ! -f packages/database/.env ]; then
-  cp .env packages/database/.env
+if [ -f .env ]; then
+  cp -f .env packages/database/.env
 fi
 npm run db:push
 
