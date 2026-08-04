@@ -2,6 +2,8 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 import { defineConfig } from 'vite';
 
+const apiPort = process.env.API_PORT || (process.env.NODE_ENV === 'production' ? '3005' : '3001');
+
 export default defineConfig({
   plugins: [
     sveltekit(),
@@ -56,11 +58,16 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:3001',
+        target: `http://127.0.0.1:${apiPort}`,
         changeOrigin: true
       },
-      '/uploads': {
-        target: 'http://127.0.0.1:3001',
+      '/storage': {
+        target: `http://127.0.0.1:${apiPort}`,
+        changeOrigin: true
+      },
+      '/ws': {
+        target: `ws://127.0.0.1:${apiPort}`,
+        ws: true,
         changeOrigin: true
       }
     }

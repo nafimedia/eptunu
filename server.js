@@ -17,23 +17,26 @@ if (apiPort === webPort) {
 console.log(`🌐 Web Frontend target port: ${webPort}`);
 console.log(`📡 API Backend target port: ${apiPort}`);
 
-// 1. Launch Fastify API Backend (Port 3002)
+// 1. Launch Fastify API Backend
 const apiProcess = fork(apiScript, [], {
   env: {
     ...process.env,
     NODE_ENV: 'production',
     API_PORT: apiPort,
     PORT: apiPort,
+    API_URL: `http://127.0.0.1:${apiPort}`,
     HOST: '0.0.0.0'
   }
 });
 
-// 2. Launch SvelteKit Web Frontend (Port 3001)
+// 2. Launch SvelteKit Web Frontend
 const webProcess = fork(webScript, [], {
   env: {
     ...process.env,
     NODE_ENV: 'production',
     PORT: webPort,
+    API_PORT: apiPort,
+    API_URL: `http://127.0.0.1:${apiPort}`,
     HOST: '0.0.0.0'
   }
 });

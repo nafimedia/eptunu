@@ -1,6 +1,7 @@
 import type { Handle } from '@sveltejs/kit';
 
-const API_TARGET = process.env.API_URL || 'http://127.0.0.1:3005';
+const defaultApiPort = process.env.NODE_ENV === 'production' ? '3005' : '3001';
+const API_TARGET = process.env.API_URL || `http://127.0.0.1:${process.env.API_PORT || defaultApiPort}`;
 
 export const handle: Handle = async ({ event, resolve }) => {
   const { pathname, search } = event.url;
