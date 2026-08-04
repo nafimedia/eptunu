@@ -5,10 +5,10 @@ dotenv.config({ path: path.resolve(__dirname, '../../../../.env') });
 
 export const env = {
   NODE_ENV: process.env.NODE_ENV || 'development',
-  PORT: parseInt(process.env.PORT || '3001', 10),
+  PORT: parseInt(process.env.API_PORT || '3005', 10),
   HOST: process.env.HOST || '0.0.0.0',
-  WEB_URL: process.env.WEB_URL || 'http://localhost:5173',
-  API_URL: process.env.API_URL || 'http://localhost:3001',
+  WEB_URL: process.env.WEB_URL || 'http://localhost:3001',
+  API_URL: process.env.API_URL || 'http://localhost:3005',
   JWT_SECRET: process.env.JWT_SECRET || 'super-secret-jwt-key-starter-kit-2026',
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '15m',
   REFRESH_TOKEN_EXPIRES_IN: process.env.REFRESH_TOKEN_EXPIRES_IN || '7d',

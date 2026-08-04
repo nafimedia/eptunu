@@ -22,6 +22,7 @@ const apiProcess = fork(apiScript, [], {
   env: {
     ...process.env,
     NODE_ENV: 'production',
+    API_PORT: apiPort,
     PORT: apiPort,
     HOST: '0.0.0.0'
   }
