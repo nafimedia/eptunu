@@ -18,8 +18,16 @@ export const handle: Handle = async ({ event, resolve }) => {
     const targetUrl = `${targetBase}${pathname}${search}`;
 
     try {
-      const requestHeaders = new Headers(event.request.headers);
-      requestHeaders.delete('host');
+      // Clean request headers for Node.js fetch / undici compatibility
+      const requestHeaders = new Headers();
+      event.request.headers.forEach((value, key) => {
+        const lowerKey = key.toLowerCase();
+        if (
+          !['host', 'connection', 'content-length', 'transfer-encoding', 'accept-encoding'].includes(lowerKey)
+        ) {
+          requestHeaders.set(key, value);
+        }
+      });
 
       const body = ['GET', 'HEAD'].includes(event.request.method)
         ? undefined
@@ -28,10 +36,17 @@ export const handle: Handle = async ({ event, resolve }) => {
       const response = await fetch(targetUrl, {
         method: event.request.method,
         headers: requestHeaders,
-        body,
+        body: body && body.byteLength > 0 ? body : undefined,
       });
 
-      const responseHeaders = new Headers(response.headers);
+      // Clean response headers
+      const responseHeaders = new Headers();
+      response.headers.forEach((value, key) => {
+        const lowerKey = key.toLowerCase();
+        if (!['content-encoding', 'transfer-encoding', 'connection'].includes(lowerKey)) {
+          responseHeaders.set(key, value);
+        }
+      });
 
       return new Response(response.body, {
         status: response.status,
@@ -39,7 +54,7 @@ export const handle: Handle = async ({ event, resolve }) => {
         headers: responseHeaders,
       });
     } catch (err: any) {
-      console.error(`❌ API Proxy Error fetching ${targetUrl}:`, err?.message || err);
+      console.error(`❌ API Proxy Error fetching ${targetUrl}:`, err?.message || err, err?.cause || '');
       return new Response(
         JSON.stringify({
           success: false,
