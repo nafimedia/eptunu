@@ -102,6 +102,19 @@
   function printCertificate() {
     window.print();
   }
+
+  function formatOrdinalDate(dateInput: any) {
+    if (!dateInput) return '';
+    const d = new Date(dateInput);
+    if (isNaN(d.getTime())) return '';
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const day = d.getDate();
+    let suffix = 'th';
+    if (day % 10 === 1 && day !== 11) suffix = 'st';
+    else if (day % 10 === 2 && day !== 12) suffix = 'nd';
+    else if (day % 10 === 3 && day !== 13) suffix = 'rd';
+    return `${months[d.getMonth()]} ${day}${suffix}, ${d.getFullYear()}`;
+  }
 </script>
 
 <svelte:head>
@@ -224,7 +237,7 @@
   {/if}
 </div>
 
-<!-- PRINTABLE CERTIFICATE PREVIEW MODAL (A4 LANDSCAPE) -->
+<!-- PRINTABLE CERTIFICATE PREVIEW MODAL (A4 PORTRAIT) -->
 {#if isPreviewModalOpen && selectedCert}
   {@const student = selectedCert.studentExam?.user}
   {@const scores = selectedCert.studentExam}
@@ -232,12 +245,12 @@
   {@const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/verify/' + selectedCert.certificateNo)}`}
 
   <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-5xl w-full p-6 shadow-2xl space-y-4 my-8">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl w-full p-6 shadow-2xl space-y-4 my-8">
       <!-- Modal Header (Non-printable) -->
       <div class="flex justify-between items-center border-b border-slate-800 pb-3 print:hidden">
         <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
           <Award class="w-4 h-4 text-emerald-400" />
-          Pratinjau Sertifikat Resmi EPT (Ukuran A4 Landscape)
+          Pratinjau Sertifikat Resmi EPT (Ukuran A4 Portrait)
         </h3>
         <div class="flex items-center gap-2">
           <button
@@ -251,97 +264,141 @@
         </div>
       </div>
 
-      <!-- CERTIFICATE TEMPLATE BODY (EXACT A4 LANDSCAPE PRINTABLE AREA) -->
+      <!-- CERTIFICATE TEMPLATE BODY (EXACT A4 PORTRAIT PRINTABLE AREA MATCHING SAMPLE REDAKSI) -->
       <div
         id="certificate-print-area"
-        class="bg-[#fffbeb] text-slate-900 p-8 sm:p-10 border-[6px] border-double border-amber-900/70 relative shadow-2xl font-serif print:m-0 print:border-4 print:shadow-none mx-auto w-full aspect-[297/210] flex flex-col justify-between"
+        class="bg-[#faf8f5] text-slate-900 px-8 py-12 sm:px-12 sm:py-16 relative shadow-2xl font-serif print:m-0 print:shadow-none mx-auto w-full aspect-[210/297] flex flex-col justify-between overflow-hidden bg-cover bg-center bg-no-repeat"
+        style="background-image: url('/certificate_bg.jpg');"
       >
         <!-- Background Seal Watermark -->
-        <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-5">
-          <img src="/logo.png" alt="Watermark UNU" class="w-96 h-96 object-contain" />
+        <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] z-0">
+          <img src="/logo.png" alt="Watermark UNU" class="w-80 h-80 object-contain" />
         </div>
 
-        <div>
-          <!-- Certificate Header -->
-          <div class="text-center border-b-2 border-amber-900/50 pb-3 mb-4 relative z-10">
-            <img src="/logo.png" alt="UNU Purwokerto Logo" class="w-14 h-14 object-contain mx-auto mb-1" />
-            <div class="text-[11px] font-sans font-bold tracking-widest text-amber-950 uppercase">UNIVERSITAS NAHDLATUL ULAMA PURWOKERTO</div>
-            <div class="text-base font-black text-amber-950 uppercase tracking-wide">UPT BAHASA (LANGUAGE CENTER)</div>
-            <div class="text-[9px] font-sans text-slate-600">Jl. Sultan Agung No. 42 Purwokerto, Jawa Tengah • Email: uptbahasa@unupurwokerto.ac.id</div>
-          </div>
+        <!-- Top Content (Header, Title, Identity, Attestation, Scores) -->
+        <div class="relative z-10 space-y-4 pt-2">
 
-          <!-- Certificate Title -->
-          <div class="text-center mb-4 relative z-10">
-            <h2 class="text-lg font-extrabold uppercase text-amber-950 tracking-wider mb-0.5">CERTIFICATE OF PROFICIENCY</h2>
-            <p class="text-[11px] italic text-slate-700">English Proficiency Test (EPT)</p>
-            <div class="text-[10px] font-sans font-bold text-amber-900 mt-1">Number: {selectedCert.certificateNo}</div>
-          </div>
-
-          <!-- Student Identity -->
-          <div class="text-center text-xs space-y-1 mb-4 relative z-10">
-            <p class="text-slate-600 text-[11px]">This is to certify that:</p>
-            <div class="text-base font-extrabold text-amber-950 uppercase tracking-wide border-b-2 border-amber-900/30 inline-block px-8 py-0.5">
-              {student?.fullName || 'Peserta Ujian'}
+          <!-- 1. Header (Kop Surat) -->
+          <div class="text-center relative pb-3 border-b-2 border-double border-slate-900/60">
+            <img src="/logo.png" alt="UNU Purwokerto Logo" class="w-16 h-16 object-contain mx-auto mb-2" />
+            <div class="text-xs sm:text-sm font-sans font-extrabold tracking-wide text-emerald-800 uppercase">
+              UNIVERSITY OF NAHDLATUL ULAMA PURWOKERTO
             </div>
-            <p class="text-slate-600 text-[10px]">Identity / Student ID: <span class="font-bold text-slate-900 font-sans">{student?.identityNumber || '-'}</span></p>
-            <p class="text-slate-600 text-[10px]">Faculty / Study Program: <span class="font-semibold text-slate-900">{student?.faculty || '-'} / {student?.prodi || '-'}</span></p>
-          </div>
-
-          <p class="text-center text-[10px] text-slate-700 mb-3 px-4 leading-relaxed relative z-10">
-            has taken the official Computer-Based English Proficiency Test (EPT) organized by UPT Bahasa UNU Purwokerto on
-            <strong class="font-sans">{new Date(selectedCert.issuedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</strong>
-            and achieved the following converted scores:
-          </p>
-
-          <!-- Scores Table -->
-          <div class="max-w-md mx-auto bg-white/90 border border-amber-900/30 rounded-xl p-3 shadow-sm mb-4 font-sans text-xs relative z-10">
-            <div class="grid grid-cols-4 gap-2 text-center divide-x divide-slate-200">
-              <div>
-                <span class="block text-[9px] text-slate-500 uppercase font-semibold">Listening</span>
-                <span class="text-xs font-bold text-slate-800">{scores?.scoreListening || 0}</span>
-              </div>
-              <div>
-                <span class="block text-[9px] text-slate-500 uppercase font-semibold">Structure</span>
-                <span class="text-xs font-bold text-slate-800">{scores?.scoreStructure || 0}</span>
-              </div>
-              <div>
-                <span class="block text-[9px] text-slate-500 uppercase font-semibold">Reading</span>
-                <span class="text-xs font-bold text-slate-800">{scores?.scoreReading || 0}</span>
-              </div>
-              <div>
-                <span class="block text-[9px] text-slate-500 uppercase font-semibold">Total Score</span>
-                <span class="text-sm font-extrabold text-amber-950">{scores?.totalScore || 0}</span>
-              </div>
+            <div class="text-base sm:text-xl font-sans font-black text-amber-600 uppercase tracking-wider my-0.5">
+              LANGUAGE CENTER
+            </div>
+            <div class="text-[9px] font-sans text-slate-600 leading-tight">
+              Jln. Sultan Agung No. 42, Karangklesem, Purwokerto Selatan, Purwokerto, Central Java, 53144<br />
+              Tel./Fax. (0281) 6841836; e-mail: uptbahasa@unupurwokerto.ac.id; website: www.unupurwokerto.ac.id
             </div>
           </div>
+
+          <!-- 2. Certificate Title -->
+          <div class="text-center pt-2 pb-1">
+            <h2 class="text-2xl sm:text-3xl font-sans font-black text-amber-600 tracking-wider uppercase mb-0.5">
+              EPTUNU CERTIFICATE
+            </h2>
+            <p class="text-xs italic text-slate-800 font-serif font-medium">
+              (English Proficiency Test of UNU Purwokerto)
+            </p>
+            <div class="text-xs font-sans font-bold text-slate-900 mt-1 border-b border-slate-400/80 inline-block pb-0.5 px-3">
+              No.: &nbsp; {selectedCert.certificateNo}
+            </div>
+          </div>
+
+          <!-- 3. Identity Block (This is to certify that) -->
+          <div class="text-xs text-slate-800 font-sans space-y-2 pt-1 px-4">
+            <p class="text-xs font-serif italic text-slate-700">This is to certify that</p>
+            
+            <div class="grid grid-cols-[130px_10px_1fr] gap-x-2 text-xs font-sans items-center pl-6">
+              <span class="font-semibold text-slate-800">name</span>
+              <span>:</span>
+              <span class="font-bold text-slate-900 text-sm">{student?.fullName || '-'}</span>
+              
+              <span class="font-semibold text-slate-800">student number</span>
+              <span>:</span>
+              <span class="font-bold text-slate-900 font-mono text-sm">{student?.identityNumber || '-'}</span>
+            </div>
+          </div>
+
+          <!-- 4. Attestation Text -->
+          <div class="px-4 text-xs font-sans text-slate-800 leading-relaxed pt-1">
+            <p class="text-justify">
+              took English Proficiency Test of UNU Purwokerto organized by Language Center of UNU Purwokerto on 
+              <span class="font-semibold">{formatOrdinalDate(selectedCert.issuedAt)}</span> 
+              and achieved the following scores:
+            </p>
+          </div>
+
+          <!-- 5. Scores Breakdown List -->
+          <div class="px-8 py-1 font-sans text-xs text-slate-900 max-w-lg mx-auto">
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center border-b border-slate-200/60 pb-1">
+                <span>1. Listening Comprehension</span>
+                <span class="font-bold font-mono text-sm">{scores?.scoreListening || 0}</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-slate-200/60 pb-1">
+                <span>2. Structure and Written Expression</span>
+                <span class="font-bold font-mono text-sm">{scores?.scoreStructure || 0}</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-slate-200/60 pb-1">
+                <span>3. Reading Comprehension</span>
+                <span class="font-bold font-mono text-sm">{scores?.scoreReading || 0}</span>
+              </div>
+              <div class="border-t-2 border-slate-800 pt-1.5 flex justify-between items-center font-bold">
+                <span class="text-sm">Total</span>
+                <span class="font-black font-mono text-base text-amber-900">{scores?.totalScore || 0}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 6. Held statement -->
+          <div class="px-4 text-xs font-sans text-slate-800 pt-1">
+            <p>The English Proficiency Test was held in UNU Purwokerto</p>
+          </div>
+
         </div>
 
-        <!-- Footer Signatures & QR Code -->
-        <div class="flex justify-between items-end text-xs font-sans pt-2 border-t border-amber-900/20 relative z-10">
-          <div class="text-center">
-            <img src={qrUrl} alt="QR Code Verifikasi" class="w-16 h-16 border border-amber-900/30 rounded p-1 mx-auto mb-1 bg-white" />
-            <span class="text-[8px] text-slate-500 block">Scan to Verify Authenticity</span>
-          </div>
-
-          <div class="text-center space-y-0.5 min-w-[220px]">
-            <p class="text-[10px]">Purwokerto, {new Date(selectedCert.issuedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
-            <p class="text-[10px] font-bold text-amber-950">Head of Language Center</p>
-            <div class="h-14 flex items-center justify-center my-0.5">
-              {#if selectedCert.signerSignatureUrl || systemSettings?.signerSignatureUrl}
-                <img src={selectedCert.signerSignatureUrl || systemSettings?.signerSignatureUrl} alt="Tanda Tangan Kepala UPT Bahasa" class="max-h-14 max-w-[170px] object-contain mx-auto" />
-              {:else}
-                <div class="italic text-amber-900 font-bold opacity-80 text-[10px] border border-amber-900/20 rounded px-2 py-1">[ Digital Signature Verified ]</div>
-              {/if}
+        <!-- Bottom Content (Footer, Signatures & QR Code) -->
+        <div class="relative z-10 px-4 pb-2">
+          <div class="flex justify-between items-end text-xs font-sans">
+            
+            <!-- QR Code Box (Bottom Left) -->
+            <div class="text-center">
+              <div class="p-1.5 bg-white border border-slate-400 rounded-lg inline-block shadow-sm">
+                <img src={qrUrl} alt="QR Code Verifikasi" class="w-20 h-20" />
+              </div>
+              <span class="text-[8px] text-slate-500 font-sans block mt-1">Scan to Verify Authenticity</span>
             </div>
-            <p class="text-[11px] font-bold text-slate-900 underline">{selectedCert.signerName || systemSettings?.signerName || 'Kepala UPT Bahasa'}</p>
-            <p class="text-[9px] text-slate-600 font-mono">NIP. {selectedCert.signerNip || systemSettings?.signerNip || '-'}</p>
-          </div>
-        </div>
 
-        <!-- Integrity Hash Footer -->
-        <div class="mt-2 pt-1 border-t border-amber-900/10 text-[7px] font-sans text-slate-400 flex justify-between relative z-10">
-          <span>SHA-256 Signature: {selectedCert.verificationHash || 'SHA256-VERIFIED'}</span>
-          <span>Valid Until: {new Date(selectedCert.validUntil).toLocaleDateString('id-ID')}</span>
+            <!-- Signature Block (Bottom Right) -->
+            <div class="text-center space-y-0.5 min-w-[230px]">
+              <p class="text-xs text-slate-800 font-sans">Purwokerto, {formatOrdinalDate(selectedCert.issuedAt)}</p>
+              <p class="text-xs font-bold text-slate-900 font-sans">Head of Language Center,</p>
+              
+              <div class="h-16 flex items-center justify-center my-1">
+                {#if selectedCert.signerSignatureUrl || systemSettings?.signerSignatureUrl}
+                  <img src={selectedCert.signerSignatureUrl || systemSettings?.signerSignatureUrl} alt="Tanda Tangan Kepala UPT Bahasa" class="max-h-16 max-w-[180px] object-contain mx-auto" />
+                {:else}
+                  <div class="italic text-amber-900 font-bold opacity-80 text-xs border border-amber-900/30 rounded-lg px-3 py-1 bg-amber-50/50">[ Digital Signature Verified ]</div>
+                {/if}
+              </div>
+              
+              <p class="text-xs font-bold text-slate-900 underline font-sans">
+                {selectedCert.signerName || systemSettings?.signerName || 'M. Happy Nur Tsani, S.Pd., M.Pd.'}
+              </p>
+              <p class="text-[10px] text-slate-700 font-mono">
+                NPP: {selectedCert.signerNip || systemSettings?.signerNip || '19871208 201707 1 073'}
+              </p>
+            </div>
+
+          </div>
+
+          <!-- SHA-256 Hash Line -->
+          <div class="mt-3 pt-1.5 border-t border-slate-300 text-[8px] font-sans text-slate-500 flex justify-between">
+            <span>SHA-256 Signature: {selectedCert.verificationHash || 'SHA256-VERIFIED'}</span>
+            <span>Valid Until: {formatOrdinalDate(selectedCert.validUntil)}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -351,7 +408,7 @@
 <style>
   @media print {
     @page {
-      size: A4 landscape;
+      size: A4 portrait;
       margin: 0;
     }
     :global(body) {
@@ -368,15 +425,18 @@
       position: fixed !important;
       left: 0 !important;
       top: 0 !important;
-      width: 297mm !important;
-      height: 210mm !important;
-      padding: 12mm 18mm !important;
+      width: 210mm !important;
+      height: 297mm !important;
+      padding: 22mm 18mm 26mm 18mm !important;
       margin: 0 !important;
       box-sizing: border-box !important;
-      background-color: #fffbeb !important;
+      background-image: url('/certificate_bg.jpg') !important;
+      background-size: 100% 100% !important;
+      background-position: center !important;
+      background-repeat: no-repeat !important;
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
-      border: 8px double #78350f !important;
+      border: none !important;
       z-index: 99999 !important;
     }
   }
