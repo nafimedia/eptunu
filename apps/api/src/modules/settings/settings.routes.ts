@@ -38,37 +38,10 @@ export async function settingsRoutes(fastify: FastifyInstance) {
         data: settings,
       });
     } catch (err: any) {
-      console.error('Error fetching settings:', err);
-      // Fallback response so app never crashes with 500
-      return reply.send({
-        success: true,
-        data: {
-          id: 'default',
-          institution: 'Universitas Nahdlatul Ulama Purwokerto',
-          uptName: 'UPT Bahasa UNU Purwokerto',
-          logoUrl: '/logo.png',
-          contactEmail: 'unupurwokerto@gmail.com',
-          address: 'Karangklesem, Purwokerto Selatan, Kabupaten Banyumas, Jawa Tengah 53145',
-          passingScore: 450,
-          maxViolations: 3,
-          defaultDuration: 110,
-          signerName: 'Kepala UPT Bahasa UNU Purwokerto',
-          signerNip: '198504152010121002',
-          signerSignatureUrl: null,
-          certValidityYears: 2,
-          maintenanceMode: false,
-          enableEmailNotif: true,
-          smtpHost: 'smtp.gmail.com',
-          smtpPort: 587,
-          smtpUser: 'unupurwokerto@gmail.com',
-          smtpPass: 'app_password_secret',
-          smtpSenderName: 'UPT Bahasa UNU Purwokerto',
-          enableWaNotif: true,
-          waProvider: 'Fonnte / Wablas',
-          waApiKey: 'FONNTE_API_TOKEN_SAMPLE',
-          waSenderNumber: '081234567890',
-          waEndpointUrl: 'https://api.fonnte.com/send',
-        },
+      console.error('Error fetching settings from database:', err);
+      return reply.status(500).send({
+        success: false,
+        message: 'Gagal memuat pengaturan sistem dari database.',
       });
     }
   });

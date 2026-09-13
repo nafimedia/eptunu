@@ -1,42 +1,24 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { page } from '$app/stores';
-  import { ShieldCheck, Award, GraduationCap, CheckCircle2, XCircle, RefreshCw } from 'lucide-svelte';
+  import type { PageData } from './$types';
+  import { ShieldCheck, GraduationCap, XCircle } from 'lucide-svelte';
 
-  const certificateNo = $page.params.certificateNo;
-  let certData: any = null;
-  let isLoading = true;
-  let errorMsg = '';
+  export let data: PageData;
 
-  onMount(async () => {
-    try {
-      const res = await fetch(`/api/certificates/verify/${encodeURIComponent(certificateNo || '')}`);
-      const json = await res.json();
-      if (json.success) {
-        certData = json.data;
-      } else {
-        errorMsg = json.message || 'Sertifikat tidak ditemukan.';
-      }
-    } catch (e: any) {
-      errorMsg = e.message || 'Gagal terhubung ke server verifikasi.';
-    } finally {
-      isLoading = false;
-    }
-  });
+  $: certData = data.certData;
+  $: errorMsg = data.errorMsg;
 </script>
 
 <svelte:head>
-  <title>Verifikasi Sertifikat EPT - UNU Purwokerto</title>
+  <title>
+    {certData
+      ? `Sertifikat Resmi ${certData.student?.fullName || ''} - UNU Purwokerto`
+      : 'Verifikasi Sertifikat EPT - UNU Purwokerto'}
+  </title>
 </svelte:head>
 
 <div class="min-h-screen bg-slate-950 text-white flex flex-col justify-center items-center p-4">
   <div class="max-w-lg w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
-    {#if isLoading}
-      <div class="py-12 space-y-3">
-        <RefreshCw class="w-8 h-8 text-indigo-400 animate-spin mx-auto" />
-        <p class="text-xs text-slate-400">Memeriksa keaslian sertifikat di database resmi...</p>
-      </div>
-    {:else if errorMsg}
+    {#if errorMsg}
       <div class="w-16 h-16 bg-rose-500/20 text-rose-400 border border-rose-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl">
         <XCircle class="w-8 h-8" />
       </div>

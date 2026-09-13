@@ -130,3 +130,61 @@ export interface Permission {
   resource: string;
   description?: string;
 }
+
+export interface CertificateVerificationDTO {
+  id: string;
+  certificateNo: string;
+  issuedAt: string;
+  validUntil: string;
+  signerName: string;
+  verificationHash: string;
+  isExpired: boolean;
+  student: {
+    fullName: string;
+    identityNumber: string;
+    prodi?: string | null;
+    faculty?: string | null;
+  };
+  scores: {
+    listening: number;
+    structure: number;
+    reading: number;
+    total: number;
+  };
+  sessionTitle: string;
+  examDate: string;
+}
+
+export interface ReportOverviewDTO {
+  totalTakers: number;
+  passedCount: number;
+  failedCount: number;
+  passRate: number;
+  avgListening: number;
+  avgStructure: number;
+  avgReading: number;
+  avgTotal: number;
+  passingScoreThreshold: number;
+}
+
+export interface ReportAnalyticsDTO {
+  overview: ReportOverviewDTO;
+  facultyBreakdown: Record<string, { count: number; passed: number; totalScore: number }>;
+  prodiBreakdown: Record<string, { count: number; passed: number; totalScore: number }>;
+  monthlySummary: Record<string, { total: number; passed: number; avgScore: number }>;
+  recentExams: Array<{
+    id: string;
+    fullName: string;
+    identityNumber: string;
+    faculty?: string | null;
+    prodi?: string | null;
+    sessionTitle: string;
+    submittedAt?: string | null;
+    scoreListening?: number | null;
+    scoreStructure?: number | null;
+    scoreReading?: number | null;
+    totalScore?: number | null;
+    isPassed: boolean;
+  }>;
+}
+

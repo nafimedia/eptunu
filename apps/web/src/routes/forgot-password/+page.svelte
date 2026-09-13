@@ -43,7 +43,7 @@
             id="email"
             type="email"
             bind:value={email}
-            placeholder="admin@starterkit.com"
+            placeholder="nama@unupurwokerto.ac.id"
             class="w-full pl-9 pr-4 py-2.5 bg-muted/30 border border-border rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
             required
           />

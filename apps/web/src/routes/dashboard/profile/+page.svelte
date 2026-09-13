@@ -248,7 +248,7 @@
             id="profileName"
             type="text"
             bind:value={name}
-            class="w-full px-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+            class="w-full px-4 py-2.5 bg-background border border-border text-foreground rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
             required
           />
         </div>
@@ -280,7 +280,7 @@
             type="url"
             bind:value={avatarUrl}
             placeholder="https://example.com/avatar.jpg"
-            class="w-full px-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
+            class="w-full px-4 py-2.5 bg-background border border-border text-foreground rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-muted-foreground"
           />
         </div>
 
@@ -317,7 +317,7 @@
               type="password"
               bind:value={currentPassword}
               placeholder="••••••••"
-              class="w-full pl-9 pr-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
+              class="w-full pl-9 pr-4 py-2.5 bg-background border border-border text-foreground rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-muted-foreground"
               required
             />
           </div>
@@ -332,7 +332,7 @@
               type="password"
               bind:value={newPassword}
               placeholder="••••••••"
-              class="w-full pl-9 pr-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
+              class="w-full pl-9 pr-4 py-2.5 bg-background border border-border text-foreground rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-muted-foreground"
               required
             />
           </div>
@@ -347,7 +347,7 @@
               type="password"
               bind:value={confirmPassword}
               placeholder="••••••••"
-              class="w-full pl-9 pr-4 py-2.5 bg-white border border-border text-slate-900 rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-slate-400"
+              class="w-full pl-9 pr-4 py-2.5 bg-background border border-border text-foreground rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary placeholder:text-muted-foreground"
               required
             />
           </div>

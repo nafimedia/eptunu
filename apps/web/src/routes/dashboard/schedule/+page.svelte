@@ -287,21 +287,21 @@
     <!-- Section 1: Registered Sessions -->
     <div class="space-y-4">
       <h2 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-        <UserCheck class="w-5 h-5 text-emerald-600" />
-        <span>Sesi Ujian Terdaftar Saya</span>
+        <UserCheck class="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+        <span class="text-foreground">Sesi Ujian Terdaftar Saya</span>
       </h2>
 
       {#if isLoading}
-        <div class="p-8 text-center bg-white rounded-2xl border border-slate-200 text-xs text-slate-400">
+        <div class="p-8 text-center bg-card rounded-2xl border border-border text-xs text-muted-foreground">
           Memuat sesi ujian terdaftar...
         </div>
       {:else if studentExams.length === 0}
-        <div class="p-6 bg-amber-50/70 border border-amber-200/80 rounded-2xl text-amber-900 space-y-3">
+        <div class="p-6 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-900 dark:text-amber-200 space-y-3">
           <div class="flex items-center gap-2 font-bold text-sm">
-            <Sparkles class="w-4 h-4 text-amber-600" />
+            <Sparkles class="w-4 h-4 text-amber-600 dark:text-amber-400" />
             <span>Anda belum terdaftar pada sesi ujian aktif</span>
           </div>
-          <p class="text-xs text-amber-800">
+          <p class="text-xs text-amber-800 dark:text-amber-300">
             Silakan mendaftar pada salah satu sesi ujian EPT yang tersedia di bawah ini untuk memperoleh jadwal dan token pelaksanaan ujian.
           </p>
           <a
@@ -315,40 +315,40 @@
       {:else}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           {#each studentExams as exam}
-            <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition p-6 space-y-4 relative overflow-hidden">
-              <div class="flex items-start justify-between border-b border-slate-100 pb-3">
+            <div class="bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition p-6 space-y-4 relative overflow-hidden text-card-foreground">
+              <div class="flex items-start justify-between border-b border-border pb-3">
                 <div>
-                  <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 mb-1">
+                  <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 mb-1 border border-emerald-500/20">
                     {exam.status === 'COMPLETED' ? 'SELESAI' : (exam.examSession?.isActive ? 'SESI AKTIF' : 'TERDAFTAR')}
                   </span>
-                  <h3 class="text-base font-extrabold text-slate-900">{exam.examSession?.title || 'EPT Regular Sesi'}</h3>
+                  <h3 class="text-base font-extrabold text-foreground">{exam.examSession?.title || 'EPT Regular Sesi'}</h3>
                 </div>
               </div>
 
               <!-- Session Info -->
-              <div class="space-y-2 text-xs text-slate-600">
+              <div class="space-y-2 text-xs text-muted-foreground">
                 <div class="flex items-center gap-2">
-                  <Clock class="w-4 h-4 text-slate-400" />
+                  <Clock class="w-4 h-4 text-muted-foreground" />
                   <span>{new Date(exam.examSession?.startTime).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'short' })} WIB</span>
                 </div>
                 <div class="flex items-center gap-2">
-                  <MapPin class="w-4 h-4 text-indigo-500" />
-                  <span class="font-semibold text-slate-800">{exam.examSession?.room || 'Lab Komputer 1 UNU Purwokerto'}</span>
+                  <MapPin class="w-4 h-4 text-primary" />
+                  <span class="font-semibold text-foreground">{exam.examSession?.room || 'Lab Komputer 1 UNU Purwokerto'}</span>
                 </div>
               </div>
 
               <!-- Token Box -->
-              <div class="p-3 bg-slate-900 rounded-xl text-white flex items-center justify-between shadow-inner">
+              <div class="p-3 bg-muted/60 border border-border rounded-xl flex items-center justify-between shadow-inner">
                 <div class="flex items-center gap-3">
-                  <Key class="w-4 h-4 text-indigo-400" />
+                  <Key class="w-4 h-4 text-primary" />
                   <div>
-                    <div class="text-[10px] text-slate-400 font-semibold uppercase">Token Ujian Anda</div>
-                    <div class="font-mono text-base font-black text-indigo-300 tracking-widest">{exam.examSession?.token || '******'}</div>
+                    <div class="text-[10px] text-muted-foreground font-semibold uppercase">Token Ujian Anda</div>
+                    <div class="font-mono text-base font-black text-primary tracking-widest">{exam.examSession?.token || '******'}</div>
                   </div>
                 </div>
                 <button
                   on:click={() => copyToken(exam.examSession?.token, exam.id)}
-                  class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold border border-slate-700 transition"
+                  class="px-3 py-1.5 bg-background hover:bg-muted text-foreground rounded-lg text-xs font-bold border border-border transition"
                 >
                   {copiedTokenId === exam.id ? 'Tersalin!' : 'Salin Token'}
                 </button>
@@ -358,9 +358,9 @@
               {#if exam.status === 'COMPLETED' || exam.status === 'SUBMITTED' || exam.status === 'FORCE_SUBMITTED'}
                 <button
                   on:click={() => goto('/dashboard/results')}
-                  class="w-full py-2.5 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center justify-center gap-2"
+                  class="w-full py-2.5 px-4 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs transition flex items-center justify-center gap-2 border border-border"
                 >
-                  <Award class="w-4 h-4 text-amber-400" />
+                  <Award class="w-4 h-4 text-amber-500" />
                   <span>Lihat Hasil Skor EPT</span>
                 </button>
               {:else if exam.examSession?.isActive || exam.status === 'IN_PROGRESS'}
@@ -372,7 +372,7 @@
                   <span>MASUK RUANG UJIAN CBT SEKARANG</span>
                 </button>
               {:else}
-                <div class="p-3 rounded-xl bg-slate-100 text-slate-600 text-xs text-center font-medium">
+                <div class="p-3 rounded-xl bg-muted text-muted-foreground text-xs text-center font-medium border border-border">
                   ⏳ Sesi Belum Dimulai (Hadir 15 menit sebelum jadwal di Lab Komputer)
                 </div>
               {/if}
@@ -383,29 +383,29 @@
     </div>
 
     <!-- Section 2: Public Available Active Sessions -->
-    <div class="space-y-4 pt-4 border-t border-slate-200">
-      <h2 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-        <Calendar class="w-5 h-5 text-indigo-600" />
+    <div class="space-y-4 pt-4 border-t border-border">
+      <h2 class="text-lg font-extrabold text-foreground flex items-center gap-2">
+        <Calendar class="w-5 h-5 text-primary" />
         <span>Sesi Ujian EPT Aktif Tersedia</span>
       </h2>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         {#each sessions as s}
-          <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 shadow-sm hover:shadow-md transition">
+          <div class="bg-card rounded-2xl border border-border p-5 space-y-3 shadow-sm hover:shadow-md transition text-card-foreground">
             <div class="flex items-center justify-between">
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-800">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
                 {s.isActive ? 'SESI AKTIF' : 'MENDATANG'}
               </span>
-              <span class="text-xs font-bold text-slate-500">Kuota: {s._count?.studentExams || 0}/{s.quota}</span>
+              <span class="text-xs font-bold text-muted-foreground">Kuota: {s._count?.studentExams || 0}/{s.quota}</span>
             </div>
-            <h3 class="font-extrabold text-slate-900 text-sm">{s.title}</h3>
-            <div class="text-xs text-slate-500 space-y-1">
+            <h3 class="font-extrabold text-foreground text-sm">{s.title}</h3>
+            <div class="text-xs text-muted-foreground space-y-1">
               <div class="flex items-center gap-1.5"><Clock class="w-3.5 h-3.5" /> {new Date(s.startTime).toLocaleString('id-ID')}</div>
               <div class="flex items-center gap-1.5"><MapPin class="w-3.5 h-3.5" /> {s.room || 'Lab Komputer UNU'}</div>
             </div>
             <a
               href="/dashboard/registrations"
-              class="block text-center py-2 px-3 bg-slate-100 hover:bg-indigo-50 text-indigo-700 font-bold text-xs rounded-xl border border-slate-200 transition"
+              class="block text-center py-2 px-3 bg-muted hover:bg-primary/10 text-primary font-bold text-xs rounded-xl border border-border transition"
             >
               📝 Daftar Sesi Ujian Ini
             </a>
@@ -439,47 +439,47 @@
 
   <!-- Stat Summary Cards -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold">
+    <div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex items-center gap-4 text-card-foreground">
+      <div class="w-12 h-12 rounded-xl bg-indigo-500/10 text-primary flex items-center justify-center font-bold">
         <Calendar class="w-6 h-6" />
       </div>
       <div>
-        <div class="text-xs font-medium text-slate-500">Total Jadwal Sesi</div>
-        <div class="text-xl font-black text-slate-900 mt-0.5">{sessions.length} Sesi</div>
+        <div class="text-xs font-medium text-muted-foreground">Total Jadwal Sesi</div>
+        <div class="text-xl font-black text-foreground mt-0.5">{sessions.length} Sesi</div>
       </div>
     </div>
 
-    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
+    <div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex items-center gap-4 text-card-foreground">
+      <div class="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
         <CheckCircle2 class="w-6 h-6" />
       </div>
       <div>
-        <div class="text-xs font-medium text-slate-500">Sesi Aktif</div>
-        <div class="text-xl font-black text-emerald-700 mt-0.5">
+        <div class="text-xs font-medium text-muted-foreground">Sesi Aktif</div>
+        <div class="text-xl font-black text-emerald-600 dark:text-emerald-400 mt-0.5">
           {sessions.filter(s => s.isActive).length} Sesi
         </div>
       </div>
     </div>
 
-    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold">
+    <div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex items-center gap-4 text-card-foreground">
+      <div class="w-12 h-12 rounded-xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
         <Users class="w-6 h-6" />
       </div>
       <div>
-        <div class="text-xs font-medium text-slate-500">Total Peserta Terdaftar</div>
-        <div class="text-xl font-black text-blue-700 mt-0.5">
+        <div class="text-xs font-medium text-muted-foreground">Total Peserta Terdaftar</div>
+        <div class="text-xl font-black text-blue-600 dark:text-blue-400 mt-0.5">
           {sessions.reduce((acc, s) => acc + (s._count?.studentExams || 0), 0)} Peserta
         </div>
       </div>
     </div>
 
-    <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-4">
-      <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold">
+    <div class="bg-card p-5 rounded-2xl border border-border shadow-sm flex items-center gap-4 text-card-foreground">
+      <div class="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
         <MapPin class="w-6 h-6" />
       </div>
       <div>
-        <div class="text-xs font-medium text-slate-500">Total Kapasitas Kuota</div>
-        <div class="text-xl font-black text-purple-700 mt-0.5">
+        <div class="text-xs font-medium text-muted-foreground">Total Kapasitas Kuota</div>
+        <div class="text-xl font-black text-purple-600 dark:text-purple-400 mt-0.5">
           {sessions.reduce((acc, s) => acc + (s.quota || 35), 0)} Kursi
         </div>
       </div>
@@ -488,69 +488,69 @@
 
   <!-- Content Section -->
   {#if isLoading}
-    <div class="p-12 text-center bg-white rounded-2xl border border-slate-200">
-      <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
-      <p class="text-slate-500 text-sm mt-3">Memuat jadwal ujian EPTUNU...</p>
+    <div class="p-12 text-center bg-card rounded-2xl border border-border text-card-foreground">
+      <div class="inline-block animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      <p class="text-muted-foreground text-sm mt-3">Memuat jadwal ujian EPTUNU...</p>
     </div>
 
   {:else if sessions.length === 0}
-    <div class="p-12 text-center bg-white rounded-2xl border border-slate-200">
-      <Calendar class="w-12 h-12 text-slate-300 mx-auto mb-3" />
-      <h3 class="text-base font-bold text-slate-700">Belum Ada Jadwal Ujian</h3>
-      <p class="text-slate-500 text-xs mt-1">Klik "+ Buat Jadwal Ujian Baru" untuk menambah sesi ujian.</p>
+    <div class="p-12 text-center bg-card rounded-2xl border border-border text-card-foreground">
+      <Calendar class="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
+      <h3 class="text-base font-bold text-foreground">Belum Ada Jadwal Ujian</h3>
+      <p class="text-muted-foreground text-xs mt-1">Klik "+ Buat Jadwal Ujian Baru" untuk menambah sesi ujian.</p>
     </div>
 
   {:else}
     <!-- EXAM SCHEDULE CARDS GRID -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {#each sessions as s}
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-6 space-y-4">
+        <div class="bg-card rounded-2xl border border-border shadow-sm hover:shadow-md transition-all p-6 space-y-4 text-card-foreground">
           <!-- Card Header & Status -->
-          <div class="flex items-start justify-between gap-3 border-b border-slate-100 pb-3">
+          <div class="flex items-start justify-between gap-3 border-b border-border pb-3">
             <div>
-              <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-100 text-indigo-800 mb-1">
+              <span class="inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-primary/10 text-primary border border-primary/20 mb-1">
                 {s.isActive ? 'SESI AKTIF' : 'NONAKTIF'}
               </span>
-              <h3 class="text-base font-extrabold text-slate-900">{s.title}</h3>
+              <h3 class="text-base font-extrabold text-foreground">{s.title}</h3>
             </div>
 
             <div class="flex items-center gap-1">
-              <button on:click={() => openEditModal(s)} title="Edit Jadwal" class="p-2 text-slate-400 hover:text-indigo-600 rounded-lg">
+              <button on:click={() => openEditModal(s)} title="Edit Jadwal" class="p-2 text-muted-foreground hover:text-primary rounded-lg transition-colors">
                 <Edit2 class="w-4 h-4" />
               </button>
-              <button on:click={() => handleDeleteSchedule(s.id, s.title)} title="Hapus Jadwal" class="p-2 text-slate-400 hover:text-red-600 rounded-lg">
+              <button on:click={() => handleDeleteSchedule(s.id, s.title)} title="Hapus Jadwal" class="p-2 text-muted-foreground hover:text-destructive rounded-lg transition-colors">
                 <Trash2 class="w-4 h-4" />
               </button>
             </div>
           </div>
 
           <!-- Dynamic Token Box -->
-          <div class="p-3.5 bg-slate-900 rounded-xl text-white flex items-center justify-between shadow-inner">
+          <div class="p-3.5 bg-muted/60 border border-border rounded-xl flex items-center justify-between shadow-inner">
             <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-indigo-400">
+              <div class="w-8 h-8 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                 <Key class="w-4 h-4" />
               </div>
               <div>
-                <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Dynamic Token Ujian</div>
-                <div class="font-mono text-lg font-black text-indigo-300 tracking-widest">{s.token}</div>
+                <div class="text-[10px] text-muted-foreground font-semibold uppercase tracking-wider">Dynamic Token Ujian</div>
+                <div class="font-mono text-lg font-black text-primary tracking-widest">{s.token}</div>
               </div>
             </div>
 
             <div class="flex items-center gap-2">
               <button
                 on:click={() => copyToClipboard(s.token, s.id)}
-                class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
+                class="p-2 rounded-lg bg-background hover:bg-muted text-muted-foreground hover:text-foreground border border-border transition-colors"
                 title="Salin Token"
               >
                 {#if copiedTokenId === s.id}
-                  <Check class="w-4 h-4 text-emerald-400" />
+                  <Check class="w-4 h-4 text-emerald-500" />
                 {:else}
                   <Copy class="w-4 h-4" />
                 {/if}
               </button>
               <button
                 on:click={() => handleRegenerateToken(s)}
-                class="p-2 rounded-lg bg-slate-800 hover:bg-indigo-600 text-slate-300 hover:text-white transition-colors"
+                class="p-2 rounded-lg bg-background hover:bg-muted text-muted-foreground hover:text-foreground border border-border transition-colors"
                 title="Acak Ulang Token"
               >
                 <RefreshCw class="w-4 h-4" />
@@ -560,34 +560,34 @@
 
           <!-- Schedule Details Grid -->
           <div class="grid grid-cols-2 gap-3 text-xs">
-            <div class="flex items-start gap-2.5 text-slate-700">
-              <Clock class="w-4 h-4 text-indigo-600 mt-0.5 shrink-0" />
+            <div class="flex items-start gap-2.5 text-muted-foreground">
+              <Clock class="w-4 h-4 text-primary mt-0.5 shrink-0" />
               <div>
-                <strong class="block text-slate-900">Waktu Mulai:</strong>
+                <strong class="block text-foreground">Waktu Mulai:</strong>
                 {formatDate(s.startTime)}
               </div>
             </div>
 
-            <div class="flex items-start gap-2.5 text-slate-700">
-              <Clock class="w-4 h-4 text-rose-600 mt-0.5 shrink-0" />
+            <div class="flex items-start gap-2.5 text-muted-foreground">
+              <Clock class="w-4 h-4 text-destructive mt-0.5 shrink-0" />
               <div>
-                <strong class="block text-slate-900">Waktu Selesai:</strong>
+                <strong class="block text-foreground">Waktu Selesai:</strong>
                 {formatDate(s.endTime)} ({s.durationMin} Menit)
               </div>
             </div>
 
-            <div class="flex items-start gap-2.5 text-slate-700 col-span-2">
-              <MapPin class="w-4 h-4 text-amber-600 mt-0.5 shrink-0" />
+            <div class="flex items-start gap-2.5 text-muted-foreground col-span-2">
+              <MapPin class="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
               <div>
-                <strong class="block text-slate-900">Ruang Pelaksanaan:</strong>
+                <strong class="block text-foreground">Ruang Pelaksanaan:</strong>
                 {s.room || 'Lab Komputer 1 UNU Purwokerto'}
               </div>
             </div>
 
-            <div class="flex items-start gap-2.5 text-slate-700 col-span-2">
-              <UserCheck class="w-4 h-4 text-teal-600 mt-0.5 shrink-0" />
+            <div class="flex items-start gap-2.5 text-muted-foreground col-span-2">
+              <UserCheck class="w-4 h-4 text-teal-500 mt-0.5 shrink-0" />
               <div>
-                <strong class="block text-slate-900">Pengawas (Proctor):</strong>
+                <strong class="block text-foreground">Pengawas (Proctor):</strong>
                 {s.proctor?.fullName || 'Pengawas Belum Ditugaskan'} ({s.proctor?.email || '-'})
               </div>
             </div>
@@ -596,10 +596,10 @@
           <!-- Capacity Quota Progress Bar -->
           <div class="space-y-1.5 pt-1">
             <div class="flex justify-between text-xs font-semibold">
-              <span class="text-slate-600">Kapasitas Kuota Peserta</span>
-              <span class="text-indigo-700">{s._count?.studentExams || 0} / {s.quota || 35} Kursi</span>
+              <span class="text-muted-foreground">Kapasitas Kuota Peserta</span>
+              <span class="text-primary">{s._count?.studentExams || 0} / {s.quota || 35} Kursi</span>
             </div>
-            <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+            <div class="w-full h-2.5 bg-muted rounded-full overflow-hidden border border-border">
               <div
                 class="h-full bg-gradient-to-r from-indigo-500 to-emerald-500 rounded-full transition-all duration-300"
                 style="width: {Math.min(100, Math.round(((s._count?.studentExams || 0) / (s.quota || 35)) * 100))}%"
@@ -608,22 +608,22 @@
           </div>
 
           <!-- Manual Start / Stop & Notification Action Buttons -->
-          <div class="pt-2 border-t border-slate-100 space-y-2">
+          <div class="pt-2 border-t border-border space-y-2">
             <button
               on:click={() => handleSendReminder(s)}
               disabled={sendingReminderId === s.id}
-              class="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-indigo-50 text-indigo-700 font-bold text-xs border border-slate-200 transition-all flex items-center justify-center gap-1.5"
+              class="w-full py-2 px-3 rounded-xl bg-muted hover:bg-primary/10 text-primary font-bold text-xs border border-border transition-all flex items-center justify-center gap-1.5"
             >
-              <Bell class="w-3.5 h-3.5 text-indigo-600" />
+              <Bell class="w-3.5 h-3.5 text-primary" />
               <span>{sendingReminderId === s.id ? 'Mengirim Notifikasi...' : 'Kirim Pengingat H-1 (WA & Email)'}</span>
             </button>
 
             {#if s.isActive}
               <button
                 on:click={() => handleStopSession(s)}
-                class="w-full py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 font-bold text-xs border border-amber-500/30 transition-all flex items-center justify-center gap-2"
+                class="w-full py-2.5 px-4 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-600 dark:text-amber-400 font-bold text-xs border border-amber-500/30 transition-all flex items-center justify-center gap-2"
               >
-                <Power class="w-4 h-4 text-amber-600" /> Hentikan Sesi Ujian (Manual)
+                <Power class="w-4 h-4 text-amber-500" /> Hentikan Sesi Ujian (Manual)
               </button>
             {:else}
               <button
@@ -643,10 +643,10 @@
 
 <!-- CREATE / EDIT EXAM SESSION MODAL -->
 {#if isModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-lg overflow-hidden text-card-foreground">
       <!-- Modal Header -->
-      <div class="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+      <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-base">
           <Calendar class="w-5 h-5 text-indigo-400" /> {modalTitle}
         </div>
@@ -658,31 +658,31 @@
       <!-- Modal Body -->
       <div class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
         <div>
-          <label id="lbl-stitle" for="in-stitle" class="block text-xs font-semibold text-slate-700 mb-1">Judul / Sesi Ujian</label>
+          <label id="lbl-stitle" for="in-stitle" class="block text-xs font-semibold text-muted-foreground mb-1">Judul / Sesi Ujian</label>
           <input
             id="in-stitle"
             type="text"
             bind:value={formData.title}
             placeholder="Contoh: EPT Regular Periode Juli 2026 - Sesi Pagi"
-            class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 font-medium text-slate-900 bg-white placeholder:text-slate-400"
+            class="w-full px-3.5 py-2.5 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary font-medium text-foreground bg-background placeholder:text-muted-foreground"
           />
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label id="lbl-stoken" for="in-stoken" class="block text-xs font-semibold text-slate-700 mb-1">Token Dynamic (6 Karakter)</label>
+            <label id="lbl-stoken" for="in-stoken" class="block text-xs font-semibold text-muted-foreground mb-1">Token Dynamic (6 Karakter)</label>
             <div class="flex items-center gap-2">
               <input
                 id="in-stoken"
                 type="text"
                 bind:value={formData.token}
                 maxlength="6"
-                class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-mono font-bold uppercase text-indigo-700 bg-white"
+                class="w-full px-3 py-2 text-sm border border-border rounded-xl font-mono font-bold uppercase text-primary bg-background"
               />
               <button
                 type="button"
                 on:click={() => (formData.token = generateRandomToken())}
-                class="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl"
+                class="p-2 bg-muted hover:bg-muted/80 text-foreground rounded-xl transition-colors"
                 title="Acak Token"
               >
                 <RefreshCw class="w-4 h-4" />
@@ -691,67 +691,67 @@
           </div>
 
           <div>
-            <label id="lbl-sdur" for="in-sdur" class="block text-xs font-semibold text-slate-700 mb-1">Durasi Ujian (Menit)</label>
+            <label id="lbl-sdur" for="in-sdur" class="block text-xs font-semibold text-muted-foreground mb-1">Durasi Ujian (Menit)</label>
             <input
               id="in-sdur"
               type="number"
               bind:value={formData.durationMin}
-              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-bold text-slate-900 bg-white"
+              class="w-full px-3 py-2 text-sm border border-border rounded-xl font-bold text-foreground bg-background"
             />
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label id="lbl-sstart" for="in-sstart" class="block text-xs font-semibold text-slate-700 mb-1">Waktu Mulai Ujian</label>
+            <label id="lbl-sstart" for="in-sstart" class="block text-xs font-semibold text-muted-foreground mb-1">Waktu Mulai Ujian</label>
             <input
               id="in-sstart"
               type="datetime-local"
               bind:value={formData.startTime}
-              class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white"
+              class="w-full px-3 py-2 text-xs border border-border rounded-xl text-foreground bg-background"
             />
           </div>
 
           <div>
-            <label id="lbl-send" for="in-send" class="block text-xs font-semibold text-slate-700 mb-1">Waktu Selesai Ujian</label>
+            <label id="lbl-send" for="in-send" class="block text-xs font-semibold text-muted-foreground mb-1">Waktu Selesai Ujian</label>
             <input
               id="in-send"
               type="datetime-local"
               bind:value={formData.endTime}
-              class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white"
+              class="w-full px-3 py-2 text-xs border border-border rounded-xl text-foreground bg-background"
             />
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label id="lbl-sroom" for="in-sroom" class="block text-xs font-semibold text-slate-700 mb-1">Ruang Pelaksanaan Ujian</label>
+            <label id="lbl-sroom" for="in-sroom" class="block text-xs font-semibold text-muted-foreground mb-1">Ruang Pelaksanaan Ujian</label>
             <input
               id="in-sroom"
               type="text"
               bind:value={formData.room}
               placeholder="Lab Komputer 1 / Lab Bahasa"
-              class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400"
+              class="w-full px-3 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground"
             />
           </div>
 
           <div>
-            <label id="lbl-squota" for="in-squota" class="block text-xs font-semibold text-slate-700 mb-1">Kapasitas Kuota Peserta</label>
+            <label id="lbl-squota" for="in-squota" class="block text-xs font-semibold text-muted-foreground mb-1">Kapasitas Kuota Peserta</label>
             <input
               id="in-squota"
               type="number"
               bind:value={formData.quota}
-              class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl font-bold text-slate-900 bg-white"
+              class="w-full px-3 py-2 text-xs border border-border rounded-xl font-bold text-foreground bg-background"
             />
           </div>
         </div>
 
         <div>
-          <label id="lbl-sproctor" for="sel-sproctor" class="block text-xs font-semibold text-slate-700 mb-1">Penugasan Pengawas (Proctor)</label>
+          <label id="lbl-sproctor" for="sel-sproctor" class="block text-xs font-semibold text-muted-foreground mb-1">Penugasan Pengawas (Proctor)</label>
           <select
             id="sel-sproctor"
             bind:value={formData.proctorId}
-            class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl text-slate-900 bg-white"
+            class="w-full px-3 py-2 text-sm border border-border rounded-xl text-foreground bg-background"
           >
             <option value="">-- Pilih Pengawas Ujian --</option>
             {#each proctors as p}
@@ -765,25 +765,25 @@
             id="in-sactive"
             type="checkbox"
             bind:checked={formData.isActive}
-            class="w-4 h-4 text-indigo-600 rounded"
+            class="w-4 h-4 text-primary rounded"
           />
-          <label for="in-sactive" class="text-xs font-semibold text-slate-700">Aktifkan Sesi Ujian Ini</label>
+          <label for="in-sactive" class="text-xs font-semibold text-foreground">Aktifkan Sesi Ujian Ini</label>
         </div>
       </div>
 
       <!-- Modal Footer -->
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
         <button
           type="button"
           on:click={() => (isModalOpen = false)}
-          class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-xl"
+          class="px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-colors"
         >
           Batal
         </button>
         <button
           type="button"
           on:click={handleSaveSchedule}
-          class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md"
+          class="px-5 py-2 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded-xl shadow-md transition-all"
         >
           Simpan Jadwal Ujian
         </button>

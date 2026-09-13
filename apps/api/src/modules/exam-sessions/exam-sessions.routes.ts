@@ -186,13 +186,13 @@ export async function examSessionsRoutes(fastify: FastifyInstance) {
       const now = new Date();
       const durationMs = (session.durationMin || 110) * 60 * 1000;
       const endTime = new Date(now.getTime() + durationMs);
-      const newToken = generateRandomToken();
+      const activeToken = session.token || generateRandomToken();
 
       const updated = await db.examSession.update({
         where: { id },
         data: {
           isActive: true,
-          token: newToken,
+          token: activeToken,
           startTime: now,
           endTime,
         },
@@ -200,7 +200,7 @@ export async function examSessionsRoutes(fastify: FastifyInstance) {
 
       return reply.send({
         success: true,
-        message: `Sesi Ujian '${session.title}' berhasil DIMULAI secara manual! Token Aktif: ${newToken}`,
+        message: `Sesi Ujian '${session.title}' berhasil DIMULAI! Token Aktif: ${activeToken}`,
         data: updated,
       });
     });

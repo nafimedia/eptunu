@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import {
     Sparkles,
@@ -13,102 +14,52 @@
     Award,
     Zap,
     GraduationCap,
-    Home
+    Home,
+    RefreshCw,
+    AlertCircle
   } from 'lucide-svelte';
 
-  const demoQuestions = [
-    {
-      id: 'demo-1',
-      section: 'LISTENING',
-      audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-      text: 'Listen to the audio recording above.',
-      prompt: 'What is the main topic of the conversation between the student and professor?',
-      options: {
-        A: 'Requesting an extension for the research paper deadline',
-        B: 'Changing the major from Biology to Chemistry',
-        C: 'Inquiring about office hours for tomorrow',
-        D: 'Submitting a late lab experiment report'
-      },
-      correctOption: 'A',
-      explanation: 'In the audio, the student explicitly mentions: "I was hoping to ask for a short extension on my term paper."'
-    },
-    {
-      id: 'demo-2',
-      section: 'LISTENING',
-      audioUrl: '',
-      text: 'Listen to the short dialogue.',
-      prompt: 'What does the man imply when he says "I could use a hand"?',
-      options: {
-        A: 'He wants to shake hands with the woman',
-        B: 'He needs assistance completing the task',
-        C: 'He has injured his hand',
-        D: 'He is ready to leave the office'
-      },
-      correctOption: 'B',
-      explanation: 'The idiom "could use a hand" means needing assistance or help from someone.'
-    },
-    {
-      id: 'demo-3',
-      section: 'STRUCTURE',
-      text: 'The North Pole _____ a latitude of 90 degrees North.',
-      prompt: 'Choose the correct structure to complete the sentence:',
-      options: {
-        A: 'has',
-        B: 'is having',
-        C: 'which has',
-        D: 'it has'
-      },
-      correctOption: 'A',
-      explanation: 'The subject "The North Pole" requires a simple present singular verb "has" to state a geographical fact.'
-    },
-    {
-      id: 'demo-4',
-      section: 'STRUCTURE',
-      text: 'Not until the 19th century _____ to be used as a primary source of industrial energy.',
-      prompt: 'Choose the correct structure to complete the inverted sentence:',
-      options: {
-        A: 'coal began',
-        B: 'did coal begin',
-        C: 'when coal began',
-        D: 'began coal'
-      },
-      correctOption: 'B',
-      explanation: 'Negative adverbial phrases like "Not until..." at the start of a clause require subject-auxiliary inversion ("did coal begin").'
-    },
-    {
-      id: 'demo-5',
-      section: 'READING',
-      text: 'Passage: Photosynthesis is a chemical process through which green plants convert light energy from the sun into chemical energy stored in glucose. Chlorophyll, the green pigment in chloroplasts, absorbs light waves essential for this synthesis.',
-      prompt: 'According to the passage, what role does chlorophyll play in photosynthesis?',
-      options: {
-        A: 'It produces glucose directly without sunlight',
-        B: 'It absorbs light energy necessary for the process',
-        C: 'It releases oxygen into the atmosphere',
-        D: 'It breaks down chemical bonds in water'
-      },
-      correctOption: 'B',
-      explanation: 'The text states: "Chlorophyll, the green pigment in chloroplasts, absorbs light waves essential for this synthesis."'
-    },
-    {
-      id: 'demo-6',
-      section: 'READING',
-      text: 'Passage: Photosynthesis is a chemical process through which green plants convert light energy from the sun into chemical energy stored in glucose.',
-      prompt: 'The word "convert" in line 1 is closest in meaning to:',
-      options: {
-        A: 'transform',
-        B: 'destroy',
-        C: 'store',
-        D: 'reflect'
-      },
-      correctOption: 'A',
-      explanation: '"Convert" means to change or transform from one form into another.'
-    }
-  ];
+  interface DemoQuestion {
+    id: string;
+    section: 'LISTENING' | 'STRUCTURE' | 'READING';
+    audioUrl?: string;
+    text?: string;
+    prompt: string;
+    options: Record<string, string>;
+    correctOption: string;
+    explanation?: string;
+  }
+
+  let demoQuestions: DemoQuestion[] = [];
+  let isLoading = true;
+  let fetchError = '';
 
   let currentIndex = 0;
   let userAnswers: Record<string, string> = {};
   let isFinished = false;
   let score = 0;
+
+  async function loadDemoQuestions() {
+    isLoading = true;
+    fetchError = '';
+    try {
+      const res = await fetch('/api/questions/demo-sample');
+      const json = await res.json();
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+        demoQuestions = json.data;
+      } else {
+        fetchError = json.message || 'Belum ada bank soal terverifikasi di database.';
+      }
+    } catch (e: any) {
+      fetchError = 'Gagal terhubung ke database bank soal.';
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  onMount(() => {
+    loadDemoQuestions();
+  });
 
   function selectOption(qId: string, opt: string) {
     if (isFinished) return;
@@ -125,7 +76,7 @@
       }
     }
     // TOEFL ITP scaled approximation formula for demo
-    score = Math.round(310 + (correctCount / demoQuestions.length) * 367);
+    score = Math.round(310 + (correctCount / Math.max(demoQuestions.length, 1)) * 367);
   }
 
   function restartDemoTest() {
@@ -133,6 +84,7 @@
     isFinished = false;
     currentIndex = 0;
     score = 0;
+    loadDemoQuestions();
   }
 </script>
 
@@ -147,7 +99,7 @@
       <img src="/logo.png" alt="UNU Purwokerto Logo" class="w-9 h-9 object-contain" />
       <div>
         <span class="font-extrabold text-base text-white block">Simulasi / Tryout EPTUNU</span>
-        <span class="text-[11px] text-emerald-400 font-semibold">Demo Latihan Ujian CBT Sederhana</span>
+        <span class="text-[11px] text-emerald-400 font-semibold">Bank Soal Riil Database CBT UNU Purwokerto</span>
       </div>
     </div>
 
@@ -169,7 +121,27 @@
 
   <!-- Main Content Body -->
   <main class="max-w-4xl mx-auto w-full flex-1 space-y-6">
-    {#if !isFinished}
+    {#if isLoading}
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center shadow-2xl space-y-4">
+        <RefreshCw class="w-8 h-8 text-indigo-400 animate-spin mx-auto" />
+        <p class="text-sm font-semibold text-slate-300">Memuat bank soal riil dari database EPTUNU...</p>
+        <p class="text-xs text-slate-500">Menyiapkan kombinasi soal Listening, Structure, & Reading.</p>
+      </div>
+
+    {:else if fetchError || demoQuestions.length === 0}
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-8 text-center shadow-2xl space-y-4">
+        <AlertCircle class="w-10 h-10 text-amber-400 mx-auto" />
+        <h2 class="text-lg font-bold text-white">Gagal Memuat Soal Database</h2>
+        <p class="text-xs text-slate-400 max-w-md mx-auto">{fetchError}</p>
+        <button
+          on:click={loadDemoQuestions}
+          class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-2 shadow"
+        >
+          <RefreshCw class="w-4 h-4" /> Coba Lagi
+        </button>
+      </div>
+
+    {:else if !isFinished}
       <!-- Question Card Box -->
       {@const q = demoQuestions[currentIndex]}
       <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
@@ -183,7 +155,7 @@
           </div>
 
           <!-- Question Grid Navigation Bar -->
-          <div class="flex items-center gap-1.5">
+          <div class="flex items-center gap-1.5 flex-wrap">
             {#each demoQuestions as item, idx}
               <button
                 on:click={() => (currentIndex = idx)}
@@ -205,7 +177,7 @@
           {/if}
 
           {#if q.text}
-            <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800/80 text-xs sm:text-sm text-slate-300 leading-relaxed font-serif">
+            <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800/80 text-xs sm:text-sm text-slate-300 leading-relaxed font-serif whitespace-pre-line">
               {q.text}
             </div>
           {/if}
@@ -267,7 +239,7 @@
             <Award class="w-8 h-8" />
           </div>
           <h2 class="text-2xl sm:text-3xl font-extrabold text-white">Hasil Simulasi EPT</h2>
-          <p class="text-xs text-slate-400">Estimasi Konversi Nilai TOEFL ITP berdasarkan simulasi demo</p>
+          <p class="text-xs text-slate-400">Estimasi Konversi Nilai TOEFL ITP berdasarkan bank soal database riil</p>
         </div>
 
         <!-- Score Showcase -->
@@ -299,9 +271,11 @@
                 <div class="text-slate-400 text-[11px]">
                   Jawaban Anda: <strong class="text-white">{userAnswers[q.id] || '-'}</strong> | Kunci Jawaban: <strong class="text-emerald-400">{q.correctOption}</strong>
                 </div>
-                <div class="p-2.5 bg-slate-950 rounded-xl text-[11px] text-slate-300 font-mono border border-slate-800">
-                  💡 <strong>Pembahasan:</strong> {q.explanation}
-                </div>
+                {#if q.explanation}
+                  <div class="p-2.5 bg-slate-950 rounded-xl text-[11px] text-slate-300 font-mono border border-slate-800">
+                    💡 <strong>Pembahasan:</strong> {q.explanation}
+                  </div>
+                {/if}
               </div>
             {/each}
           </div>

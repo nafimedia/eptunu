@@ -5,28 +5,75 @@ import { hasRole } from '../../middleware/rbac';
 import { createAuditLog } from '../../middleware/audit';
 import { sendEmail } from '../../services/mailer';
 
+const db = prisma as any;
+
 export async function notificationsRoutes(fastify: FastifyInstance) {
   fastify.register(async (protectedRoutes) => {
     protectedRoutes.addHook('preHandler', authenticate);
 
-    // 1. GET NOTIFICATION LOGS & HISTORY
+    // 1. GET NOTIFICATIONS FROM DATABASE
     protectedRoutes.get('/', async (request, reply) => {
-      // Notification logs history view
+      const userId = request.user?.userId;
+
+      const notifications = await db.notification.findMany({
+        where: {
+          OR: [
+            { userId },
+            { userId: null }, // Global/System notifications
+          ],
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 50,
+      });
+
+      const unreadCount = await db.notification.count({
+        where: {
+          OR: [
+            { userId, isRead: false },
+            { userId: null, isRead: false },
+          ],
+        },
+      });
+
       return reply.send({
         success: true,
-        data: [
-          {
-            id: 'notif-1',
-            action: 'KIRIM_NOTIFIKASI_H1',
-            channel: 'EMAIL_AND_WHATSAPP',
-            details: 'Notifikasi H-1 terkirim ke seluruh peserta sesi EPT Regular Periode Sesi Pagi',
-            createdAt: new Date().toISOString(),
-          },
-        ],
+        data: notifications,
+        notifications,
+        unreadCount,
       });
     });
 
-    // 2. SEND AUTOMATIC H-1 EXAM REMINDER VIA EMAIL & WHATSAPP
+    // 2. MARK SINGLE NOTIFICATION AS READ
+    protectedRoutes.put('/:id/read', async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const userId = request.user?.userId;
+
+      await db.notification.updateMany({
+        where: {
+          id,
+          OR: [{ userId }, { userId: null }],
+        },
+        data: { isRead: true },
+      });
+
+      return reply.send({ success: true, message: 'Pemberitahuan telah ditandai dibaca' });
+    });
+
+    // 3. MARK ALL NOTIFICATIONS AS READ
+    protectedRoutes.put('/read-all', async (request, reply) => {
+      const userId = request.user?.userId;
+
+      await db.notification.updateMany({
+        where: {
+          OR: [{ userId }, { userId: null }],
+        },
+        data: { isRead: true },
+      });
+
+      return reply.send({ success: true, message: 'Semua pemberitahuan telah ditandai dibaca' });
+    });
+
+    // 4. SEND AUTOMATIC H-1 EXAM REMINDER VIA EMAIL & WHATSAPP
     protectedRoutes.post('/send-reminder', { preHandler: [hasRole(['SUPER_ADMIN', 'ADMIN_EPT', 'PROCTOR'])] }, async (request, reply) => {
       const { sessionId, studentExamId, channel = 'BOTH' } = request.body as {
         sessionId?: string;
@@ -43,7 +90,7 @@ export async function notificationsRoutes(fastify: FastifyInstance) {
         return reply.status(400).send({ success: false, message: 'sessionId atau studentExamId wajib diisi' });
       }
 
-      const studentExams = await prisma.studentExam.findMany({
+      const studentExams = await db.studentExam.findMany({
         where,
         include: {
           user: true,
@@ -119,6 +166,21 @@ export async function notificationsRoutes(fastify: FastifyInstance) {
 
         const waStatus = ['WHATSAPP', 'BOTH'].includes(channel) ? 'QUEUED_WA_GATEWAY' : 'SKIPPED';
 
+        // Persist real notification record into database for this student
+        try {
+          await db.notification.create({
+            data: {
+              userId: item.userId,
+              title: `Pengingat H-1: ${sessionTitle}`,
+              message: `Jadwal ujian EPT Anda pada ${examDateStr} di ${room}. Token ujian: ${token}.`,
+              type: 'URGENT',
+              link: '/dashboard/schedule',
+            },
+          });
+        } catch (notifErr) {
+          console.error('Failed to create in-app notification:', notifErr);
+        }
+
         results.push({
           name: studentName,
           email: studentEmail,
@@ -139,7 +201,7 @@ export async function notificationsRoutes(fastify: FastifyInstance) {
 
       return reply.send({
         success: true,
-        message: `Notifikasi Pengingat H-1 & Kartu Ujian berhasil dikirim ke ${results.length} peserta!`,
+        message: `Notifikasi Pengingat H-1 berhasil diproses untuk ${results.length} peserta!`,
         data: results,
       });
     });

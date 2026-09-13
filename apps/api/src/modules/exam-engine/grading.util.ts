@@ -31,11 +31,23 @@ export async function calculateEptScore(prisma: PrismaClient, studentExamId: str
       }
     }
 
-    // Lookup Scaled Scores
+    // Lookup Scaled Scores with smart boundary clamping
     const conversions = await tx.scoreConversion.findMany();
     const getScaled = (section: SectionType, raw: number) => {
-      const match = conversions.find(c => c.section === section && c.rawScore === raw);
-      return match ? match.scaledScore : 31; // Default floor
+      const sectionConversions = conversions
+        .filter(c => c.section === section)
+        .sort((a, b) => a.rawScore - b.rawScore);
+
+      if (sectionConversions.length === 0) return 31;
+
+      const minEntry = sectionConversions[0];
+      const maxEntry = sectionConversions[sectionConversions.length - 1];
+
+      if (raw >= maxEntry.rawScore) return maxEntry.scaledScore;
+      if (raw <= minEntry.rawScore) return minEntry.scaledScore;
+
+      const match = sectionConversions.find(c => c.rawScore === raw);
+      return match ? match.scaledScore : minEntry.scaledScore;
     };
 
     const scaledListening = getScaled(SectionType.LISTENING, rawListening);
@@ -45,11 +57,13 @@ export async function calculateEptScore(prisma: PrismaClient, studentExamId: str
     // TOEFL ITP Formula: ((Listening + Structure + Reading) * 10) / 3
     const totalScore = Math.round(((scaledListening + scaledStructure + scaledReading) * 10) / 3);
 
+    const finalStatus = studentExam.status === 'FORCE_SUBMITTED' ? 'FORCE_SUBMITTED' : 'SUBMITTED';
+
     return await tx.studentExam.update({
       where: { id: studentExamId },
       data: {
-        status: 'SUBMITTED',
-        submittedAt: new Date(),
+        status: finalStatus,
+        submittedAt: studentExam.submittedAt || new Date(),
         scoreListening: scaledListening,
         scoreStructure: scaledStructure,
         scoreReading: scaledReading,

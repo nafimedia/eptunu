@@ -1,5 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { prisma } from '@starter-kit/database';
+import { calculateEptScore } from './grading.util';
 
 export async function timerWebsocketRoutes(fastify: FastifyInstance) {
   fastify.get('/timer', { websocket: true }, (connection, req) => {
@@ -39,6 +40,18 @@ export async function timerWebsocketRoutes(fastify: FastifyInstance) {
         const remainingSeconds = Math.max(0, durationSec - elapsedSec);
 
         if (remainingSeconds <= 0) {
+          // Auto submit student exam in database and compute score immediately
+          await prisma.studentExam.update({
+            where: { id: studentExamId },
+            data: { status: 'FORCE_SUBMITTED', submittedAt: new Date() },
+          });
+
+          try {
+            await calculateEptScore(prisma, studentExamId);
+          } catch (e) {
+            // ignore if already calculated
+          }
+
           connection.socket.send(JSON.stringify({ type: 'FORCE_SUBMIT', reason: 'TIME_EXPIRED' }));
           clearInterval(interval);
           connection.socket.close();

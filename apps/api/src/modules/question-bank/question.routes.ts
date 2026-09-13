@@ -49,6 +49,65 @@ export async function questionRoutes(fastify: FastifyInstance) {
     }
   });
 
+  // Public Demo Sample Questions (Real data from database for Tryout/Simulasi)
+  fastify.get('/demo-sample', async (request, reply) => {
+    try {
+      const [listening, structure, reading] = await Promise.all([
+        db.question.findMany({
+          where: { section: 'LISTENING', status: 'APPROVED' },
+          take: 3,
+          orderBy: { createdAt: 'desc' },
+        }),
+        db.question.findMany({
+          where: { section: 'STRUCTURE', status: 'APPROVED' },
+          take: 4,
+          orderBy: { createdAt: 'desc' },
+        }),
+        db.question.findMany({
+          where: { section: 'READING', status: 'APPROVED' },
+          take: 3,
+          include: { passage: true },
+          orderBy: { createdAt: 'desc' },
+        }),
+      ]);
+
+      const all = [...listening, ...structure, ...reading];
+
+      const formatted = all.map((q: any) => {
+        let optObj: Record<string, string> = {};
+        if (Array.isArray(q.options)) {
+          q.options.forEach((opt: any) => {
+            optObj[opt.id] = opt.text;
+          });
+        } else if (typeof q.options === 'object' && q.options !== null) {
+          optObj = q.options;
+        }
+
+        let passageText = '';
+        if (q.passage) {
+          passageText = `Passage: ${q.passage.title || ''}\n\n${q.passage.content}`;
+        } else if (q.section === 'LISTENING') {
+          passageText = 'Listen to the audio recording above.';
+        }
+
+        return {
+          id: q.id,
+          section: q.section,
+          audioUrl: q.audioUrl || '',
+          text: passageText,
+          prompt: q.questionText,
+          options: optObj,
+          correctOption: q.correctOption,
+          explanation: q.explanation || 'Jawaban yang tepat berdasarkan kaidah standar TOEFL ITP.',
+        };
+      });
+
+      return reply.send({ success: true, data: formatted });
+    } catch (err: any) {
+      return reply.status(500).send({ success: false, message: 'Gagal mengambil soal simulasi dari database' });
+    }
+  });
+
   // Protected Question Bank Endpoints
   fastify.register(async (protectedRoutes) => {
     protectedRoutes.addHook('preHandler', authenticate);

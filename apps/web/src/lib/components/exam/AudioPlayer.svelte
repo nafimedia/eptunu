@@ -2,13 +2,28 @@
   import { Volume2, Play, Pause, AlertCircle } from 'lucide-svelte';
 
   export let audioUrl: string;
-  export let maxPlays: number = 2;
+  export let questionId: string = '';
+  export let maxPlays: number = 1;
 
   let audioElement: HTMLAudioElement;
   let isPlaying = false;
-  let playCount = 0;
   let currentTime = 0;
   let duration = 0;
+
+  function getStoredPlayCount(qId: string, url: string): number {
+    if (typeof window === 'undefined') return 0;
+    const key = `ept_audio_${qId || url}`;
+    const val = localStorage.getItem(key);
+    return val ? parseInt(val, 10) : 0;
+  }
+
+  let playCount = 0;
+
+  $: if (questionId || audioUrl) {
+    playCount = getStoredPlayCount(questionId, audioUrl);
+    isPlaying = false;
+    currentTime = 0;
+  }
 
   function togglePlay() {
     if (!audioElement) return;
@@ -18,7 +33,7 @@
       isPlaying = false;
     } else {
       if (playCount >= maxPlays) return;
-      audioElement.play();
+      audioElement.play().catch(() => {});
       isPlaying = true;
     }
   }
@@ -33,6 +48,10 @@
   function handleEnded() {
     isPlaying = false;
     playCount += 1;
+    if (typeof window !== 'undefined') {
+      const key = `ept_audio_${questionId || audioUrl}`;
+      localStorage.setItem(key, playCount.toString());
+    }
   }
 
   function formatTime(seconds: number) {

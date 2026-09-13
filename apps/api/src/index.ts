@@ -1,4 +1,4 @@
-import fastify from 'fastify';
+import fastify, { FastifyInstance } from 'fastify';
 import cors from '@fastify/cors';
 import jwt from '@fastify/jwt';
 import cookie from '@fastify/cookie';
@@ -109,38 +109,31 @@ async function main() {
   // Health check route
   app.get('/health', async () => ({ status: 'ok', service: 'EPTUNU CBT API', timestamp: new Date().toISOString() }));
 
-  // Register EPTUNU Modules (/api/v1)
-  await app.register(authRoutes, { prefix: '/api/v1/auth' });
-  await app.register(usersRoutes, { prefix: '/api/v1/users' });
-  await app.register(examRoutes, { prefix: '/api/v1/exam' });
-  await app.register(questionRoutes, { prefix: '/api/v1/questions' });
-  await app.register(timerWebsocketRoutes, { prefix: '/ws/v1/exam' });
-  await app.register(notificationsRoutes, { prefix: '/api/v1/notifications' });
-  await app.register(rolesRoutes, { prefix: '/api/v1/roles' });
-  await app.register(auditLogsRoutes, { prefix: '/api/v1/audit-logs' });
-  await app.register(settingsRoutes, { prefix: '/api/v1/settings' });
-  await app.register(masterDataRoutes, { prefix: '/api/v1/master-data' });
-  await app.register(examSessionsRoutes, { prefix: '/api/v1/exam-sessions' });
-  await app.register(registrationsRoutes, { prefix: '/api/v1/registrations' });
-  await app.register(uploadRoutes, { prefix: '/api/v1/upload' });
-  await app.register(certificatesRoutes, { prefix: '/api/v1/certificates' });
-  await app.register(reportsRoutes, { prefix: '/api/v1/reports' });
+  // Helper plugin for registering all EPTUNU modules
+  const registerModules = async (fastifyScope: FastifyInstance, prefix: string) => {
+    await fastifyScope.register(authRoutes, { prefix: `${prefix}/auth` });
+    await fastifyScope.register(usersRoutes, { prefix: `${prefix}/users` });
+    await fastifyScope.register(examRoutes, { prefix: `${prefix}/exam` });
+    await fastifyScope.register(questionRoutes, { prefix: `${prefix}/questions` });
+    await fastifyScope.register(notificationsRoutes, { prefix: `${prefix}/notifications` });
+    await fastifyScope.register(rolesRoutes, { prefix: `${prefix}/roles` });
+    await fastifyScope.register(auditLogsRoutes, { prefix: `${prefix}/audit-logs` });
+    await fastifyScope.register(settingsRoutes, { prefix: `${prefix}/settings` });
+    await fastifyScope.register(masterDataRoutes, { prefix: `${prefix}/master-data` });
+    await fastifyScope.register(examSessionsRoutes, { prefix: `${prefix}/exam-sessions` });
+    await fastifyScope.register(registrationsRoutes, { prefix: `${prefix}/registrations` });
+    await fastifyScope.register(uploadRoutes, { prefix: `${prefix}/upload` });
+    await fastifyScope.register(certificatesRoutes, { prefix: `${prefix}/certificates` });
+    await fastifyScope.register(reportsRoutes, { prefix: `${prefix}/reports` });
+  };
 
-  // Direct route compatibility (/api/*)
-  await app.register(authRoutes, { prefix: '/api/auth' });
-  await app.register(usersRoutes, { prefix: '/api/users' });
-  await app.register(examRoutes, { prefix: '/api/exam' });
-  await app.register(questionRoutes, { prefix: '/api/questions' });
-  await app.register(notificationsRoutes, { prefix: '/api/notifications' });
-  await app.register(rolesRoutes, { prefix: '/api/roles' });
-  await app.register(auditLogsRoutes, { prefix: '/api/audit-logs' });
-  await app.register(settingsRoutes, { prefix: '/api/settings' });
-  await app.register(masterDataRoutes, { prefix: '/api/master-data' });
-  await app.register(examSessionsRoutes, { prefix: '/api/exam-sessions' });
-  await app.register(registrationsRoutes, { prefix: '/api/registrations' });
-  await app.register(uploadRoutes, { prefix: '/api/upload' });
-  await app.register(certificatesRoutes, { prefix: '/api/certificates' });
-  await app.register(reportsRoutes, { prefix: '/api/reports' });
+  // Register EPTUNU Modules for both /api/v1 and /api compatibility
+  await registerModules(app, '/api/v1');
+  await registerModules(app, '/api');
+
+  // Register WebSocket routes
+  await app.register(timerWebsocketRoutes, { prefix: '/ws/v1/exam' });
+  await app.register(timerWebsocketRoutes, { prefix: '/ws/exam' });
 
   try {
     await app.listen({ port: env.PORT, host: env.HOST });

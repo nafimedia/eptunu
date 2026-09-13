@@ -204,10 +204,10 @@
   </div>
 
   <!-- Tab Navigation -->
-  <div class="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+  <div class="flex items-center gap-2 border-b border-border pb-2 overflow-x-auto">
     <button
       on:click={() => (activeTab = 'myRegistrations')}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'myRegistrations' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'myRegistrations' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
       <Calendar class="w-4 h-4" /> Pendaftaran Ujian Saya ({myRegistrations.length})
     </button>
@@ -215,7 +215,7 @@
     {#if isAdminOrOperator}
       <button
         on:click={() => (activeTab = 'verifyOperator')}
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'verifyOperator' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'verifyOperator' ? 'bg-purple-600 text-white shadow-md' : 'text-muted-foreground hover:bg-muted'}"
       >
         <UserCheck class="w-4 h-4" /> Verifikasi Pendaftaran Operator ({allRegistrations.length})
       </button>
@@ -224,29 +224,29 @@
 
   <!-- Content Section -->
   {#if isLoading}
-    <div class="p-12 text-center bg-white rounded-2xl border border-slate-200">
-      <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
-      <p class="text-slate-500 text-sm mt-3">Memuat pendaftaran EPTUNU...</p>
+    <div class="p-12 text-center bg-card rounded-2xl border border-border text-card-foreground">
+      <div class="inline-block animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+      <p class="text-muted-foreground text-sm mt-3">Memuat pendaftaran EPTUNU...</p>
     </div>
 
   {:else if activeTab === 'myRegistrations'}
     <!-- MY REGISTRATIONS TAB -->
     <div class="space-y-6">
       <!-- 1. Active Available Sessions to Register -->
-      <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
-        <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-          <Calendar class="w-5 h-5 text-indigo-600" /> Sesi Ujian Aktif Yang Tersedia
+      <div class="bg-card p-6 rounded-2xl border border-border shadow-sm space-y-4 text-card-foreground">
+        <h2 class="text-base font-bold text-foreground flex items-center gap-2">
+          <Calendar class="w-5 h-5 text-primary" /> Sesi Ujian Aktif Yang Tersedia
         </h2>
 
         {#if availableSessions.length === 0}
-          <p class="text-xs text-slate-500">Belum ada sesi ujian aktif yang dibuka saat ini.</p>
+          <p class="text-xs text-muted-foreground">Belum ada sesi ujian aktif yang dibuka saat ini.</p>
         {:else}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             {#each availableSessions as sess}
-              <div class="p-4 rounded-xl border border-slate-200 bg-slate-50 hover:bg-indigo-50/30 transition-colors flex items-center justify-between gap-3">
+              <div class="p-4 rounded-xl border border-border bg-muted/30 hover:bg-primary/5 transition-colors flex items-center justify-between gap-3">
                 <div>
-                  <h3 class="text-sm font-bold text-slate-900">{sess.title}</h3>
-                  <div class="text-xs text-slate-600 mt-1 space-y-0.5">
+                  <h3 class="text-sm font-bold text-foreground">{sess.title}</h3>
+                  <div class="text-xs text-muted-foreground mt-1 space-y-0.5">
                     <div>📅 {formatDate(sess.startTime)}</div>
                     <div>📍 {sess.room || 'Lab Komputer UNU Purwokerto'}</div>
                     <div>🪑 Kuota: {sess._count?.studentExams || 0} / {sess.quota} Kursi</div>
@@ -255,7 +255,7 @@
 
                 <button
                   on:click={() => handleRegisterSession(sess.id)}
-                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs shadow-md transition-all shrink-0"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-medium text-xs shadow-md transition-all shrink-0"
                 >
                   <Plus class="w-4 h-4" /> Daftar Sesi
                 </button>
@@ -266,16 +266,16 @@
       </div>
 
       <!-- 2. Registered Student Exams Table -->
-      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden space-y-3 p-5">
-        <h2 class="text-base font-bold text-slate-800">Riwayat Pendaftaran Ujian Saya</h2>
+      <div class="bg-card rounded-2xl border border-border shadow-sm overflow-hidden space-y-3 p-5 text-card-foreground">
+        <h2 class="text-base font-bold text-foreground">Riwayat Pendaftaran Ujian Saya</h2>
 
         {#if myRegistrations.length === 0}
-          <p class="text-xs text-slate-500 py-4 text-center">Anda belum terdaftar pada sesi ujian manapun.</p>
+          <p class="text-xs text-muted-foreground py-4 text-center">Anda belum terdaftar pada sesi ujian manapun.</p>
         {:else}
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse text-xs">
               <thead>
-                <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+                <tr class="bg-muted/50 text-muted-foreground font-bold border-b border-border">
                   <th class="p-3.5">No. Registrasi</th>
                   <th class="p-3.5">Judul Sesi Ujian</th>
                   <th class="p-3.5">Waktu Pelaksanaan</th>
@@ -283,33 +283,33 @@
                   <th class="p-3.5 text-center">Aksi / Kartu</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-slate-100">
+              <tbody class="divide-y divide-border">
                 {#each myRegistrations as reg}
-                  <tr class="hover:bg-slate-50/80 transition-colors">
-                    <td class="p-3.5 font-mono font-bold text-indigo-700">{reg.registrationNo || 'REG/2026/07/0001'}</td>
-                    <td class="p-3.5 font-bold text-slate-900">{reg.examSession?.title}</td>
-                    <td class="p-3.5 text-slate-600">{formatDate(reg.examSession?.startTime)}</td>
+                  <tr class="hover:bg-muted/40 transition-colors">
+                    <td class="p-3.5 font-mono font-bold text-primary">{reg.registrationNo || 'REG/2026/07/0001'}</td>
+                    <td class="p-3.5 font-bold text-foreground">{reg.examSession?.title}</td>
+                    <td class="p-3.5 text-muted-foreground">{formatDate(reg.examSession?.startTime)}</td>
                     <td class="p-3.5 text-center">
                       {#if reg.verificationStatus === 'VERIFIED'}
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                          <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600" /> Terverifikasi
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          <CheckCircle2 class="w-3.5 h-3.5 text-emerald-500" /> Terverifikasi
                         </span>
                       {:else if reg.verificationStatus === 'REJECTED'}
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
-                          <XCircle class="w-3.5 h-3.5 text-rose-600" /> Ditolak
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">
+                          <XCircle class="w-3.5 h-3.5 text-rose-500" /> Ditolak
                         </span>
                       {:else}
-                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
-                          <Clock class="w-3.5 h-3.5 text-purple-600" /> Menunggu Verifikasi
+                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+                          <Clock class="w-3.5 h-3.5 text-purple-500" /> Menunggu Verifikasi
                         </span>
                       {/if}
                     </td>
                     <td class="p-3.5 text-center flex items-center justify-center gap-2">
                       <button
                         on:click={() => { targetRegForPayment = reg; isPaymentModalOpen = true; }}
-                        class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 text-slate-700 hover:bg-slate-200 transition-colors flex items-center gap-1"
+                        class="px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-muted hover:bg-muted/80 text-foreground transition-colors flex items-center gap-1 border border-border"
                       >
-                        <CreditCard class="w-3.5 h-3.5 text-indigo-600" /> Bukti Bayar
+                        <CreditCard class="w-3.5 h-3.5 text-primary" /> Bukti Bayar
                       </button>
 
                       {#if reg.verificationStatus === 'VERIFIED'}
@@ -332,18 +332,18 @@
 
   {:else if activeTab === 'verifyOperator'}
     <!-- OPERATOR VERIFICATION TAB -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-4">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
+    <div class="bg-card rounded-2xl border border-border shadow-sm p-6 space-y-4 text-card-foreground">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
-          <h2 class="text-base font-bold text-slate-800">Daftar Verifikasi Berkas Peserta</h2>
-          <p class="text-xs text-slate-500">Periksa bukti pembayaran & keabsahan pendaftaran peserta EPTUNU.</p>
+          <h2 class="text-base font-bold text-foreground">Daftar Verifikasi Berkas Peserta</h2>
+          <p class="text-xs text-muted-foreground">Periksa bukti pembayaran & keabsahan pendaftaran peserta EPTUNU.</p>
         </div>
 
         <div class="flex items-center gap-3">
           <select
             bind:value={filterStatus}
             on:change={loadData}
-            class="px-3 py-2 text-xs border border-slate-300 rounded-xl focus:ring-2 focus:ring-purple-500 text-slate-900 bg-white"
+            class="px-3 py-2 text-xs border border-border rounded-xl focus:ring-2 focus:ring-purple-500 text-foreground bg-background"
           >
             <option value="">Semua Status Verifikasi</option>
             <option value="PENDING">PENDING (Menunggu)</option>
@@ -356,7 +356,7 @@
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs">
           <thead>
-            <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+            <tr class="bg-muted/50 text-muted-foreground font-bold border-b border-border">
               <th class="p-3.5">No. Registrasi</th>
               <th class="p-3.5">Peserta</th>
               <th class="p-3.5">Sesi Ujian</th>
@@ -365,35 +365,35 @@
               <th class="p-3.5 text-center">Aksi Verifikasi</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100">
+          <tbody class="divide-y divide-border">
             {#each allRegistrations as reg}
-              <tr class="hover:bg-slate-50/80 transition-colors">
-                <td class="p-3.5 font-mono font-bold text-indigo-700">{reg.registrationNo || 'REG/2026/07/0001'}</td>
+              <tr class="hover:bg-muted/40 transition-colors">
+                <td class="p-3.5 font-mono font-bold text-primary">{reg.registrationNo || 'REG/2026/07/0001'}</td>
                 <td class="p-3.5">
-                  <div class="font-bold text-slate-900">{reg.user?.fullName}</div>
-                  <div class="text-[11px] text-slate-500 font-mono">{reg.user?.identityNumber} • {reg.user?.prodi || 'Peserta'}</div>
+                  <div class="font-bold text-foreground">{reg.user?.fullName}</div>
+                  <div class="text-[11px] text-muted-foreground font-mono">{reg.user?.identityNumber} • {reg.user?.prodi || 'Peserta'}</div>
                 </td>
-                <td class="p-3.5 text-slate-700 font-medium">{reg.examSession?.title}</td>
+                <td class="p-3.5 text-foreground font-medium">{reg.examSession?.title}</td>
                 <td class="p-3.5 text-center">
                   {#if reg.paymentProofUrl}
                     <a
                       href={reg.paymentProofUrl}
                       target="_blank"
-                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-semibold hover:underline"
+                      class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-primary/10 text-primary font-semibold hover:underline"
                     >
                       <Eye class="w-3.5 h-3.5" /> Lihat Bukti
                     </a>
                   {:else}
-                    <span class="text-slate-400 italic">Belum Upload</span>
+                    <span class="text-muted-foreground italic">Belum Upload</span>
                   {/if}
                 </td>
                 <td class="p-3.5 text-center">
                   {#if reg.verificationStatus === 'VERIFIED'}
-                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800">VERIFIED</span>
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">VERIFIED</span>
                   {:else if reg.verificationStatus === 'REJECTED'}
-                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-100 text-rose-800">REJECTED</span>
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/20">REJECTED</span>
                   {:else}
-                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-100 text-purple-800">PENDING</span>
+                    <span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">PENDING</span>
                   {/if}
                 </td>
                 <td class="p-3.5 text-center">
@@ -415,9 +415,9 @@
 
 <!-- UPLOAD PAYMENT PROOF MODAL -->
 {#if isPaymentModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
-      <div class="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden text-card-foreground">
+      <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-base">
           <Upload class="w-5 h-5 text-indigo-400" /> Upload Bukti Pembayaran
         </div>
@@ -425,29 +425,29 @@
       </div>
 
       <div class="p-6 space-y-4">
-        <div class="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border">
+        <div class="text-xs text-muted-foreground bg-muted/40 p-3 rounded-xl border border-border">
           <div><strong>Sesi:</strong> {targetRegForPayment?.examSession?.title}</div>
           <div><strong>No. Registrasi:</strong> {targetRegForPayment?.registrationNo}</div>
         </div>
 
         <div>
-          <label id="lbl-pay" for="in-pay" class="block text-xs font-semibold text-slate-700 mb-1">Pilih File Bukti Pembayaran (JPG/PNG/PDF)</label>
+          <label id="lbl-pay" for="in-pay" class="block text-xs font-semibold text-muted-foreground mb-1">Pilih File Bukti Pembayaran (JPG/PNG/PDF)</label>
           <input
             id="in-pay"
             type="file"
             accept="image/*,application/pdf"
             on:change={handleUploadPaymentFile}
-            class="w-full text-xs text-slate-500 border border-slate-300 rounded-xl p-1.5"
+            class="w-full text-xs text-foreground border border-border rounded-xl p-1.5 bg-background"
           />
           {#if uploadedPaymentUrl}
-            <div class="text-[11px] text-emerald-600 font-mono mt-1">✓ Berkas terunggah: {uploadedPaymentUrl}</div>
+            <div class="text-[11px] text-emerald-500 font-mono mt-1">✓ Berkas terunggah: {uploadedPaymentUrl}</div>
           {/if}
         </div>
       </div>
 
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
-        <button type="button" on:click={() => (isPaymentModalOpen = false)} class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-xl">Batal</button>
-        <button type="button" on:click={handleSavePaymentProof} class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md">Kirim Bukti Pembayaran</button>
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
+        <button type="button" on:click={() => (isPaymentModalOpen = false)} class="px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-colors">Batal</button>
+        <button type="button" on:click={handleSavePaymentProof} class="px-4 py-2 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded-xl shadow-md transition-all">Kirim Bukti Pembayaran</button>
       </div>
     </div>
   </div>
@@ -455,8 +455,8 @@
 
 <!-- ADMIN VERIFICATION WORKFLOW MODAL -->
 {#if isVerifyModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden text-card-foreground">
       <div class="p-5 bg-gradient-to-r from-slate-900 to-purple-950 text-white flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-base">
           <UserCheck class="w-5 h-5 text-purple-400" /> Verifikasi Pendaftaran Operator
@@ -465,19 +465,19 @@
       </div>
 
       <div class="p-6 space-y-4">
-        <div class="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border space-y-1">
+        <div class="text-xs text-muted-foreground bg-muted/40 p-3 rounded-xl border border-border space-y-1">
           <div><strong>Peserta:</strong> {targetRegForVerify?.user?.fullName} ({targetRegForVerify?.user?.identityNumber})</div>
           <div><strong>No. Registrasi:</strong> {targetRegForVerify?.registrationNo}</div>
           <div><strong>Sesi:</strong> {targetRegForVerify?.examSession?.title}</div>
         </div>
 
         <div>
-          <label id="lbl-vnotes" for="txt-vnotes" class="block text-xs font-semibold text-slate-700 mb-1">Catatan Verifikasi (Opsional)</label>
-          <textarea id="txt-vnotes" bind:value={verificationNotes} rows="2" placeholder="Catatan kelengkapan pembayaran atau alasan penolakan..." class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400"></textarea>
+          <label id="lbl-vnotes" for="txt-vnotes" class="block text-xs font-semibold text-muted-foreground mb-1">Catatan Verifikasi (Opsional)</label>
+          <textarea id="txt-vnotes" bind:value={verificationNotes} rows="2" placeholder="Catatan kelengkapan pembayaran atau alasan penolakan..." class="w-full px-3.5 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground"></textarea>
         </div>
       </div>
 
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-between">
         <button type="button" on:click={() => handleAdminVerify('REJECTED')} class="px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 rounded-xl shadow-sm">❌ Tolak Berkas</button>
         <button type="button" on:click={() => handleAdminVerify('VERIFIED')} class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md">✓ Verifikasi (Terima)</button>
       </div>
@@ -487,10 +487,10 @@
 
 <!-- PRINTABLE KARTU PESERTA UJIAN MODAL -->
 {#if isCardModalOpen && examCardData}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden print:shadow-none print:border-none print:w-full">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
+    <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-xl overflow-hidden print:shadow-none print:border-none print:w-full">
       <!-- Modal Toolbar Header (Hidden on Print) -->
-      <div class="p-4 bg-slate-900 text-white flex items-center justify-between print:hidden">
+      <div class="p-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between print:hidden">
         <div class="flex items-center gap-2 font-bold text-sm">
           <Printer class="w-4 h-4 text-emerald-400" /> Pratinjau Kartu Peserta Ujian
         </div>

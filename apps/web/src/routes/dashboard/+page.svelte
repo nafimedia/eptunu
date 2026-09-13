@@ -58,11 +58,24 @@
     }
   });
 
+  let activeSimulationToken = 'UJIAN1';
+
   async function fetchHistory() {
     try {
-      const res = await apiFetch('/exam/my-exams');
-      if (res.success) {
-        examHistory = res.data || [];
+      const [historyRes, activeSessionsRes] = await Promise.allSettled([
+        apiFetch('/exam/my-exams'),
+        apiFetch('/exam-sessions/active'),
+      ]);
+
+      if (historyRes.status === 'fulfilled' && historyRes.value.success) {
+        examHistory = historyRes.value.data || [];
+      }
+
+      if (activeSessionsRes.status === 'fulfilled' && activeSessionsRes.value.success) {
+        const activeList = activeSessionsRes.value.data || [];
+        if (activeList.length > 0 && activeList[0].token) {
+          activeSimulationToken = activeList[0].token;
+        }
       }
     } catch (e) {
       // ignore
@@ -254,8 +267,16 @@
           </button>
         </form>
 
-        <div class="p-3 bg-muted/40 rounded-xl border border-border/60 text-xs text-muted-foreground leading-relaxed">
-          💡 Token simulasi aktif default: <strong class="text-primary font-mono">EPT2026</strong>
+        <div class="p-3 bg-muted/40 rounded-xl border border-border/60 text-xs text-muted-foreground leading-relaxed flex items-center justify-between">
+          <span>💡 Token sesi aktif saat ini:</span>
+          <button
+            type="button"
+            on:click={() => (tokenInput = activeSimulationToken)}
+            class="text-primary font-mono font-bold hover:underline cursor-pointer bg-primary/10 px-2 py-0.5 rounded transition"
+            title="Klik untuk memasukkan token otomatis"
+          >
+            {activeSimulationToken}
+          </button>
         </div>
       </div>
 
@@ -296,19 +317,19 @@
                   <div class="flex items-center gap-4 bg-card px-4 py-2.5 rounded-xl border border-border shadow-2xs">
                     <div class="text-center">
                       <span class="block text-[10px] text-muted-foreground uppercase font-semibold">Listening</span>
-                      <span class="text-sm font-bold text-primary">{exam.scoreListening || 31}</span>
+                      <span class="text-sm font-bold text-primary">{exam.scoreListening ?? '-'}</span>
                     </div>
                     <div class="text-center">
                       <span class="block text-[10px] text-muted-foreground uppercase font-semibold">Structure</span>
-                      <span class="text-sm font-bold text-primary">{exam.scoreStructure || 31}</span>
+                      <span class="text-sm font-bold text-primary">{exam.scoreStructure ?? '-'}</span>
                     </div>
                     <div class="text-center">
                       <span class="block text-[10px] text-muted-foreground uppercase font-semibold">Reading</span>
-                      <span class="text-sm font-bold text-primary">{exam.scoreReading || 31}</span>
+                      <span class="text-sm font-bold text-primary">{exam.scoreReading ?? '-'}</span>
                     </div>
                     <div class="pl-2 border-l border-border text-center">
                       <span class="block text-[10px] text-amber-500 font-semibold uppercase">Total Skor</span>
-                      <span class="text-base font-extrabold text-amber-600">{exam.totalScore || 310}</span>
+                      <span class="text-base font-extrabold text-amber-600">{exam.totalScore ?? '-'}</span>
                     </div>
                   </div>
                 {:else}

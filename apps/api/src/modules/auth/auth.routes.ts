@@ -160,4 +160,51 @@ export async function authRoutes(fastify: FastifyInstance) {
       },
     });
   });
+
+  // 3. FORGOT PASSWORD REQUEST
+  fastify.post('/forgot-password', async (request, reply) => {
+    const { email } = (request.body || {}) as { email?: string };
+
+    if (!email || !email.includes('@')) {
+      return reply.status(400).send({
+        success: false,
+        message: 'Alamat email wajib diisi dengan format yang benar.',
+      });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { email: email.trim().toLowerCase() },
+    });
+
+    if (!user) {
+      return reply.send({
+        success: true,
+        message: 'Instruksi reset kata sandi telah dikirimkan ke email Anda jika terdaftar.',
+      });
+    }
+
+    try {
+      const { sendEmail } = await import('../../services/mailer');
+      await sendEmail({
+        to: user.email,
+        subject: '[EPTUNU CBT] Permintaan Reset Kata Sandi Akun',
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0f172a; color: #f8fafc; border-radius: 16px; padding: 24px;">
+            <h2 style="color: #34d399; margin: 0 0 16px 0;">UPT BAHASA UNU PURWOKERTO</h2>
+            <p>Halo <strong>${user.fullName}</strong> (${user.identityNumber}),</p>
+            <p style="color: #cbd5e1;">Kami menerima permintaan untuk mereset kata sandi akun EPTUNU CBT Anda.</p>
+            <p style="color: #cbd5e1;">Silakan hubungi administrator UPT Bahasa atau gunakan bantuan helpdesk resmi untuk pembaruan kata sandi akun institusi.</p>
+            <p style="color: #64748b; font-size: 11px; margin-top: 24px; border-top: 1px solid #334155; padding-top: 12px;">Jika Anda tidak merasa melakukan permintaan ini, silakan abaikan pesan ini demi keamanan akun Anda.</p>
+          </div>
+        `,
+      });
+    } catch (e) {
+      console.error('Failed to send reset email:', e);
+    }
+
+    return reply.send({
+      success: true,
+      message: 'Instruksi reset kata sandi telah dikirimkan ke email Anda jika terdaftar.',
+    });
+  });
 }

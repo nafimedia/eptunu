@@ -85,13 +85,13 @@
   let isResetting = false;
 
   const availableRoles: Array<{ key: UserRole; label: string; badgeColor: string }> = [
-    { key: 'SUPER_ADMIN', label: 'Super Admin', badgeColor: 'bg-amber-100 text-amber-800 border-amber-300' },
-    { key: 'ADMIN_EPT', label: 'Admin EPT', badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-300' },
-    { key: 'QUESTION_AUTHOR', label: 'Penyusun Soal', badgeColor: 'bg-teal-100 text-teal-800 border-teal-300' },
-    { key: 'VALIDATOR', label: 'Validator', badgeColor: 'bg-purple-100 text-purple-800 border-purple-300' },
-    { key: 'PROCTOR', label: 'Pengawas', badgeColor: 'bg-cyan-100 text-cyan-800 border-cyan-300' },
-    { key: 'STUDENT', label: 'Peserta', badgeColor: 'bg-sky-100 text-sky-800 border-sky-300' },
-    { key: 'EXECUTIVE', label: 'Pimpinan', badgeColor: 'bg-rose-100 text-rose-800 border-rose-300' },
+    { key: 'SUPER_ADMIN', label: 'Super Admin', badgeColor: 'bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-700/50' },
+    { key: 'ADMIN_EPT', label: 'Admin EPT', badgeColor: 'bg-indigo-100 dark:bg-indigo-950/40 text-indigo-800 dark:text-indigo-300 border-indigo-300 dark:border-indigo-700/50' },
+    { key: 'QUESTION_AUTHOR', label: 'Penyusun Soal', badgeColor: 'bg-teal-100 dark:bg-teal-950/40 text-teal-800 dark:text-teal-300 border-teal-300 dark:border-teal-700/50' },
+    { key: 'VALIDATOR', label: 'Validator', badgeColor: 'bg-purple-100 dark:bg-purple-950/40 text-purple-800 dark:text-purple-300 border-purple-300 dark:border-purple-700/50' },
+    { key: 'PROCTOR', label: 'Pengawas', badgeColor: 'bg-cyan-100 dark:bg-cyan-950/40 text-cyan-800 dark:text-cyan-300 border-cyan-300 dark:border-cyan-700/50' },
+    { key: 'STUDENT', label: 'Peserta', badgeColor: 'bg-sky-100 dark:bg-sky-950/40 text-sky-800 dark:text-sky-300 border-sky-300 dark:border-sky-700/50' },
+    { key: 'EXECUTIVE', label: 'Pimpinan', badgeColor: 'bg-rose-100 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border-rose-300 dark:border-rose-700/50' },
   ];
 
   async function fetchUsers() {
@@ -245,17 +245,17 @@
   </div>
 
   <!-- Filters & Search Toolbar -->
-  <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+  <div class="bg-card p-4 rounded-xl border border-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 text-card-foreground">
     <div class="flex flex-1 items-center gap-3">
       <!-- Search Input -->
       <div class="relative flex-1 max-w-md">
-        <Search class="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+        <Search class="w-4 h-4 absolute left-3.5 top-3 text-muted-foreground" />
         <input
           type="text"
           bind:value={searchQuery}
           on:input={() => { currentPage = 1; fetchUsers(); }}
           placeholder="Cari berdasarkan NIM/NIP, Nama, atau Email..."
-          class="w-full pl-10 pr-4 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white placeholder:text-slate-400"
+          class="w-full pl-10 pr-4 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background placeholder:text-muted-foreground"
         />
       </div>
 
@@ -263,7 +263,7 @@
       <select
         bind:value={selectedRole}
         on:change={() => { currentPage = 1; fetchUsers(); }}
-        class="px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white"
+        class="px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background"
       >
         <option value="">Semua Role (7 Role)</option>
         {#each availableRoles as r}
@@ -272,29 +272,29 @@
       </select>
     </div>
 
-    <div class="text-xs text-slate-500 font-medium">
-      Total Terdaftar: <strong class="text-indigo-600 text-sm font-bold">{totalUsers}</strong> Akun
+    <div class="text-xs text-muted-foreground font-medium">
+      Total Terdaftar: <strong class="text-primary text-sm font-bold">{totalUsers}</strong> Akun
     </div>
   </div>
 
   <!-- Users Data Table -->
-  <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+  <div class="bg-card rounded-2xl border border-border shadow-sm overflow-hidden text-card-foreground">
     {#if isLoading}
       <div class="p-12 text-center">
-        <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
-        <p class="text-slate-500 text-sm mt-3">Memuat data pengguna EPTUNU...</p>
+        <div class="inline-block animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full"></div>
+        <p class="text-muted-foreground text-sm mt-3">Memuat data pengguna EPTUNU...</p>
       </div>
     {:else if users.length === 0}
       <div class="p-12 text-center">
-        <Users class="w-12 h-12 text-slate-300 mx-auto mb-3" />
-        <h3 class="text-base font-bold text-slate-700">Tidak ada pengguna ditemukan</h3>
-        <p class="text-slate-500 text-xs mt-1">Coba sesuaikan kata kunci pencarian atau filter role.</p>
+        <Users class="w-12 h-12 text-muted-foreground/40 mx-auto mb-3" />
+        <h3 class="text-base font-bold text-foreground">Tidak ada pengguna ditemukan</h3>
+        <p class="text-muted-foreground text-xs mt-1">Coba sesuaikan kata kunci pencarian atau filter role.</p>
       </div>
     {:else}
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-xs">
           <thead>
-            <tr class="bg-slate-50 text-slate-700 font-bold border-b border-slate-200">
+            <tr class="bg-muted/50 text-muted-foreground font-bold border-b border-border">
               <th class="p-4">Identitas (NIM / NIP)</th>
               <th class="p-4">Nama Lengkap & Email</th>
               <th class="p-4">Role Pengguna</th>
@@ -302,18 +302,18 @@
               <th class="p-4 text-center">Aksi Manajemen</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100">
+          <tbody class="divide-y divide-border">
             {#each users as u}
-              <tr class="hover:bg-slate-50/80 transition-colors">
+              <tr class="hover:bg-muted/40 transition-colors">
                 <!-- Identity Number -->
-                <td class="p-4 font-mono font-bold text-indigo-700">
+                <td class="p-4 font-mono font-bold text-primary">
                   {u.identityNumber || '-'}
                 </td>
 
                 <!-- Name & Email -->
                 <td class="p-4">
-                  <div class="font-bold text-slate-900 text-sm">{u.fullName || u.name || '-'}</div>
-                  <div class="text-slate-500 font-mono text-[11px]">{u.email}</div>
+                  <div class="font-bold text-foreground text-sm">{u.fullName || u.name || '-'}</div>
+                  <div class="text-muted-foreground font-mono text-[11px]">{u.email}</div>
                 </td>
 
                 <!-- Role Badge -->
@@ -324,9 +324,9 @@
                 </td>
 
                 <!-- Prodi & Faculty -->
-                <td class="p-4 text-slate-600">
-                  <div class="font-medium text-slate-800">{u.prodi || '-'}</div>
-                  <div class="text-[11px] text-slate-400">{u.faculty || '-'}</div>
+                <td class="p-4 text-muted-foreground">
+                  <div class="font-medium text-foreground">{u.prodi || '-'}</div>
+                  <div class="text-[11px] text-muted-foreground">{u.faculty || '-'}</div>
                 </td>
 
                 <!-- Actions -->
@@ -336,7 +336,7 @@
                     <button
                       on:click={() => openEditModal(u)}
                       title="Edit Data User"
-                      class="p-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors"
+                      class="p-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
                     >
                       <Edit2 class="w-4 h-4" />
                     </button>
@@ -345,7 +345,7 @@
                     <button
                       on:click={() => openResetPasswordModal(u)}
                       title="Reset Password"
-                      class="p-2 text-slate-600 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                      class="p-2 text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-colors"
                     >
                       <KeyRound class="w-4 h-4" />
                     </button>
@@ -354,7 +354,7 @@
                     <button
                       on:click={() => handleDeleteUser(u)}
                       title="Hapus User"
-                      class="p-2 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                      class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
                     >
                       <Trash2 class="w-4 h-4" />
                     </button>
@@ -367,22 +367,22 @@
       </div>
 
       <!-- Pagination Footer -->
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-        <div class="text-xs text-slate-500">
-          Halaman <span class="font-bold text-slate-800">{currentPage}</span> dari <span class="font-bold text-slate-800">{totalPages}</span>
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-between">
+        <div class="text-xs text-muted-foreground">
+          Halaman <span class="font-bold text-foreground">{currentPage}</span> dari <span class="font-bold text-foreground">{totalPages}</span>
         </div>
         <div class="flex items-center gap-2">
           <button
             on:click={() => { if (currentPage > 1) { currentPage--; fetchUsers(); } }}
             disabled={currentPage === 1}
-            class="p-2 text-slate-600 hover:bg-slate-200 rounded-lg disabled:opacity-40 transition-colors"
+            class="p-2 text-muted-foreground hover:bg-muted rounded-lg disabled:opacity-40 transition-colors"
           >
             <ChevronLeft class="w-4 h-4" />
           </button>
           <button
             on:click={() => { if (currentPage < totalPages) { currentPage++; fetchUsers(); } }}
             disabled={currentPage === totalPages}
-            class="p-2 text-slate-600 hover:bg-slate-200 rounded-lg disabled:opacity-40 transition-colors"
+            class="p-2 text-muted-foreground hover:bg-muted rounded-lg disabled:opacity-40 transition-colors"
           >
             <ChevronRight class="w-4 h-4" />
           </button>
@@ -394,10 +394,10 @@
 
 <!-- CREATE / EDIT USER MODAL -->
 {#if isModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-lg overflow-hidden text-card-foreground">
       <!-- Modal Header -->
-      <div class="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
+      <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-base">
           <UserPlus class="w-5 h-5 text-indigo-400" /> {editingUser ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru'}
         </div>
@@ -410,46 +410,46 @@
       <div class="p-6 space-y-4">
         <!-- Identity Number -->
         <div>
-          <label id="label-identity" for="input-identity" class="block text-xs font-semibold text-slate-700 mb-1">Identitas (NIM untuk Mahasiswa / NIP untuk Dosen)</label>
+          <label id="label-identity" for="input-identity" class="block text-xs font-semibold text-muted-foreground mb-1">Identitas (NIM untuk Mahasiswa / NIP untuk Dosen)</label>
           <input
             id="input-identity"
             type="text"
             bind:value={formData.identityNumber}
             placeholder="Contoh: 202601001 atau 19850415..."
-            class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white placeholder:text-slate-400"
+            class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background placeholder:text-muted-foreground"
           />
         </div>
 
         <!-- Full Name -->
         <div>
-          <label id="label-fullname" for="input-fullname" class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+          <label id="label-fullname" for="input-fullname" class="block text-xs font-semibold text-muted-foreground mb-1">Nama Lengkap</label>
           <input
             id="input-fullname"
             type="text"
             bind:value={formData.fullName}
             placeholder="Nama lengkap beserta gelar..."
-            class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white placeholder:text-slate-400"
+            class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background placeholder:text-muted-foreground"
           />
         </div>
 
         <!-- Email & Role -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label id="label-email" for="input-email" class="block text-xs font-semibold text-slate-700 mb-1">Email</label>
+            <label id="label-email" for="input-email" class="block text-xs font-semibold text-muted-foreground mb-1">Email</label>
             <input
               id="input-email"
               type="email"
               bind:value={formData.email}
               placeholder="user@unupurwokerto.ac.id"
-              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white placeholder:text-slate-400"
+              class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background placeholder:text-muted-foreground"
             />
           </div>
           <div>
-            <label id="label-role" for="input-role" class="block text-xs font-semibold text-slate-700 mb-1">Role Pengguna</label>
+            <label id="label-role" for="input-role" class="block text-xs font-semibold text-muted-foreground mb-1">Role Pengguna</label>
             <select
               id="input-role"
               bind:value={formData.role}
-              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white"
+              class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background"
             >
               {#each availableRoles as r}
                 <option value={r.key}>{r.label} ({r.key})</option>
@@ -461,13 +461,13 @@
         <!-- Password (Create only) -->
         {#if !editingUser}
           <div>
-            <label id="label-password" for="input-password" class="block text-xs font-semibold text-slate-700 mb-1">Password Awal</label>
+            <label id="label-password" for="input-password" class="block text-xs font-semibold text-muted-foreground mb-1">Password Awal</label>
             <input
               id="input-password"
               type="text"
               bind:value={formData.password}
               placeholder="Default: password123"
-              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white placeholder:text-slate-400"
+              class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background placeholder:text-muted-foreground"
             />
           </div>
         {/if}
@@ -475,12 +475,12 @@
         <!-- Prodi & Faculty Dropdowns -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label id="label-prodi" for="input-prodi" class="block text-xs font-semibold text-slate-700 mb-1">Program Studi</label>
+            <label id="label-prodi" for="input-prodi" class="block text-xs font-semibold text-muted-foreground mb-1">Program Studi</label>
             <select
               id="input-prodi"
               bind:value={formData.prodi}
               on:change={handleProdiChange}
-              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white"
+              class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background"
             >
               <option value="">-- Pilih Program Studi --</option>
               {#each filteredProdis as p}
@@ -492,12 +492,12 @@
             </select>
           </div>
           <div>
-            <label id="label-faculty" for="input-faculty" class="block text-xs font-semibold text-slate-700 mb-1">Fakultas</label>
+            <label id="label-faculty" for="input-faculty" class="block text-xs font-semibold text-muted-foreground mb-1">Fakultas</label>
             <select
               id="input-faculty"
               bind:value={formData.faculty}
               on:change={handleFacultyChange}
-              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-slate-900 bg-white"
+              class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-primary/40 focus:border-primary text-foreground bg-background"
             >
               <option value="">-- Pilih Fakultas --</option>
               {#each masterFaculties as f}
@@ -512,18 +512,18 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
         <button
           type="button"
           on:click={() => (isModalOpen = false)}
-          class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors"
+          class="px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-colors"
         >
           Batal
         </button>
         <button
           type="button"
           on:click={handleSaveUser}
-          class="px-4 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md transition-all"
+          class="px-4 py-2 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded-xl shadow-md transition-all"
         >
           Simpan Data
         </button>
@@ -534,8 +534,8 @@
 
 <!-- RESET PASSWORD MODAL -->
 {#if isResetModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden text-card-foreground">
       <div class="p-5 bg-gradient-to-r from-slate-900 to-amber-950 text-white flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-base">
           <KeyRound class="w-5 h-5 text-amber-400" /> Reset Password Pengguna
@@ -546,26 +546,26 @@
       </div>
 
       <div class="p-6 space-y-4">
-        <p class="text-xs text-slate-600">
-          Anda akan mereset password untuk pengguna <strong class="text-slate-900 font-bold">{resetTargetUser?.fullName}</strong> ({resetTargetUser?.identityNumber}).
+        <p class="text-xs text-muted-foreground">
+          Anda akan mereset password untuk pengguna <strong class="text-foreground font-bold">{resetTargetUser?.fullName}</strong> ({resetTargetUser?.identityNumber}).
         </p>
 
         <div>
-          <label id="label-newpassword" for="input-newpassword" class="block text-xs font-semibold text-slate-700 mb-1">Password Baru</label>
+          <label id="label-newpassword" for="input-newpassword" class="block text-xs font-semibold text-muted-foreground mb-1">Password Baru</label>
           <input
             id="input-newpassword"
             type="text"
             bind:value={newResetPassword}
-            class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-mono text-slate-900 bg-white"
+            class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 font-mono text-foreground bg-background"
           />
         </div>
       </div>
 
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
         <button
           type="button"
           on:click={() => (isResetModalOpen = false)}
-          class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-xl transition-colors"
+          class="px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-colors"
         >
           Batal
         </button>

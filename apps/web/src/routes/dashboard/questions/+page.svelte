@@ -469,38 +469,38 @@
   </div>
 
   <!-- Tab Navigation -->
-  <div class="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+  <div class="flex items-center gap-2 border-b border-border pb-2 overflow-x-auto">
     <button
       on:click={() => { activeTab = 'listening'; loadQuestions(); }}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'listening' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'listening' ? 'bg-indigo-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <Headphones class="w-4 h-4" /> Section 1: Listening
     </button>
 
     <button
       on:click={() => { activeTab = 'structure'; loadQuestions(); }}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'structure' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'structure' ? 'bg-indigo-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <FileQuestion class="w-4 h-4" /> Section 2: Structure
     </button>
 
     <button
       on:click={() => { activeTab = 'reading'; loadQuestions(); }}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'reading' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'reading' ? 'bg-indigo-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <BookOpen class="w-4 h-4" /> Section 3: Reading Passage
     </button>
 
     <button
       on:click={() => { activeTab = 'review'; loadQuestions(); }}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'review' ? 'bg-purple-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'review' ? 'bg-purple-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <CheckCircle2 class="w-4 h-4" /> Workflow Validasi (Validator)
     </button>
 
     <button
       on:click={() => (activeTab = 'import')}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'import' ? 'bg-teal-600 text-white shadow-md' : 'text-slate-600 hover:bg-slate-100'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'import' ? 'bg-teal-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <FileSpreadsheet class="w-4 h-4" /> Batch Import (Excel/CSV)
     </button>
@@ -508,29 +508,29 @@
 
   <!-- Status Sub-Filter for Review Tab -->
   {#if activeTab === 'review'}
-    <div class="flex items-center gap-2 bg-purple-50 p-2.5 rounded-2xl border border-purple-200 overflow-x-auto">
-      <span class="text-xs font-bold text-purple-900 px-2 shrink-0">Filter Status Review:</span>
+    <div class="flex items-center gap-2 bg-purple-500/10 p-2.5 rounded-2xl border border-purple-500/20 overflow-x-auto">
+      <span class="text-xs font-bold text-purple-700 dark:text-purple-300 px-2 shrink-0">Filter Status Review:</span>
       <button
         on:click={() => { selectedStatus = 'IN_REVIEW'; loadQuestions(); }}
-        class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition {selectedStatus === 'IN_REVIEW' || !selectedStatus ? 'bg-purple-600 text-white shadow-sm' : 'bg-white text-purple-700 hover:bg-purple-100 border border-purple-200'}"
+        class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition {selectedStatus === 'IN_REVIEW' || !selectedStatus ? 'bg-purple-600 text-white shadow-sm' : 'bg-card text-purple-600 dark:text-purple-400 hover:bg-purple-500/20 border border-purple-500/20'}"
       >
         ⏳ Menunggu Review (IN_REVIEW)
       </button>
       <button
         on:click={() => { selectedStatus = 'APPROVED'; loadQuestions(); }}
-        class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition {selectedStatus === 'APPROVED' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-white text-emerald-700 hover:bg-emerald-100 border border-emerald-200'}"
+        class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition {selectedStatus === 'APPROVED' ? 'bg-emerald-600 text-white shadow-sm' : 'bg-card text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 border border-emerald-500/20'}"
       >
         ✅ Disetujui (APPROVED)
       </button>
       <button
         on:click={() => { selectedStatus = 'REJECTED'; loadQuestions(); }}
-        class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition {selectedStatus === 'REJECTED' ? 'bg-rose-600 text-white shadow-sm' : 'bg-white text-rose-700 hover:bg-rose-100 border border-rose-200'}"
+        class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition {selectedStatus === 'REJECTED' ? 'bg-rose-600 text-white shadow-sm' : 'bg-card text-rose-600 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/20'}"
       >
         ❌ Ditolak / Minta Revisi (REJECTED)
       </button>
       <button
         on:click={() => { selectedStatus = ''; loadQuestions(); }}
-        class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition {selectedStatus === '' ? 'bg-slate-800 text-white shadow-sm' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'}"
+        class="px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition {selectedStatus === '' ? 'bg-primary text-primary-foreground shadow-sm' : 'bg-card text-muted-foreground hover:bg-muted border border-border'}"
       >
         📂 Semua Status
       </button>
@@ -540,20 +540,20 @@
   <!-- Content Section -->
   {#if activeTab === 'import'}
     <!-- BATCH IMPORT TAB -->
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-6">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b pb-4">
+    <div class="bg-card text-card-foreground rounded-2xl border border-border shadow-sm p-6 space-y-6">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-4">
         <div>
-          <h2 class="text-base font-bold text-slate-800">Batch Import Soal (CSV / Excel / JSON Format)</h2>
-          <p class="text-xs text-slate-500 mt-0.5">Unggah berkas CSV/Excel atau tempelkan JSON untuk mengimpor puluhan soal sekaligus.</p>
+          <h2 class="text-base font-bold text-foreground">Batch Import Soal (CSV / Excel / JSON Format)</h2>
+          <p class="text-xs text-muted-foreground mt-0.5">Unggah berkas CSV/Excel atau tempelkan JSON untuk mengimpor puluhan soal sekaligus.</p>
         </div>
 
         <div class="flex items-center gap-3">
           <button
             type="button"
             on:click={downloadSampleTemplate}
-            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs border border-slate-300 transition"
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs border border-border transition"
           >
-            <Download class="w-4 h-4 text-indigo-600" />
+            <Download class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
             <span>Download Template CSV</span>
           </button>
 
@@ -578,24 +578,24 @@
 
       <!-- Preview Table if parsed file exists -->
       {#if parsedPreviewQuestions.length > 0}
-        <div class="p-4 bg-teal-50/70 border border-teal-200 rounded-2xl space-y-3">
+        <div class="p-4 bg-teal-500/10 border border-teal-500/20 rounded-2xl space-y-3">
           <div class="flex items-center justify-between">
-            <span class="text-xs font-extrabold text-teal-900 flex items-center gap-2">
-              <Sparkles class="w-4 h-4 text-teal-600" />
+            <span class="text-xs font-extrabold text-teal-700 dark:text-teal-300 flex items-center gap-2">
+              <Sparkles class="w-4 h-4 text-teal-600 dark:text-teal-400" />
               Pratinjau Hasil Ekstraksi: {parsedPreviewQuestions.length} Soal Siap Diimpor
             </span>
             <button
               type="button"
               on:click={() => { parsedPreviewQuestions = []; importRawText = ''; }}
-              class="text-xs text-teal-700 hover:underline font-semibold"
+              class="text-xs text-teal-600 dark:text-teal-400 hover:underline font-semibold"
             >
               Reset Pratinjau
             </button>
           </div>
 
-          <div class="max-h-48 overflow-y-auto border border-teal-200 rounded-xl bg-white text-xs">
+          <div class="max-h-48 overflow-y-auto border border-teal-500/20 rounded-xl bg-card text-xs">
             <table class="w-full text-left">
-              <thead class="bg-teal-100/60 text-teal-950 font-bold sticky top-0">
+              <thead class="bg-teal-500/20 text-foreground font-bold sticky top-0">
                 <tr>
                   <th class="p-2">#</th>
                   <th class="p-2">Section</th>
@@ -604,38 +604,38 @@
                   <th class="p-2">Tingkat</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-teal-100">
+              <tbody class="divide-y divide-teal-500/10">
                 {#each parsedPreviewQuestions.slice(0, 10) as item, i}
                   <tr>
                     <td class="p-2 font-bold">{i + 1}</td>
-                    <td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-100 text-indigo-800 text-[10px] font-bold">{item.section}</span></td>
+                    <td class="p-2"><span class="px-2 py-0.5 rounded bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 text-[10px] font-bold">{item.section}</span></td>
                     <td class="p-2 truncate max-w-xs">{item.questionText}</td>
-                    <td class="p-2 font-black text-teal-700">{item.correctOption}</td>
-                    <td class="p-2">{item.difficulty}</td>
+                    <td class="p-2 font-black text-teal-600 dark:text-teal-400">{item.correctOption}</td>
+                    <td class="p-2 text-muted-foreground">{item.difficulty}</td>
                   </tr>
                 {/each}
               </tbody>
             </table>
           </div>
           {#if parsedPreviewQuestions.length > 10}
-            <p class="text-[11px] text-teal-700 font-medium text-center">Menampilkan 10 dari {parsedPreviewQuestions.length} soal pada pratinjau...</p>
+            <p class="text-[11px] text-teal-700 dark:text-teal-300 font-medium text-center">Menampilkan 10 dari {parsedPreviewQuestions.length} soal pada pratinjau...</p>
           {/if}
         </div>
       {/if}
 
       <div>
-        <label id="lbl-json" for="txt-json" class="block text-xs font-semibold text-slate-700 mb-1">Preview / Editor Data JSON Soal</label>
+        <label id="lbl-json" for="txt-json" class="block text-xs font-semibold text-foreground mb-1">Preview / Editor Data JSON Soal</label>
         <textarea
           id="txt-json"
           bind:value={importRawText}
           rows="8"
           placeholder={`[\n  {\n    "section": "STRUCTURE",\n    "questionText": "The dean of faculty _______ attending the meeting.",\n    "optionA": "are", "optionB": "is", "optionC": "were", "optionD": "have been",\n    "correctOption": "B",\n    "explanation": "Subject singular requires singular verb.",\n    "skillTag": "Subject-Verb Agreement",\n    "difficulty": "MEDIUM"\n  }\n]`}
-          class="w-full px-3.5 py-3 text-xs font-mono border border-slate-300 rounded-xl focus:ring-2 focus:ring-teal-500 bg-slate-900 text-teal-300"
+          class="w-full px-3.5 py-3 text-xs font-mono border border-border rounded-xl focus:ring-2 focus:ring-teal-500 bg-background text-teal-600 dark:text-teal-400"
         ></textarea>
       </div>
 
       <div class="flex items-center justify-between pt-2">
-        <span class="text-xs text-slate-500">Format kolom CSV: `section,listeningPart,questionText,optionA,optionB,optionC,optionD,correctOption,skillTag,difficulty,explanation`</span>
+        <span class="text-xs text-muted-foreground">Format kolom CSV: `section,listeningPart,questionText,optionA,optionB,optionC,optionD,correctOption,skillTag,difficulty,explanation`</span>
         <button
           on:click={handleExecuteBatchImport}
           disabled={isImporting || !importRawText}
@@ -647,28 +647,28 @@
     </div>
 
   {:else if isLoading}
-    <div class="p-12 text-center bg-white rounded-2xl border border-slate-200">
+    <div class="p-12 text-center bg-card text-card-foreground rounded-2xl border border-border">
       <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-600 border-t-transparent rounded-full"></div>
-      <p class="text-slate-500 text-sm mt-3">Memuat bank soal EPTUNU...</p>
+      <p class="text-muted-foreground text-sm mt-3">Memuat bank soal EPTUNU...</p>
     </div>
 
   {:else if questions.length === 0}
-    <div class="p-12 text-center bg-white rounded-2xl border border-slate-200">
-      <FileQuestion class="w-12 h-12 text-slate-300 mx-auto mb-3" />
-      <h3 class="text-base font-bold text-slate-700">Belum Ada Soal Terdaftar</h3>
-      <p class="text-slate-500 text-xs mt-1">Klik tombol "+ Tambah Soal Baru" untuk mulai menyusun bank soal.</p>
+    <div class="p-12 text-center bg-card text-card-foreground rounded-2xl border border-border">
+      <FileQuestion class="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
+      <h3 class="text-base font-bold text-foreground">Belum Ada Soal Terdaftar</h3>
+      <p class="text-muted-foreground text-xs mt-1">Klik tombol "+ Tambah Soal Baru" untuk mulai menyusun bank soal.</p>
     </div>
 
   {:else}
     <!-- BULK ACTION FLOATING BAR FOR VALIDATOR -->
     {#if activeTab === 'review' || questions.some(q => q.status === 'IN_REVIEW')}
-      <div class="p-4 bg-slate-900 text-white rounded-2xl border border-purple-800 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="p-4 bg-muted/90 backdrop-blur text-foreground rounded-2xl border border-purple-500/30 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-3">
         <div class="flex items-center gap-3">
           <input
             type="checkbox"
             checked={selectedQuestionIds.length === questions.length && questions.length > 0}
             on:change={() => toggleSelectAll(questions)}
-            class="w-4 h-4 text-purple-600 rounded border-slate-700 bg-slate-800"
+            class="w-4 h-4 text-purple-600 rounded border-border bg-background"
           />
           <span class="text-xs font-bold">
             Pilih Semua ({selectedQuestionIds.length}/{questions.length} Soal Terpilih)
@@ -699,34 +699,34 @@
     <!-- QUESTIONS LIST -->
     <div class="space-y-4">
       {#each questions as q, idx}
-        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all p-5 space-y-3">
+        <div class="bg-card text-card-foreground rounded-2xl border border-border shadow-sm hover:shadow-md transition-all p-5 space-y-3">
           <!-- Card Header Badges -->
-          <div class="flex items-center justify-between gap-2 border-b border-slate-100 pb-3">
+          <div class="flex items-center justify-between gap-2 border-b border-border/60 pb-3">
             <div class="flex items-center gap-2 flex-wrap">
               <input
                 type="checkbox"
                 checked={selectedQuestionIds.includes(q.id)}
                 on:change={() => toggleSelectQuestion(q.id)}
-                class="w-4 h-4 text-purple-600 rounded border-slate-300 mr-1"
+                class="w-4 h-4 text-purple-600 rounded border-border bg-background mr-1"
               />
 
-              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800">
+              <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
                 #{idx + 1} {q.section}
               </span>
 
               {#if q.listeningPart}
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-100 text-cyan-800 border border-cyan-200">
+                <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-cyan-500/10 text-cyan-700 dark:text-cyan-300 border border-cyan-500/20">
                   <Headphones class="w-3 h-3 inline" /> {q.listeningPart}
                 </span>
               {/if}
 
               {#if q.skillTag}
-                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                <span class="px-2 py-0.5 rounded-md text-[11px] font-medium bg-muted text-muted-foreground border border-border">
                   Tag: {q.skillTag}
                 </span>
               {/if}
 
-              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold border {q.difficulty === 'EASY' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : (q.difficulty === 'HARD' ? 'bg-rose-50 text-rose-700 border-rose-200' : 'bg-amber-50 text-amber-700 border-amber-200')}">
+              <span class="px-2 py-0.5 rounded-full text-[11px] font-semibold border {q.difficulty === 'EASY' ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-500/20' : (q.difficulty === 'HARD' ? 'bg-rose-500/10 text-rose-700 dark:text-rose-400 border-rose-500/20' : 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-500/20')}">
                 {q.difficulty}
               </span>
             </div>
@@ -734,23 +734,23 @@
             <!-- Status Review Badge -->
             <div class="flex items-center gap-2">
               {#if q.status === 'APPROVED'}
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                  <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600" /> Disetujui
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/20">
+                  <CheckCircle2 class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" /> Disetujui
                 </span>
               {:else if q.status === 'REJECTED'}
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
-                  <XCircle class="w-3.5 h-3.5 text-rose-600" /> Ditolak
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-700 dark:text-rose-400 border border-rose-500/20">
+                  <XCircle class="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" /> Ditolak
                 </span>
               {:else}
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
-                  <AlertCircle class="w-3.5 h-3.5 text-purple-600" /> Menunggu Review
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-700 dark:text-purple-400 border border-purple-500/20">
+                  <AlertCircle class="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" /> Menunggu Review
                 </span>
               {/if}
 
               <button
                 on:click={() => handleDeleteQuestion(q.id)}
                 title="Hapus Soal"
-                class="p-1.5 text-slate-400 hover:text-red-600 rounded-lg"
+                class="p-1.5 text-muted-foreground hover:text-red-500 transition-colors rounded-lg"
               >
                 <Trash2 class="w-4 h-4" />
               </button>
@@ -759,15 +759,15 @@
 
           <!-- Passage Content (If Reading) -->
           {#if q.passage}
-            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700 leading-relaxed italic">
-              <strong class="text-slate-900 not-italic block mb-1">📖 Reading Passage: {q.passage.title || 'Teks Bacaan'}</strong>
+            <div class="p-3 bg-muted/40 rounded-xl border border-border text-xs text-muted-foreground leading-relaxed italic">
+              <strong class="text-foreground not-italic block mb-1">📖 Reading Passage: {q.passage.title || 'Teks Bacaan'}</strong>
               {q.passage.content}
             </div>
           {/if}
 
           <!-- Audio Preview (If Listening) -->
           {#if q.audioUrl}
-            <div class="flex items-center gap-3 p-3 bg-cyan-50/70 rounded-xl border border-cyan-100">
+            <div class="flex items-center gap-3 p-3 bg-cyan-500/10 rounded-xl border border-cyan-500/20">
               <button
                 on:click={() => toggleAudioPlay(q.audioUrl)}
                 class="w-9 h-9 rounded-full bg-cyan-600 text-white flex items-center justify-center shadow-md hover:bg-cyan-500 transition-colors"
@@ -778,20 +778,20 @@
                   <Play class="w-4 h-4 ml-0.5" />
                 {/if}
               </button>
-              <span class="text-xs font-medium text-cyan-900">Audio Listening MP3: <span class="font-mono text-cyan-700">{q.audioUrl}</span></span>
+              <span class="text-xs font-medium text-cyan-800 dark:text-cyan-300">Audio Listening MP3: <span class="font-mono text-cyan-600 dark:text-cyan-400">{q.audioUrl}</span></span>
             </div>
           {/if}
 
           <!-- Question Text -->
-          <div class="text-sm font-semibold text-slate-900">
+          <div class="text-sm font-semibold text-foreground">
             {q.questionText}
           </div>
 
           <!-- Options Grid A/B/C/D -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
             {#each q.options as opt}
-              <div class="p-2.5 rounded-xl border flex items-center justify-between transition-colors {opt.id === q.correctOption ? 'bg-emerald-50/80 border-emerald-300 font-bold text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-700'}">
-                <span><strong>{opt.id}.</strong> {opt.text}</span>
+              <div class="p-2.5 rounded-xl border flex items-center justify-between transition-colors {opt.id === q.correctOption ? 'bg-emerald-500/10 border-emerald-500/30 font-bold text-emerald-700 dark:text-emerald-300' : 'bg-muted/40 border-border text-muted-foreground'}">
+                <span><strong class="text-foreground">{opt.id}.</strong> {opt.text}</span>
                 {#if opt.id === q.correctOption}
                   <span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-600 text-white font-bold">KUNCI</span>
                 {/if}
@@ -801,13 +801,13 @@
 
           <!-- Explanation / Review Notes -->
           {#if q.explanation}
-            <div class="text-xs text-indigo-700 bg-indigo-50/50 p-2.5 rounded-xl border border-indigo-100">
+            <div class="text-xs text-indigo-700 dark:text-indigo-300 bg-indigo-500/10 p-2.5 rounded-xl border border-indigo-500/20">
               <strong>💡 Pembahasan:</strong> {q.explanation}
             </div>
           {/if}
 
           {#if q.reviewNotes}
-            <div class="text-xs text-rose-700 bg-rose-50/50 p-2.5 rounded-xl border border-rose-100">
+            <div class="text-xs text-rose-700 dark:text-rose-300 bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20">
               <strong>📝 Catatan Validator:</strong> {q.reviewNotes}
             </div>
           {/if}
@@ -831,8 +831,8 @@
 
 <!-- CREATE QUESTION MODAL -->
 {#if isCreateModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-card text-card-foreground rounded-2xl border border-border shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
       <div class="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-base">
           <Plus class="w-5 h-5 text-indigo-400" /> Tambah Soal {formData.section}
@@ -847,11 +847,11 @@
         {#if formData.section === 'LISTENING'}
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label id="lbl-lpart" for="sel-lpart" class="block text-xs font-semibold text-slate-700 mb-1">Part Listening</label>
+              <label id="lbl-lpart" for="sel-lpart" class="block text-xs font-semibold text-foreground mb-1">Part Listening</label>
               <select
                 id="sel-lpart"
                 bind:value={formData.listeningPart}
-                class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-white"
+                class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-indigo-500 text-foreground bg-background"
               >
                 <option value="PART_A">Part A (Short Conversation)</option>
                 <option value="PART_B">Part B (Long Conversation)</option>
@@ -860,16 +860,16 @@
             </div>
 
             <div>
-              <label id="lbl-audio" for="file-audio" class="block text-xs font-semibold text-slate-700 mb-1">Upload File Audio MP3</label>
+              <label id="lbl-audio" for="file-audio" class="block text-xs font-semibold text-foreground mb-1">Upload File Audio MP3</label>
               <input
                 id="file-audio"
                 type="file"
                 accept="audio/mp3,audio/mpeg"
                 on:change={handleAudioUpload}
-                class="w-full text-xs text-slate-700 border border-slate-300 rounded-xl p-1.5 bg-white"
+                class="w-full text-xs text-foreground border border-border rounded-xl p-1.5 bg-background"
               />
               {#if formData.audioUrl}
-                <div class="text-[11px] text-emerald-600 font-mono mt-1">✓ Audio: {formData.audioUrl}</div>
+                <div class="text-[11px] text-emerald-600 dark:text-emerald-400 font-mono mt-1">✓ Audio: {formData.audioUrl}</div>
               {/if}
             </div>
           </div>
@@ -878,11 +878,11 @@
         <!-- Reading Passage Selector -->
         {#if formData.section === 'READING'}
           <div>
-            <label id="lbl-passage" for="sel-passage" class="block text-xs font-semibold text-slate-700 mb-1">Pilih Reading Passage (Teks Bacaan)</label>
+            <label id="lbl-passage" for="sel-passage" class="block text-xs font-semibold text-foreground mb-1">Pilih Reading Passage (Teks Bacaan)</label>
             <select
               id="sel-passage"
               bind:value={formData.passageId}
-              class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-white"
+              class="w-full px-3 py-2 text-sm border border-border rounded-xl focus:ring-2 focus:ring-indigo-500 text-foreground bg-background"
             >
               {#each passages as p}
                 <option value={p.id}>{p.title || 'Passage'} ({p.content.substring(0, 50)}...)</option>
@@ -893,41 +893,41 @@
 
         <!-- Question Text -->
         <div>
-          <label id="lbl-qtext" for="txt-qtext" class="block text-xs font-semibold text-slate-700 mb-1">Teks Soal / Pertanyaan</label>
+          <label id="lbl-qtext" for="txt-qtext" class="block text-xs font-semibold text-foreground mb-1">Teks Soal / Pertanyaan</label>
           <textarea
             id="txt-qtext"
             bind:value={formData.questionText}
             rows="3"
             placeholder="Tuliskan teks pertanyaan soal TOEFL ITP..."
-            class="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 text-slate-900 bg-white placeholder:text-slate-400"
+            class="w-full px-3.5 py-2.5 text-sm border border-border rounded-xl focus:ring-2 focus:ring-indigo-500 text-foreground bg-background placeholder:text-muted-foreground"
           ></textarea>
         </div>
 
         <!-- Options A/B/C/D -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label id="lbl-opta" for="in-opta" class="block text-xs font-semibold text-slate-700 mb-1">Pilihan A</label>
-            <input id="in-opta" type="text" bind:value={formData.optionA} placeholder="Teks pilihan A..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400" />
+            <label id="lbl-opta" for="in-opta" class="block text-xs font-semibold text-foreground mb-1">Pilihan A</label>
+            <input id="in-opta" type="text" bind:value={formData.optionA} placeholder="Teks pilihan A..." class="w-full px-3 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground" />
           </div>
           <div>
-            <label id="lbl-optb" for="in-optb" class="block text-xs font-semibold text-slate-700 mb-1">Pilihan B</label>
-            <input id="in-optb" type="text" bind:value={formData.optionB} placeholder="Teks pilihan B..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400" />
+            <label id="lbl-optb" for="in-optb" class="block text-xs font-semibold text-foreground mb-1">Pilihan B</label>
+            <input id="in-optb" type="text" bind:value={formData.optionB} placeholder="Teks pilihan B..." class="w-full px-3 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground" />
           </div>
           <div>
-            <label id="lbl-optc" for="in-optc" class="block text-xs font-semibold text-slate-700 mb-1">Pilihan C</label>
-            <input id="in-optc" type="text" bind:value={formData.optionC} placeholder="Teks pilihan C..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400" />
+            <label id="lbl-optc" for="in-optc" class="block text-xs font-semibold text-foreground mb-1">Pilihan C</label>
+            <input id="in-optc" type="text" bind:value={formData.optionC} placeholder="Teks pilihan C..." class="w-full px-3 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground" />
           </div>
           <div>
-            <label id="lbl-optd" for="in-optd" class="block text-xs font-semibold text-slate-700 mb-1">Pilihan D</label>
-            <input id="in-optd" type="text" bind:value={formData.optionD} placeholder="Teks pilihan D..." class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400" />
+            <label id="lbl-optd" for="in-optd" class="block text-xs font-semibold text-foreground mb-1">Pilihan D</label>
+            <input id="in-optd" type="text" bind:value={formData.optionD} placeholder="Teks pilihan D..." class="w-full px-3 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground" />
           </div>
         </div>
 
         <!-- Correct Option & Difficulty -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label id="lbl-correct" for="sel-correct" class="block text-xs font-semibold text-slate-700 mb-1">Kunci Jawaban</label>
-            <select id="sel-correct" bind:value={formData.correctOption} class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl font-bold text-slate-900 bg-white">
+            <label id="lbl-correct" for="sel-correct" class="block text-xs font-semibold text-foreground mb-1">Kunci Jawaban</label>
+            <select id="sel-correct" bind:value={formData.correctOption} class="w-full px-3 py-2 text-sm border border-border rounded-xl font-bold text-foreground bg-background">
               <option value="A">A</option>
               <option value="B">B</option>
               <option value="C">C</option>
@@ -936,8 +936,8 @@
           </div>
 
           <div>
-            <label id="lbl-diff" for="sel-diff" class="block text-xs font-semibold text-slate-700 mb-1">Tingkat Kesulitan</label>
-            <select id="sel-diff" bind:value={formData.difficulty} class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl text-slate-900 bg-white">
+            <label id="lbl-diff" for="sel-diff" class="block text-xs font-semibold text-foreground mb-1">Tingkat Kesulitan</label>
+            <select id="sel-diff" bind:value={formData.difficulty} class="w-full px-3 py-2 text-sm border border-border rounded-xl text-foreground bg-background">
               <option value="EASY">EASY (Mudah)</option>
               <option value="MEDIUM">MEDIUM (Sedang)</option>
               <option value="HARD">HARD (Sulit)</option>
@@ -945,21 +945,21 @@
           </div>
 
           <div>
-            <label id="lbl-tag" for="in-tag" class="block text-xs font-semibold text-slate-700 mb-1">Tag Skill Kategori</label>
-            <input id="in-tag" type="text" bind:value={formData.skillTag} placeholder="Main Idea, Idiom, dsb" class="w-full px-3 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400" />
+            <label id="lbl-tag" for="in-tag" class="block text-xs font-semibold text-foreground mb-1">Tag Skill Kategori</label>
+            <input id="in-tag" type="text" bind:value={formData.skillTag} placeholder="Main Idea, Idiom, dsb" class="w-full px-3 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground" />
           </div>
         </div>
 
         <!-- Explanation -->
         <div>
-          <label id="lbl-exp" for="txt-exp" class="block text-xs font-semibold text-slate-700 mb-1">Pembahasan / Explanation (Opsional)</label>
-          <textarea id="txt-exp" bind:value={formData.explanation} rows="2" placeholder="Penjelasan tata bahasa atau petunjuk kunci jawaban..." class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400"></textarea>
+          <label id="lbl-exp" for="txt-exp" class="block text-xs font-semibold text-foreground mb-1">Pembahasan / Explanation (Opsional)</label>
+          <textarea id="txt-exp" bind:value={formData.explanation} rows="2" placeholder="Penjelasan tata bahasa atau petunjuk kunci jawaban..." class="w-full px-3.5 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground"></textarea>
         </div>
       </div>
 
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
-        <button type="button" on:click={() => (isCreateModalOpen = false)} class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-xl">Batal</button>
-        <button type="button" on:click={handleSaveQuestion} class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md">Simpan Soal</button>
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
+        <button type="button" on:click={() => (isCreateModalOpen = false)} class="px-4 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors">Batal</button>
+        <button type="button" on:click={handleSaveQuestion} class="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 hover:bg-indigo-500 rounded-xl shadow-md transition-all">Simpan Soal</button>
       </div>
     </div>
   </div>
@@ -967,29 +967,29 @@
 
 <!-- READING PASSAGE MODAL -->
 {#if isPassageModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-lg overflow-hidden">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-card text-card-foreground rounded-2xl border border-border shadow-2xl w-full max-w-lg overflow-hidden">
       <div class="p-5 bg-gradient-to-r from-slate-900 to-teal-950 text-white flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-base">
           <BookOpen class="w-5 h-5 text-teal-400" /> Tambah Reading Passage Baru
         </div>
-        <button on:click={() => (isPassageModalOpen = false)} class="text-slate-400 hover:text-white"><X class="w-5 h-5" /></button>
+        <button on:click={() => (isPassageModalOpen = false)} class="text-slate-400 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
       </div>
 
       <div class="p-6 space-y-4">
         <div>
-          <label id="lbl-ptitle" for="in-ptitle" class="block text-xs font-semibold text-slate-700 mb-1">Judul Passage (Opsional)</label>
-          <input id="in-ptitle" type="text" bind:value={passageForm.title} placeholder="Judul topik bacaan..." class="w-full px-3 py-2 text-sm border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400" />
+          <label id="lbl-ptitle" for="in-ptitle" class="block text-xs font-semibold text-foreground mb-1">Judul Passage (Opsional)</label>
+          <input id="in-ptitle" type="text" bind:value={passageForm.title} placeholder="Judul topik bacaan..." class="w-full px-3 py-2 text-sm border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground" />
         </div>
         <div>
-          <label id="lbl-pcont" for="txt-pcont" class="block text-xs font-semibold text-slate-700 mb-1">Teks Bacaan (Content)</label>
-          <textarea id="txt-pcont" bind:value={passageForm.content} rows="6" placeholder="Tulis atau tempel paragraf teks bacaan..." class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400"></textarea>
+          <label id="lbl-pcont" for="txt-pcont" class="block text-xs font-semibold text-foreground mb-1">Teks Bacaan (Content)</label>
+          <textarea id="txt-pcont" bind:value={passageForm.content} rows="6" placeholder="Tulis atau tempel paragraf teks bacaan..." class="w-full px-3.5 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground"></textarea>
         </div>
       </div>
 
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-3">
-        <button type="button" on:click={() => (isPassageModalOpen = false)} class="px-4 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-200 rounded-xl">Batal</button>
-        <button type="button" on:click={handleSavePassage} class="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-500 rounded-xl shadow-md">Simpan Passage</button>
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
+        <button type="button" on:click={() => (isPassageModalOpen = false)} class="px-4 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors">Batal</button>
+        <button type="button" on:click={handleSavePassage} class="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-500 rounded-xl shadow-md transition-all">Simpan Passage</button>
       </div>
     </div>
   </div>
@@ -997,31 +997,31 @@
 
 <!-- VALIDATOR REVIEW DECISION MODAL -->
 {#if isReviewModalOpen}
-  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-    <div class="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-md overflow-hidden">
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-card text-card-foreground rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden">
       <div class="p-5 bg-gradient-to-r from-slate-900 to-purple-950 text-white flex items-center justify-between">
         <div class="flex items-center gap-2 font-bold text-base">
           <CheckCircle2 class="w-5 h-5 text-purple-400" /> Validasi Soal (Reviewer)
         </div>
-        <button on:click={() => (isReviewModalOpen = false)} class="text-slate-400 hover:text-white"><X class="w-5 h-5" /></button>
+        <button on:click={() => (isReviewModalOpen = false)} class="text-slate-400 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
       </div>
 
       <div class="p-6 space-y-4">
-        <div class="text-xs text-slate-700 bg-slate-50 p-3 rounded-xl border">
-          <strong>Pertanyaan Soal:</strong> {targetReviewQuestion?.questionText}
+        <div class="text-xs text-muted-foreground bg-muted/50 p-3 rounded-xl border border-border">
+          <strong class="text-foreground">Pertanyaan Soal:</strong> {targetReviewQuestion?.questionText}
         </div>
 
         <div>
-          <label id="lbl-rnotes" for="txt-rnotes" class="block text-xs font-semibold text-slate-700 mb-1">Catatan Revisi / Evaluasi (Opsional)</label>
-          <textarea id="txt-rnotes" bind:value={reviewNotes} rows="3" placeholder="Tuliskan alasan penolakan atau catatan perbaikan..." class="w-full px-3.5 py-2 text-xs border border-slate-300 rounded-xl text-slate-900 bg-white placeholder:text-slate-400"></textarea>
+          <label id="lbl-rnotes" for="txt-rnotes" class="block text-xs font-semibold text-foreground mb-1">Catatan Revisi / Evaluasi (Opsional)</label>
+          <textarea id="txt-rnotes" bind:value={reviewNotes} rows="3" placeholder="Tuliskan alasan penolakan atau catatan perbaikan..." class="w-full px-3.5 py-2 text-xs border border-border rounded-xl text-foreground bg-background placeholder:text-muted-foreground"></textarea>
         </div>
       </div>
 
-      <div class="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+      <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-between">
         <button
           type="button"
           on:click={() => handleReviewDecision('REJECTED')}
-          class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded-xl shadow-sm"
+          class="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-500 rounded-xl shadow-sm transition-all"
         >
           ❌ Tolak (Reject)
         </button>
@@ -1029,7 +1029,7 @@
         <button
           type="button"
           on:click={() => handleReviewDecision('APPROVED')}
-          class="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md"
+          class="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-all"
         >
           ✓ Setujui (Approve)
         </button>

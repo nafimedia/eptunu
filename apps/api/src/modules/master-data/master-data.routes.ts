@@ -74,6 +74,19 @@ export async function masterDataRoutes(fastify: FastifyInstance) {
       return reply.status(201).send({ success: true, message: 'Fakultas berhasil ditambahkan', data: item });
     });
 
+    // Update Faculty
+    protectedRoutes.put('/faculties/:id', async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const { code, name, description } = request.body as any;
+      if (!code || !name) return reply.status(400).send({ success: false, message: 'Kode dan Nama Fakultas wajib diisi' });
+
+      const item = await db.faculty.update({
+        where: { id },
+        data: { code, name, description },
+      });
+      return reply.send({ success: true, message: 'Fakultas berhasil diperbarui', data: item });
+    });
+
     // Delete Faculty (with cascade delete for child study programs)
     protectedRoutes.delete('/faculties/:id', async (request, reply) => {
       const { id } = request.params as { id: string };
@@ -91,6 +104,19 @@ export async function masterDataRoutes(fastify: FastifyInstance) {
         data: { code, name, facultyId },
       });
       return reply.status(201).send({ success: true, message: 'Program Studi berhasil ditambahkan', data: item });
+    });
+
+    // Update Study Program
+    protectedRoutes.put('/study-programs/:id', async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const { code, name, facultyId } = request.body as any;
+      if (!code || !name || !facultyId) return reply.status(400).send({ success: false, message: 'Kode, Nama Prodi, dan Fakultas wajib diisi' });
+
+      const item = await db.studyProgram.update({
+        where: { id },
+        data: { code, name, facultyId },
+      });
+      return reply.send({ success: true, message: 'Program Studi berhasil diperbarui', data: item });
     });
 
     // Delete Study Program
@@ -111,6 +137,19 @@ export async function masterDataRoutes(fastify: FastifyInstance) {
       return reply.status(201).send({ success: true, message: 'Instansi berhasil ditambahkan', data: item });
     });
 
+    // Update Institution
+    protectedRoutes.put('/institutions/:id', async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const { code, name, isInternal = true } = request.body as any;
+      if (!code || !name) return reply.status(400).send({ success: false, message: 'Kode dan Nama Instansi wajib diisi' });
+
+      const item = await db.institution.update({
+        where: { id },
+        data: { code, name, isInternal },
+      });
+      return reply.send({ success: true, message: 'Instansi berhasil diperbarui', data: item });
+    });
+
     // Delete Institution
     protectedRoutes.delete('/institutions/:id', async (request, reply) => {
       const { id } = request.params as { id: string };
@@ -127,6 +166,19 @@ export async function masterDataRoutes(fastify: FastifyInstance) {
         data: { code, name, description },
       });
       return reply.status(201).send({ success: true, message: 'Jenis Peserta berhasil ditambahkan', data: item });
+    });
+
+    // Update Participant Type
+    protectedRoutes.put('/participant-types/:id', async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const { code, name, description } = request.body as any;
+      if (!code || !name) return reply.status(400).send({ success: false, message: 'Kode dan Nama Jenis Peserta wajib diisi' });
+
+      const item = await db.participantType.update({
+        where: { id },
+        data: { code, name, description },
+      });
+      return reply.send({ success: true, message: 'Jenis Peserta berhasil diperbarui', data: item });
     });
 
     // Delete Participant Type
@@ -151,6 +203,23 @@ export async function masterDataRoutes(fastify: FastifyInstance) {
       return reply.status(201).send({ success: true, message: 'Tahun Akademik berhasil ditambahkan', data: item });
     });
 
+    // Update Academic Year
+    protectedRoutes.put('/academic-years/:id', async (request, reply) => {
+      const { id } = request.params as { id: string };
+      const { code, name, isCurrent } = request.body as any;
+      if (!code || !name) return reply.status(400).send({ success: false, message: 'Kode dan Nama Tahun Akademik wajib diisi' });
+
+      if (isCurrent) {
+        await db.academicYear.updateMany({ where: { id: { not: id } }, data: { isCurrent: false } });
+      }
+
+      const item = await db.academicYear.update({
+        where: { id },
+        data: { code, name, isCurrent: Boolean(isCurrent) },
+      });
+      return reply.send({ success: true, message: 'Tahun Akademik berhasil diperbarui', data: item });
+    });
+
     // Toggle Active Academic Year
     protectedRoutes.put('/academic-years/:id/set-current', async (request, reply) => {
       const { id } = request.params as { id: string };
@@ -159,7 +228,7 @@ export async function masterDataRoutes(fastify: FastifyInstance) {
         where: { id },
         data: { isCurrent: true },
       });
-      return reply.send({ success: true, message: `Tahun Akademik '${item.name}' diaktifkan`, data: item });
+      return reply.send({ success: true, message: `Tahun Akademik '${item.name}' diaktifkan sebagai periode aktif`, data: item });
     });
 
     // Delete Academic Year

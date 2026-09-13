@@ -35,7 +35,7 @@
 
   <!-- Audio Player (Listening Section) -->
   {#if question.section === 'LISTENING' && question.audioUrl}
-    <AudioPlayer audioUrl={question.audioUrl} />
+    <AudioPlayer audioUrl={question.audioUrl} questionId={question.id} />
   {/if}
 
   <!-- Passage Content (Reading Section) -->
@@ -55,13 +55,14 @@
 
   <!-- Options Grid -->
   <div class="space-y-3">
-    {#each question.options as opt}
+    {#each question.options as opt, optIdx}
+      {@const letterLabel = ['A', 'B', 'C', 'D'][optIdx] || opt.id}
       <button
-        on:click={() => onSelectOption(opt.id)}
+        on:click={() => onSelectOption(opt.id || letterLabel)}
         class="w-full text-left p-4 rounded-xl border transition-all duration-150 flex items-start gap-3.5 group {currentOption === opt.id ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-lg ring-1 ring-indigo-500' : 'bg-slate-800/50 border-slate-800 text-slate-300 hover:bg-slate-800 hover:border-slate-700'}"
       >
         <span class="w-7 h-7 rounded-lg text-xs font-bold flex items-center justify-center transition-all shrink-0 mt-0.5 {currentOption === opt.id ? 'bg-indigo-600 text-white' : 'bg-slate-700 text-slate-300 group-hover:bg-slate-600'}">
-          {opt.id}
+          {letterLabel}
         </span>
         <span class="text-sm md:text-base pt-0.5">{opt.text}</span>
       </button>

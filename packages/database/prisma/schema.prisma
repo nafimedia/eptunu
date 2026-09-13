@@ -68,6 +68,8 @@ model User {
   questions       Question[]
   supervisedExams ExamSession[] @relation("ExamProctor")
   studentExams    StudentExam[]
+  auditLogs       AuditLog[]
+  notifications   Notification[]
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
 
@@ -151,6 +153,8 @@ model StudentExam {
 
   @@unique([userId, examSessionId])
   @@index([examSessionId, status, verificationStatus])
+  @@index([userId])
+  @@index([submittedAt, status])
 }
 
 model ExamActivityLog {
@@ -197,6 +201,8 @@ model Certificate {
   signerName       String      // e.g., "Kepala UPT Bahasa UNU Purwokerto"
   verificationHash String      // SHA-256 integrity signature
   pdfPath          String
+
+  @@index([issuedAt])
 }
 
 model SystemSetting {
@@ -280,4 +286,38 @@ model AcademicYear {
   isCurrent   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  userName     String?
+  userRole     String?
+  action       String   // e.g. "LOGIN", "CREATE_QUESTION", "PUBLISH_SCORE", "ISSUE_CERTIFICATE", "SEND_REMINDER"
+  targetModule String?  // e.g. "Auth", "Bank Soal", "Sertifikat", "Ujian", "Pengaturan", "Notifikasi"
+  entityId     String?
+  details      String?  @db.Text
+  ipAddress    String?
+  userAgent    String?  @db.Text
+  createdAt    DateTime @default(now())
+
+  @@index([action, targetModule])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String?  // null if broadcast / system-wide notification
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String   @db.Text
+  type      String   @default("INFO") // INFO, SUCCESS, WARNING, URGENT
+  isRead    Boolean  @default(false)
+  link      String?
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead])
+  @@index([createdAt])
 }

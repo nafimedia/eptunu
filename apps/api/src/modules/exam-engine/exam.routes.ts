@@ -48,6 +48,128 @@ export const SubmitExamSchema = z.object({
   studentExamId: z.string().uuid(),
 });
 
+export async function getExamQuestionsForStudent(studentExamId: string) {
+  // 1. Fetch APPROVED questions only
+  const rawQuestions = await prisma.question.findMany({
+    where: { status: 'APPROVED' },
+    include: {
+      passage: true,
+    },
+    orderBy: [
+      { section: 'asc' },
+      { createdAt: 'asc' },
+    ],
+  });
+
+  // 2. Separate by section
+  const rawListening = rawQuestions.filter((q) => q.section === 'LISTENING');
+  const rawStructure = rawQuestions.filter((q) => q.section === 'STRUCTURE');
+  const rawReading = rawQuestions.filter((q) => q.section === 'READING');
+
+  // --- SECTION 1: LISTENING (Standard: 50 Questions, grouped by PART_A, PART_B, PART_C) ---
+  const partA = rawListening.filter((q) => q.listeningPart === 'PART_A');
+  const partB = rawListening.filter((q) => q.listeningPart === 'PART_B');
+  const partC = rawListening.filter((q) => q.listeningPart === 'PART_C');
+  const otherListening = rawListening.filter((q) => !q.listeningPart || !['PART_A', 'PART_B', 'PART_C'].includes(q.listeningPart));
+
+  // Deterministic shuffle within parts
+  const shuffledPartA = seededShuffle(partA.length > 0 ? partA : otherListening.slice(0, 30), `${studentExamId}_LIST_A`);
+  const shuffledPartB = seededShuffle(partB.length > 0 ? partB : otherListening.slice(30, 38), `${studentExamId}_LIST_B`);
+  const shuffledPartC = seededShuffle(partC.length > 0 ? partC : otherListening.slice(38, 50), `${studentExamId}_LIST_C`);
+
+  const combinedListening = [
+    ...shuffledPartA.slice(0, 30),
+    ...shuffledPartB.slice(0, 8),
+    ...shuffledPartC.slice(0, 12),
+  ];
+
+  // If combinedListening < 50, fill from any remaining approved listening questions
+  if (combinedListening.length < 50) {
+    const existingIds = new Set(combinedListening.map((q) => q.id));
+    for (const q of rawListening) {
+      if (!existingIds.has(q.id) && combinedListening.length < 50) {
+        combinedListening.push(q);
+      }
+    }
+  }
+
+  // --- SECTION 2: STRUCTURE (Standard: 40 Questions) ---
+  // Shuffle questions order deterministically, but DO NOT shuffle options A, B, C, D (so Written Expression matches sentences)
+  const shuffledStructure = seededShuffle(rawStructure, `${studentExamId}_STRUCTURE`).slice(0, 40);
+
+  // --- SECTION 3: READING (Standard: 50 Questions, grouped by Passage) ---
+  // Group questions by passageId
+  const passageMap = new Map<string, typeof rawReading>();
+  const independentReading: typeof rawReading = [];
+
+  for (const q of rawReading) {
+    if (q.passageId) {
+      const list = passageMap.get(q.passageId) || [];
+      list.push(q);
+      passageMap.set(q.passageId, list);
+    } else {
+      independentReading.push(q);
+    }
+  }
+
+  // Shuffle passage groups order deterministically
+  const passageKeys = Array.from(passageMap.keys());
+  const shuffledPassageKeys = seededShuffle(passageKeys, `${studentExamId}_READ_PASSAGES`);
+
+  const combinedReading: typeof rawReading = [];
+  for (const pKey of shuffledPassageKeys) {
+    const pQuestions = passageMap.get(pKey) || [];
+    // Shuffle questions within the passage deterministically
+    const shuffledWithinPassage = seededShuffle(pQuestions, `${studentExamId}_P_${pKey}`);
+    for (const q of shuffledWithinPassage) {
+      if (combinedReading.length < 50) {
+        combinedReading.push(q);
+      }
+    }
+  }
+
+  // If < 50 questions, fill with independent reading
+  if (combinedReading.length < 50) {
+    for (const q of independentReading) {
+      if (combinedReading.length < 50) {
+        combinedReading.push(q);
+      }
+    }
+  }
+
+  const allSelectedQuestions = [
+    ...combinedListening,
+    ...shuffledStructure,
+    ...combinedReading,
+  ];
+
+  // Sanitize questions: ensure options are strictly sorted by option id (A, B, C, D)
+  // NEVER leak correctOption or explanation to the client
+  return allSelectedQuestions.map((q) => {
+    let originalOptions: any[] = [];
+    if (Array.isArray(q.options)) {
+      originalOptions = (q.options as any[]).slice();
+      // Ensure choices are in natural A, B, C, D order
+      originalOptions.sort((a, b) => (a.id || '').localeCompare(b.id || ''));
+    }
+
+    return {
+      id: q.id,
+      section: q.section,
+      listeningPart: q.listeningPart,
+      questionText: q.questionText,
+      audioUrl: q.audioUrl,
+      options: originalOptions,
+      skillTag: q.skillTag,
+      passage: q.passage ? {
+        id: q.passage.id,
+        title: q.passage.title,
+        content: q.passage.content,
+      } : null,
+    };
+  });
+}
+
 export async function examRoutes(fastify: FastifyInstance) {
   // All exam routes require authentication
   fastify.addHook('preHandler', authenticate);
@@ -69,7 +191,9 @@ export async function examRoutes(fastify: FastifyInstance) {
     }
 
     const now = new Date();
-    if (now < session.startTime || now > session.endTime) {
+    // Allow entry up to 30 minutes before startTime or anytime session is active, up to endTime
+    const earlyEntryBufferMs = 30 * 60 * 1000;
+    if (now.getTime() < new Date(session.startTime).getTime() - earlyEntryBufferMs || now > session.endTime) {
       return reply.status(400).send({
         success: false,
         message: 'Sesi ujian belum dimulai atau telah berakhir.',
@@ -106,12 +230,12 @@ export async function examRoutes(fastify: FastifyInstance) {
         success: false,
         message: 'Anda sudah menyelesaikan ujian ini.',
       });
-    } else if (studentExam.status === 'SCHEDULED') {
+    } else if (studentExam.status === 'SCHEDULED' || !studentExam.startedAt) {
       studentExam = await prisma.studentExam.update({
         where: { id: studentExam.id },
         data: {
           status: 'IN_PROGRESS',
-          startedAt: new Date(),
+          startedAt: studentExam.startedAt || new Date(),
         },
         include: {
           answers: true,
@@ -119,52 +243,13 @@ export async function examRoutes(fastify: FastifyInstance) {
       });
     }
 
-    // Fetch questions with passage data
-    const rawQuestions = await prisma.question.findMany({
-      include: {
-        passage: true,
-      },
-      orderBy: [
-        { section: 'asc' },
-        { createdAt: 'asc' },
-      ],
-    });
+    const questions = await getExamQuestionsForStudent(studentExam.id);
 
-    // Group questions by section for structured exam flow
-    const listeningQuestions = rawQuestions.filter((q) => q.section === 'LISTENING');
-    const structureQuestions = rawQuestions.filter((q) => q.section === 'STRUCTURE');
-    const readingQuestions = rawQuestions.filter((q) => q.section === 'READING');
-
-    // Deterministic Seeded Shuffle PER STUDENT EXAM (Desk-neighbor anti-cheat)
-    const shuffledListening = seededShuffle(listeningQuestions, `${studentExam.id}_LISTENING`);
-    const shuffledStructure = seededShuffle(structureQuestions, `${studentExam.id}_STRUCTURE`);
-    const shuffledReading = seededShuffle(readingQuestions, `${studentExam.id}_READING`);
-
-    const allShuffledQuestions = [
-      ...shuffledListening,
-      ...shuffledStructure,
-      ...shuffledReading,
-    ];
-
-    // SECURITY DIRECTIVE: Zero exposure of correctOption to client & Shuffle Options A, B, C, D per question
-    const sanitizedQuestions = allShuffledQuestions.map((q) => {
-      const originalOptions = Array.isArray(q.options) ? (q.options as any[]) : [];
-      const shuffledOptions = seededShuffle(originalOptions, `${studentExam.id}_${q.id}_options`);
-
-      return {
-        id: q.id,
-        section: q.section,
-        questionText: q.questionText,
-        audioUrl: q.audioUrl,
-        options: shuffledOptions,
-        skillTag: q.skillTag,
-        passage: q.passage ? {
-          id: q.passage.id,
-          title: q.passage.title,
-          content: q.passage.content,
-        } : null,
-      };
-    });
+    const durationSec = session.durationMin * 60;
+    const elapsedSec = studentExam.startedAt
+      ? Math.floor((Date.now() - new Date(studentExam.startedAt).getTime()) / 1000)
+      : 0;
+    const remainingSeconds = Math.max(0, durationSec - elapsedSec);
 
     return reply.send({
       success: true,
@@ -173,9 +258,82 @@ export async function examRoutes(fastify: FastifyInstance) {
         status: studentExam.status,
         startedAt: studentExam.startedAt,
         durationMin: session.durationMin,
+        remainingSeconds,
         sessionTitle: session.title,
         existingAnswers: studentExam.answers,
-        questions: sanitizedQuestions,
+        violationCount: studentExam.violationCount,
+        questions,
+      },
+    });
+  });
+
+  // 1b. GET EXAM SESSION (Resume & F5 Safe)
+  fastify.get('/session/:id', async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const userId = request.user.userId;
+    const userRole = request.user?.role || '';
+
+    let studentExam = await prisma.studentExam.findUnique({
+      where: { id },
+      include: {
+        examSession: true,
+        answers: true,
+      },
+    });
+
+    if (!studentExam) {
+      return reply.status(404).send({
+        success: false,
+        message: 'Sesi ujian peserta tidak ditemukan.',
+      });
+    }
+
+    const isOwner = studentExam.userId === userId;
+    const isAdminOrProctor = ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN', 'PROCTOR'].includes(userRole);
+
+    if (!isOwner && !isAdminOrProctor) {
+      return reply.status(403).send({
+        success: false,
+        message: 'Akses ditolak ke sesi ujian ini.',
+      });
+    }
+
+    // Auto-promote to IN_PROGRESS and ensure startedAt is set if student was SCHEDULED
+    if (studentExam.status === 'SCHEDULED' || (!studentExam.startedAt && studentExam.status === 'IN_PROGRESS')) {
+      studentExam = await prisma.studentExam.update({
+        where: { id: studentExam.id },
+        data: {
+          status: 'IN_PROGRESS',
+          startedAt: studentExam.startedAt || new Date(),
+        },
+        include: {
+          examSession: true,
+          answers: true,
+        },
+      });
+    }
+
+    const session = studentExam.examSession;
+    const durationSec = session.durationMin * 60;
+    const elapsedSec = studentExam.startedAt
+      ? Math.floor((Date.now() - new Date(studentExam.startedAt).getTime()) / 1000)
+      : 0;
+    const remainingSeconds = Math.max(0, durationSec - elapsedSec);
+
+    const questions = await getExamQuestionsForStudent(studentExam.id);
+
+    return reply.send({
+      success: true,
+      data: {
+        studentExamId: studentExam.id,
+        status: studentExam.status,
+        startedAt: studentExam.startedAt,
+        durationMin: session.durationMin,
+        remainingSeconds,
+        sessionTitle: session.title,
+        existingAnswers: studentExam.answers,
+        violationCount: studentExam.violationCount,
+        questions,
       },
     });
   });
@@ -235,9 +393,45 @@ export async function examRoutes(fastify: FastifyInstance) {
     });
   });
 
-  // 3. SUBMIT EXAM & AUTO GRADE
+  // 3. SUBMIT EXAM & AUTO GRADE (With IDOR Protection)
   fastify.post('/submit', async (request, reply) => {
     const body = SubmitExamSchema.parse(request.body);
+
+    const existingExam = await prisma.studentExam.findUnique({
+      where: { id: body.studentExamId },
+    });
+
+    if (!existingExam) {
+      return reply.status(404).send({
+        success: false,
+        message: 'Data ujian peserta tidak ditemukan.',
+      });
+    }
+
+    const isOwner = existingExam.userId === request.user.userId;
+    const isAdminOrProctor = ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN', 'PROCTOR'].includes(request.user?.role || '');
+
+    if (!isOwner && !isAdminOrProctor) {
+      return reply.status(403).send({
+        success: false,
+        message: 'Akses ditolak. Anda tidak berhak mengumpulkan ujian peserta lain.',
+      });
+    }
+
+    // If already submitted, return current score without error
+    if (existingExam.status === 'SUBMITTED' || existingExam.status === 'FORCE_SUBMITTED') {
+      return reply.send({
+        success: true,
+        message: 'Ujian sudah diselesaikan sebelumnya.',
+        result: {
+          scoreListening: existingExam.scoreListening,
+          scoreStructure: existingExam.scoreStructure,
+          scoreReading: existingExam.scoreReading,
+          totalScore: existingExam.totalScore,
+          submittedAt: existingExam.submittedAt,
+        },
+      });
+    }
 
     const result = await calculateEptScore(prisma, body.studentExamId);
 
@@ -436,15 +630,29 @@ export async function examRoutes(fastify: FastifyInstance) {
   fastify.post('/log-violation', async (request, reply) => {
     const { studentExamId, reason, count } = request.body as any;
 
-    await createAuditLog({
-      userId: request.user.userId,
-      userName: request.user.email || 'Peserta',
-      userRole: request.user.role,
-      action: 'PELANGGARAN_PROCTORING',
-      targetModule: 'Proctoring',
-      details: `Pelanggaran Anti-Cheat #${count} pada ujian (${studentExamId}): ${reason}`,
-      ipAddress: request.ip,
-    });
+    if (studentExamId) {
+      const studentExam = await prisma.studentExam.findUnique({
+        where: { id: studentExamId },
+      });
+
+      if (studentExam && (studentExam.userId === request.user.userId || ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN', 'PROCTOR'].includes(request.user?.role || ''))) {
+        const newCount = Number(count) || studentExam.violationCount + 1;
+        await prisma.studentExam.update({
+          where: { id: studentExamId },
+          data: { violationCount: newCount },
+        });
+
+        await createAuditLog({
+          userId: request.user.userId,
+          userName: request.user.email || 'Peserta',
+          userRole: request.user.role,
+          action: 'PELANGGARAN_PROCTORING',
+          targetModule: 'Proctoring',
+          details: `Pelanggaran Anti-Cheat #${newCount} pada ujian (${studentExamId}): ${reason}`,
+          ipAddress: request.ip,
+        });
+      }
+    }
 
     return reply.send({ success: true, message: 'Pelanggaran anti-cheat dicatat' });
   });

@@ -123,13 +123,13 @@
 
 <div class="space-y-6">
   <!-- Header Banner -->
-  <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 p-6 rounded-3xl border border-emerald-800/40 shadow-2xl text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+  <div class="bg-gradient-to-r from-emerald-700 via-teal-800 to-slate-900 dark:from-emerald-950 dark:via-slate-900 dark:to-indigo-950 p-6 rounded-2xl border border-emerald-500/30 dark:border-emerald-800/40 shadow-xl text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
       <div class="flex items-center gap-2 mb-1">
-        <ShieldCheck class="w-6 h-6 text-emerald-400" />
+        <ShieldCheck class="w-6 h-6 text-emerald-300" />
         <h1 class="text-xl font-extrabold tracking-tight">Manajemen Sertifikat EPT</h1>
       </div>
-      <p class="text-xs text-slate-300">
+      <p class="text-xs text-emerald-100/90 dark:text-slate-300">
         Penerbitan sertifikat digital resmi UPT Bahasa UNU Purwokerto lengkap dengan QR Code, Digital Signature, & Verifikasi Online.
       </p>
     </div>
@@ -138,15 +138,15 @@
         <button
           on:click={handleDownloadBatchZip}
           disabled={isDownloadingBatch}
-          class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white text-xs font-extrabold rounded-xl border border-indigo-400/30 transition shadow-lg"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-extrabold rounded-xl border border-white/20 transition shadow"
         >
           <Archive class="w-4 h-4" />
-          <span>{isDownloadingBatch ? 'Mengunduh ZIP...' : 'Download Batch Sertifikat (ZIP)'}</span>
+          <span>{isDownloadingBatch ? 'Mengunduh ZIP...' : 'Download Batch (ZIP)'}</span>
         </button>
       {/if}
       <button
         on:click={loadCertificates}
-        class="inline-flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl border border-slate-700 transition"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl border border-white/20 transition shadow"
       >
         <RefreshCw class="w-3.5 h-3.5" />
         <span>Refresh</span>
@@ -156,15 +156,15 @@
 
   <!-- Search (Admin View) -->
   {#if isAdmin}
-    <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between">
+    <div class="bg-card p-4 rounded-2xl border border-border flex items-center justify-between shadow-xs">
       <div class="relative w-full md:w-80">
-        <Search class="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+        <Search class="w-4 h-4 text-muted-foreground absolute left-3 top-1/2 -translate-y-1/2" />
         <input
           type="text"
           placeholder="Cari nomor sertifikat, nama, atau NIM..."
           bind:value={search}
           on:input={loadCertificates}
-          class="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+          class="w-full bg-background border border-border rounded-xl pl-9 pr-4 py-2 text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-emerald-500"
         />
       </div>
     </div>
@@ -172,12 +172,12 @@
 
   <!-- Certificates Grid / List -->
   {#if isLoading}
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center text-slate-400 text-xs">
-      <RefreshCw class="w-6 h-6 animate-spin mx-auto mb-2 text-emerald-400" />
+    <div class="bg-card border border-border rounded-2xl p-12 text-center text-muted-foreground text-xs shadow-xs">
+      <RefreshCw class="w-6 h-6 animate-spin mx-auto mb-2 text-emerald-500" />
       Memuat sertifikat...
     </div>
   {:else if certificates.length === 0}
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-12 text-center text-slate-400 text-xs">
+    <div class="bg-card border border-border rounded-2xl p-12 text-center text-muted-foreground text-xs shadow-xs">
       Belum ada sertifikat yang diterbitkan.
     </div>
   {:else}
@@ -186,49 +186,49 @@
         {@const student = item.studentExam?.user}
         {@const scores = item.studentExam}
         {@const session = item.studentExam?.examSession}
-        <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 shadow-xl flex flex-col justify-between hover:border-emerald-500/40 transition">
+        <div class="bg-card border border-border rounded-2xl p-6 shadow-xs flex flex-col justify-between hover:border-emerald-500/50 transition">
           <div>
             <div class="flex items-center justify-between mb-3">
-              <span class="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold rounded-full uppercase">
+              <span class="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] font-bold rounded-full uppercase">
                 RESMI & TERVERIFIKASI
               </span>
-              <Award class="w-5 h-5 text-emerald-400" />
+              <Award class="w-5 h-5 text-emerald-500" />
             </div>
 
-            <h3 class="text-sm font-extrabold text-white mb-0.5">{student?.fullName || 'Peserta EPT'}</h3>
-            <p class="text-[11px] text-indigo-400 font-mono mb-3">NIM: {student?.identityNumber || '-'}</p>
+            <h3 class="text-sm font-extrabold text-foreground mb-0.5">{student?.fullName || 'Peserta EPT'}</h3>
+            <p class="text-[11px] text-primary font-mono mb-3">NIM: {student?.identityNumber || '-'}</p>
 
-            <div class="bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs space-y-1.5 mb-4">
-              <div class="flex justify-between border-b border-slate-800/80 pb-1.5">
-                <span class="text-slate-400 text-[11px]">No. Sertifikat:</span>
-                <span class="text-emerald-400 font-mono font-bold text-[11px]">{item.certificateNo}</span>
+            <div class="bg-muted/40 p-3 rounded-xl border border-border/80 text-xs space-y-1.5 mb-4">
+              <div class="flex justify-between border-b border-border/60 pb-1.5">
+                <span class="text-muted-foreground text-[11px]">No. Sertifikat:</span>
+                <span class="text-emerald-600 dark:text-emerald-400 font-mono font-bold text-[11px]">{item.certificateNo}</span>
               </div>
-              <div class="flex justify-between border-b border-slate-800/80 pb-1.5">
-                <span class="text-slate-400 text-[11px]">Total Skor EPT:</span>
-                <span class="text-white font-extrabold text-xs">{scores?.totalScore || '-'}</span>
+              <div class="flex justify-between border-b border-border/60 pb-1.5">
+                <span class="text-muted-foreground text-[11px]">Total Skor EPT:</span>
+                <span class="text-foreground font-extrabold text-xs">{scores?.totalScore || '-'}</span>
               </div>
               <div class="flex justify-between text-[11px]">
-                <span class="text-slate-400">Berlaku s/d:</span>
-                <span class="text-slate-200">{new Date(item.validUntil).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                <span class="text-muted-foreground">Berlaku s/d:</span>
+                <span class="text-foreground font-medium">{new Date(item.validUntil).toLocaleDateString('id-ID', { year: 'numeric', month: 'short', day: 'numeric' })}</span>
               </div>
             </div>
           </div>
 
-          <div class="flex items-center gap-2 pt-2 border-t border-slate-800">
+          <div class="flex items-center gap-2 pt-2 border-t border-border/70">
             <button
               on:click={() => openPreviewModal(item)}
-              class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow"
+              class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-xs"
             >
               <Printer class="w-3.5 h-3.5" />
-              <span>Cetak / Cetak PDF</span>
+              <span>Cetak / PDF</span>
             </button>
             <a
               href={`/verify/${encodeURIComponent(item.certificateNo)}`}
               target="_blank"
               title="Uji Verifikasi Online"
-              class="p-2 bg-slate-800 hover:bg-slate-700 text-indigo-400 rounded-xl transition"
+              class="p-2 bg-muted hover:bg-muted/80 text-foreground rounded-xl transition border border-border"
             >
-              <ExternalLink class="w-4 h-4" />
+              <ExternalLink class="w-4 h-4 text-primary" />
             </a>
           </div>
         </div>
@@ -245,11 +245,11 @@
   {@const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/verify/' + selectedCert.certificateNo)}`}
 
   <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-3xl w-full p-6 shadow-2xl space-y-4 my-8">
+    <div class="bg-card border border-border rounded-2xl max-w-3xl w-full p-6 shadow-2xl space-y-4 my-8 text-foreground">
       <!-- Modal Header (Non-printable) -->
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3 print:hidden">
-        <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
-          <Award class="w-4 h-4 text-emerald-400" />
+      <div class="flex justify-between items-center border-b border-border pb-3 print:hidden">
+        <h3 class="text-sm font-extrabold text-foreground flex items-center gap-2">
+          <Award class="w-4 h-4 text-emerald-500" />
           Pratinjau Sertifikat Resmi EPT (Ukuran A4 Portrait)
         </h3>
         <div class="flex items-center gap-2">

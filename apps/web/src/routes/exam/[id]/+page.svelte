@@ -39,22 +39,30 @@
   // Features Settings
   let isAutoNext = true; // Auto Next toggle
   let isFullscreen = false;
+  let isLoading = true;
 
-  // Hydrate exam state from local storage or server session
-  onMount(() => {
+  // Hydrate exam state from server session & local cache
+  onMount(async () => {
     if (!$auth.isAuthenticated) {
       goto('/login');
       return;
     }
 
+    // 1. Fast initial hydration from sessionStorage if present
     const storedSession = sessionStorage.getItem('currentExamSession');
     if (storedSession) {
       try {
-        sessionData = JSON.parse(storedSession);
-        if (sessionData) {
-          questions = sessionData.questions;
-          // Hydrate existing answers from backend DB
-          for (const ans of sessionData.existingAnswers) {
+        const parsed = JSON.parse(storedSession);
+        if (parsed && parsed.studentExamId === studentExamId) {
+          sessionData = parsed;
+          questions = parsed.questions || [];
+          if (parsed.remainingSeconds !== undefined) {
+            remainingSeconds = parsed.remainingSeconds;
+          }
+          if (parsed.violationCount !== undefined) {
+            violationCount = parsed.violationCount;
+          }
+          for (const ans of parsed.existingAnswers || []) {
             answers[ans.questionId] = { option: ans.selectedOption, isFlagged: ans.isFlagged };
           }
         }
@@ -63,7 +71,7 @@
       }
     }
 
-    // Hydrate local cache (Resume feature on connection loss or refresh)
+    // 2. Hydrate unsynced local cache
     const cached = localStorage.getItem(`ept_cache_${studentExamId}`);
     if (cached) {
       try {
@@ -72,17 +80,69 @@
       } catch (e) { /* ignore */ }
     }
 
+    // 3. Fetch fresh session from server (guarantees F5 refresh & "Lanjutkan Ujian" always work)
+    await loadSessionFromServer();
+
     initWebSocket();
     startClientCountdown();
 
-    // Check Fullscreen state & Anti-cheat event listeners
+    // Check Fullscreen state & Anti-cheat event listeners (no false-positive window.blur)
     document.addEventListener('fullscreenchange', handleFullscreenChange);
     document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('blur', handleWindowBlur);
     document.addEventListener('contextmenu', preventDefaultAction);
     document.addEventListener('copy', preventDefaultAction);
     document.addEventListener('cut', preventDefaultAction);
+    document.addEventListener('paste', preventDefaultAction);
+    document.addEventListener('keydown', handleKeydownGuard);
   });
+
+  async function loadSessionFromServer() {
+    isLoading = true;
+    try {
+      const res = await apiFetch(`/exam/session/${studentExamId}`);
+      if (res.success && res.data) {
+        sessionData = res.data;
+        questions = res.data.questions || [];
+        if (res.data.remainingSeconds !== undefined) {
+          remainingSeconds = res.data.remainingSeconds;
+        }
+        if (res.data.violationCount !== undefined) {
+          violationCount = res.data.violationCount;
+        }
+
+        if (res.data.status === 'SUBMITTED' || res.data.status === 'FORCE_SUBMITTED') {
+          toast.info('Sesi ujian ini telah diselesaikan.');
+          goto('/dashboard');
+          return;
+        }
+
+        // Hydrate answers from server if not already in local state
+        for (const ans of res.data.existingAnswers || []) {
+          if (!answers[ans.questionId]) {
+            answers[ans.questionId] = { option: ans.selectedOption, isFlagged: ans.isFlagged };
+          }
+        }
+
+        sessionStorage.setItem('currentExamSession', JSON.stringify(res.data));
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Gagal memuat sesi ujian');
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  function handleKeydownGuard(e: KeyboardEvent) {
+    // Block F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U, Ctrl+S, Ctrl+P
+    if (
+      e.key === 'F12' ||
+      (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j')) ||
+      (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's' || e.key === 'P' || e.key === 'p'))
+    ) {
+      e.preventDefault();
+      toast.error('Aksi Dilarang!', { description: 'Pintasan keyboard devtools dinonaktifkan demi integritas ujian EPT.' });
+    }
+  }
 
   function preventDefaultAction(e: Event) {
     e.preventDefault();
@@ -94,10 +154,6 @@
     if (document.hidden || document.visibilityState === 'hidden') {
       registerViolation('Meninggalkan tab ujian / beralih aplikasi');
     }
-  }
-
-  function handleWindowBlur() {
-    registerViolation('Fokus layar berpindah dari jendela ujian');
   }
 
   function registerViolation(reason: string) {
@@ -276,10 +332,11 @@
     if (typeof document !== 'undefined') {
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('blur', handleWindowBlur);
       document.removeEventListener('contextmenu', preventDefaultAction);
       document.removeEventListener('copy', preventDefaultAction);
       document.removeEventListener('cut', preventDefaultAction);
+      document.removeEventListener('paste', preventDefaultAction);
+      document.removeEventListener('keydown', handleKeydownGuard);
     }
   });
 </script>
@@ -397,8 +454,27 @@
           </button>
         </div>
       {:else}
-        <div class="p-8 text-center bg-slate-900 rounded-2xl border border-slate-800 text-slate-400">
-          Memuat soal ujian EPTUNU...
+        <div class="p-8 text-center bg-slate-900 rounded-2xl border border-slate-800 text-slate-400 space-y-3">
+          {#if isLoading}
+            <div class="inline-block w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin mb-2"></div>
+            <p class="font-medium text-slate-300">Menghubungkan ke server dan memuat soal ujian EPTUNU...</p>
+          {:else}
+            <div class="w-12 h-12 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center mx-auto mb-2">
+              <AlertTriangle class="w-6 h-6" />
+            </div>
+            <p class="font-semibold text-slate-200">Sesi Ujian Tidak Ditemukan atau Sudah Selesai</p>
+            <p class="text-xs text-slate-400 max-w-md mx-auto">
+              Tidak ada butir soal yang aktif untuk sesi ujian ini, atau Anda sudah menyelesaikan lembar ujian.
+            </p>
+            <div class="pt-2">
+              <a
+                href="/dashboard"
+                class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold rounded-xl transition shadow-md"
+              >
+                Kembali ke Dashboard
+              </a>
+            </div>
+          {/if}
         </div>
       {/if}
     </div>
