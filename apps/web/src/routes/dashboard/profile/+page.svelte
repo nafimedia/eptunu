@@ -151,17 +151,16 @@
 </script>
 
 <svelte:head>
-  <title>Profil Saya - Modern FairuzKit</title>
+  <title>Pengaturan Profil | EPT UNU Purwokerto</title>
 </svelte:head>
 
-<div class="space-y-8 max-w-5xl mx-auto">
+<div class="space-y-6 max-w-5xl mx-auto">
   <!-- Page Header -->
-  <div class="flex items-center justify-between">
+  <header class="flex items-center justify-between bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <h1 class="text-2xl font-bold tracking-tight">Pengaturan Profil</h1>
-      <p class="text-sm text-muted-foreground">Kelola informasi pribadi, foto avatar, dan keamanan kata sandi Anda.</p>
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Pengaturan Profil</h1>
     </div>
-  </div>
+  </header>
 
   <!-- Profile Card Banner -->
   <div class="bg-card border border-border rounded-2xl p-6 shadow-sm relative overflow-hidden">

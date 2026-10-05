@@ -15,12 +15,8 @@
     BarChart3,
     ShieldCheck,
     ArrowUpRight,
-    CheckCircle2,
-    Clock,
     AlertCircle,
-    FileText,
     Activity,
-    Layers,
     Database,
     Play,
     Power
@@ -180,18 +176,9 @@
   <!-- Shared Header -->
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="flex items-center gap-2 mb-1">
-        <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
-          Dashboard {role === 'STUDENT' ? 'Peserta Ujian' : (role === 'PROCTOR' ? 'Pengawas Ujian' : (role === 'EXECUTIVE' ? 'Pimpinan / Eksekutif' : (role === 'QUESTION_AUTHOR' || role === 'VALIDATOR' ? 'Tim Bank Soal' : 'Administrator')))}
-        </h1>
-        <span class="text-[10px] px-2.5 py-0.5 rounded-full font-bold uppercase border bg-primary/10 text-primary border-primary/20">
-          {role}
-        </span>
-      </div>
-      <p class="text-xs text-muted-foreground">
-        Selamat Datang, <strong class="text-foreground">{$auth.user?.fullName || 'Pengguna'}</strong>
-        ({$auth.user?.identityNumber || '-'}) • {$auth.user?.prodi || 'UNU Purwokerto'}
-      </p>
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">
+        Dashboard {role === 'STUDENT' ? 'Peserta Ujian' : (role === 'PROCTOR' ? 'Pengawas Ujian' : (role === 'EXECUTIVE' ? 'Pimpinan / Eksekutif' : (role === 'QUESTION_AUTHOR' || role === 'VALIDATOR' ? 'Tim Bank Soal' : 'Administrator')))}
+      </h1>
     </div>
 
     <button

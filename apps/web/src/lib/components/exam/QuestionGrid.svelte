@@ -1,6 +1,5 @@
 <script lang="ts">
   import type { Question } from '$types';
-  import { Bookmark, Check } from 'lucide-svelte';
 
   export let questions: Question[] = [];
   export let activeIndex: number = 0;

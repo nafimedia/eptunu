@@ -3,15 +3,11 @@
   import { goto } from '$app/navigation';
   import {
     CheckCircle2,
-    XCircle,
     RotateCcw,
     ArrowRight,
     Headphones,
-    FileText,
     BookOpen,
-    Clock,
     Award,
-    Zap,
     GraduationCap,
     Home,
     RefreshCw,

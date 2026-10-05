@@ -3,16 +3,13 @@
   import { apiFetch } from '$api/client';
   import { toast } from 'svelte-sonner';
   import {
-    BarChart3,
     Download,
     Users,
     CheckCircle2,
     XCircle,
     TrendingUp,
-    Filter,
     Calendar,
     Building2,
-    BookOpen,
     RefreshCw
   } from 'lucide-svelte';
 
@@ -109,13 +106,7 @@
   <!-- Page Header -->
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
-        <BarChart3 class="w-3.5 h-3.5" /> Analitik & Rekapitulasi
-      </div>
       <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Laporan & Rekapitulasi EPT</h1>
-      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
-        Analisis statistik peserta, tingkat kelulusan per Fakultas/Prodi, rekap bulanan & tahunan, serta ekspor CSV.
-      </p>
     </div>
     <div class="flex items-center gap-2">
       <button

@@ -4,18 +4,11 @@
   import { auth } from '$stores/auth';
   import { toast } from 'svelte-sonner';
   import {
-    Award,
-    CheckCircle2,
-    XCircle,
     Search,
     Edit3,
     FileCheck,
-    Download,
     Calendar,
-    Shield,
-    RefreshCw,
-    UserCheck,
-    BarChart3
+    RefreshCw
   } from 'lucide-svelte';
 
   let results: any[] = [];
@@ -142,15 +135,7 @@
   <!-- Header Banner -->
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="flex items-center gap-2 mb-1.5">
-        <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-          <Award class="w-3 h-3" /> Penilaian & Sertifikasi
-        </span>
-      </div>
       <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Hasil Ujian & Penilaian EPT</h1>
-      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
-        Koreksi otomatis TOEFL ITP score conversion, status kelulusan, dan penerbitan sertifikat resmi UPT Bahasa UNU Purwokerto.
-      </p>
     </div>
 
     <button

@@ -14,19 +14,13 @@
     Trash2,
     Edit2,
     CheckCircle2,
-    XCircle,
     Copy,
     Check,
     X,
     AlertCircle,
-    Shield,
     Play,
-    Square,
     Power,
     Bell,
-    Send,
-    ArrowRight,
-    ExternalLink,
     Award
   } from 'lucide-svelte';
   import { auth } from '$stores/auth';
@@ -267,15 +261,7 @@
     <!-- Student Header Banner -->
     <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
       <div>
-        <div class="flex items-center gap-2 mb-1.5">
-          <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-            <Calendar class="w-3 h-3" /> Pelaksanaan Ujian CBT
-          </span>
-        </div>
         <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Jadwal Ujian EPT UNU Purwokerto</h1>
-        <p class="text-xs sm:text-sm text-muted-foreground mt-1">
-          Pantau sesi terdaftar Anda, verifikasi status ruang Lab Komputer, token akses, dan pintu masuk ujian CBT.
-        </p>
       </div>
 
       <button
@@ -435,15 +421,7 @@
     <!-- Page Header -->
     <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
       <div>
-        <div class="flex items-center gap-2 mb-1.5">
-          <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-            <Calendar class="w-3 h-3" /> Modul Pelaksanaan & Sesi Ujian
-          </span>
-        </div>
         <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Manajemen Jadwal Ujian EPT</h1>
-        <p class="text-xs sm:text-sm text-muted-foreground mt-1">
-          Kelola tanggal, jam, ruang Lab Komputer, kuota peserta, pengawas (proctor), dan token ujian.
-        </p>
       </div>
 
       <button

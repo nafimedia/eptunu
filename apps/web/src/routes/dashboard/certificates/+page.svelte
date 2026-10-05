@@ -5,16 +5,10 @@
   import { toast } from 'svelte-sonner';
   import {
     Award,
-    ShieldCheck,
     Printer,
-    QrCode,
     Search,
     RefreshCw,
-    GraduationCap,
-    CheckCircle2,
-    Calendar,
     ExternalLink,
-    FileText,
     Archive,
     Download,
     X,
@@ -129,13 +123,7 @@
   <!-- Page Header -->
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 mb-2">
-        <Award class="w-3.5 h-3.5" /> Sertifikasi Resmi
-      </div>
       <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Manajemen Sertifikat EPT</h1>
-      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
-        Penerbitan sertifikat digital resmi UPT Bahasa UNU Purwokerto lengkap dengan QR Code, Digital Signature, & Verifikasi Online.
-      </p>
     </div>
     <div class="flex items-center gap-2">
       {#if isAdmin}

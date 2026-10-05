@@ -12,7 +12,6 @@
     Building2,
     GraduationCap,
     CreditCard,
-    CheckCircle2,
     BookOpen,
     Eye,
     EyeOff

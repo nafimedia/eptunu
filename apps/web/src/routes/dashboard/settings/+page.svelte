@@ -3,7 +3,6 @@
   import { apiFetch } from '$api/client';
   import { toast } from 'svelte-sonner';
   import {
-    Settings,
     Building2,
     Sliders,
     FileCheck,
@@ -11,17 +10,14 @@
     Save,
     RefreshCw,
     Award,
-    Clock,
     AlertTriangle,
     CheckCircle2,
-    Globe,
     Mail,
     MapPin,
     ShieldCheck,
     Table,
     Bell,
     Send,
-    MessageSquare,
     Smartphone,
     HardDriveDownload,
     UploadCloud,
@@ -273,13 +269,7 @@
   <!-- Page Header -->
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
-        <Settings class="w-3.5 h-3.5" /> Khusus Super Admin & Admin EPT
-      </div>
       <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Pengaturan Sistem</h1>
-      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
-        Konfigurasi identitas lembaga, parameter ujian CBT, konversi skor EPT, penandatangan sertifikat, dan keamanan server.
-      </p>
     </div>
 
     <button

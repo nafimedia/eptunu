@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Volume2, Play, Pause, AlertCircle, RefreshCw } from 'lucide-svelte';
+  import { Volume2, Play, Pause, AlertCircle } from 'lucide-svelte';
 
   export let audioUrl: string;
   export let questionId: string = '';

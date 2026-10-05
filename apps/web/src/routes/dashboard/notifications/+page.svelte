@@ -3,7 +3,7 @@
   import { apiFetch } from '$api/client';
   import type { Notification } from '$types';
   import { toast } from 'svelte-sonner';
-  import { Bell, CheckCircle2, Info, AlertTriangle, XCircle, Clock } from 'lucide-svelte';
+  import { CheckCircle2, Info, AlertTriangle, XCircle, Clock } from 'lucide-svelte';
 
   let notifications: Notification[] = [];
   let isLoading = true;
@@ -45,38 +45,43 @@
   });
 </script>
 
-<div class="space-y-6 animate-in fade-in duration-200">
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<svelte:head>
+  <title>Pusat Pemberitahuan | EPT UNU Purwokerto</title>
+</svelte:head>
+
+<div class="space-y-6">
+  <!-- Page Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <h1 class="text-2xl font-bold tracking-tight">Pusat Pemberitahuan</h1>
-      <p class="text-xs text-muted-foreground">Pemberitahuan sistem, notifikasi akun, dan informasi penting.</p>
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Pusat Pemberitahuan</h1>
     </div>
     <button
+      type="button"
       on:click={markAllRead}
-      class="px-4 py-2.5 rounded-xl border border-border bg-card hover:bg-muted font-semibold text-xs transition-all flex items-center gap-2"
+      class="border border-border bg-card hover:bg-muted text-foreground font-bold text-xs rounded-xl px-4 py-2.5 transition inline-flex items-center gap-2 shadow-xs"
     >
-      <CheckCircle2 class="w-4 h-4 text-emerald-400" />
+      <CheckCircle2 class="w-4 h-4 text-emerald-500" />
       <span>Tandai Semua Dibaca</span>
     </button>
-  </div>
+  </header>
 
-  <div class="bg-card border border-border/70 rounded-2xl shadow-sm overflow-hidden divide-y divide-border">
+  <div class="bg-card border border-border rounded-2xl shadow-xs overflow-hidden divide-y divide-border">
     {#if isLoading}
       <div class="p-8 text-center text-xs text-muted-foreground">Memuat notifikasi...</div>
     {:else if notifications.length === 0}
       <div class="p-8 text-center text-xs text-muted-foreground">Belum ada pemberitahuan.</div>
     {:else}
       {#each notifications as item}
-        <div class="p-4 flex items-start gap-4 hover:bg-muted/20 transition-colors {!item.isRead ? 'bg-indigo-500/5' : ''}">
+        <div class="p-4 flex items-start gap-4 hover:bg-muted/20 transition-colors {!item.isRead ? 'bg-primary/5' : ''}">
           <div class="p-2 rounded-xl bg-muted shrink-0 mt-0.5">
             {#if item.type === 'success'}
-              <CheckCircle2 class="w-5 h-5 text-emerald-400" />
+              <CheckCircle2 class="w-5 h-5 text-emerald-500" />
             {:else if item.type === 'warning'}
-              <AlertTriangle class="w-5 h-5 text-amber-400" />
+              <AlertTriangle class="w-5 h-5 text-amber-500" />
             {:else if item.type === 'error'}
-              <XCircle class="w-5 h-5 text-rose-400" />
+              <XCircle class="w-5 h-5 text-rose-500" />
             {:else}
-              <Info class="w-5 h-5 text-indigo-400" />
+              <Info class="w-5 h-5 text-primary" />
             {/if}
           </div>
 
@@ -92,6 +97,7 @@
 
           {#if !item.isRead}
             <button
+              type="button"
               on:click={() => markRead(item.id)}
               class="px-2.5 py-1 rounded-lg bg-primary/10 text-primary hover:bg-primary/20 text-[11px] font-medium"
             >

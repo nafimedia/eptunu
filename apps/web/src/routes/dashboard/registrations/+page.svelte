@@ -8,17 +8,13 @@
     Calendar,
     Upload,
     Printer,
-    FileText,
     CheckCircle2,
     XCircle,
     Clock,
-    Search,
     QrCode,
     Plus,
     X,
-    Building,
     CreditCard,
-    AlertCircle,
     Eye
   } from 'lucide-svelte';
 
@@ -193,15 +189,7 @@
   <!-- Page Header -->
   <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="flex items-center gap-2 mb-1.5">
-        <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
-          <UserCheck class="w-3 h-3" /> Registrasi & Verifikasi
-        </span>
-      </div>
       <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Pendaftaran & Cetak Kartu Peserta Ujian</h1>
-      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
-        Pendaftaran sesi ujian, unggah bukti pembayaran, verifikasi berkas operator, dan cetak kartu ujian resmi.
-      </p>
     </div>
   </header>
 
