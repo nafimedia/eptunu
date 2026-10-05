@@ -12,16 +12,31 @@ export async function questionRoutes(fastify: FastifyInstance) {
   fastify.get('/audio/:filename', async (request, reply) => {
     const { filename } = request.params as { filename: string };
 
-    const audioDir = path.resolve(__dirname, '../../../storage/audio');
-    const filePath = path.join(audioDir, filename);
+    const possibleDirs = [
+      path.resolve(__dirname, '../../../storage/audio'),
+      path.resolve(process.cwd(), 'apps/api/storage/audio'),
+      path.resolve(process.cwd(), 'storage/audio'),
+      path.resolve(process.cwd(), 'apps/web/static/audio'),
+      path.resolve(__dirname, '../../../../apps/web/static/audio'),
+    ];
 
-    if (!fs.existsSync(filePath)) {
+    let filePath = '';
+    for (const dir of possibleDirs) {
+      const candidate = path.join(dir, filename);
+      if (fs.existsSync(candidate)) {
+        filePath = candidate;
+        break;
+      }
+    }
+
+    if (!filePath || !fs.existsSync(filePath)) {
       return reply.status(404).send({ success: false, message: 'File audio tidak ditemukan' });
     }
 
     const stat = fs.statSync(filePath);
     const fileSize = stat.size;
     const range = request.headers.range;
+    const mimeType = filename.endsWith('.wav') ? 'audio/wav' : filename.endsWith('.ogg') ? 'audio/ogg' : 'audio/mpeg';
 
     if (range) {
       const parts = range.replace(/bytes=/, '').split('-');
@@ -35,14 +50,15 @@ export async function questionRoutes(fastify: FastifyInstance) {
         'Content-Range': `bytes ${start}-${end}/${fileSize}`,
         'Accept-Ranges': 'bytes',
         'Content-Length': chunksize,
-        'Content-Type': 'audio/mpeg',
+        'Content-Type': mimeType,
       });
 
       return reply.send(file);
     } else {
       reply.raw.writeHead(200, {
         'Content-Length': fileSize,
-        'Content-Type': 'audio/mpeg',
+        'Content-Type': mimeType,
+        'Accept-Ranges': 'bytes',
       });
 
       return reply.send(fs.createReadStream(filePath));
@@ -55,19 +71,19 @@ export async function questionRoutes(fastify: FastifyInstance) {
       const [listening, structure, reading] = await Promise.all([
         db.question.findMany({
           where: { section: 'LISTENING', status: 'APPROVED' },
-          take: 3,
-          orderBy: { createdAt: 'desc' },
+          take: 5,
+          orderBy: { createdAt: 'asc' },
         }),
         db.question.findMany({
           where: { section: 'STRUCTURE', status: 'APPROVED' },
-          take: 4,
-          orderBy: { createdAt: 'desc' },
+          take: 5,
+          orderBy: { createdAt: 'asc' },
         }),
         db.question.findMany({
           where: { section: 'READING', status: 'APPROVED' },
-          take: 3,
+          take: 5,
           include: { passage: true },
-          orderBy: { createdAt: 'desc' },
+          orderBy: { createdAt: 'asc' },
         }),
       ]);
 
@@ -85,9 +101,7 @@ export async function questionRoutes(fastify: FastifyInstance) {
 
         let passageText = '';
         if (q.passage) {
-          passageText = `Passage: ${q.passage.title || ''}\n\n${q.passage.content}`;
-        } else if (q.section === 'LISTENING') {
-          passageText = 'Listen to the audio recording above.';
+          passageText = q.passage.title ? `${q.passage.title}\n\n${q.passage.content}` : q.passage.content;
         }
 
         return {

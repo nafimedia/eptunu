@@ -271,21 +271,22 @@
 
 <div class="space-y-6">
   <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 rounded-2xl border border-indigo-900/50 shadow-xl text-white">
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-500/30 mb-2">
+      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
         <Settings class="w-3.5 h-3.5" /> Khusus Super Admin & Admin EPT
       </div>
-      <h1 class="text-2xl font-extrabold tracking-tight">Pengaturan Sistem (System Settings)</h1>
-      <p class="text-slate-300 text-sm mt-1">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Pengaturan Sistem</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
         Konfigurasi identitas lembaga, parameter ujian CBT, konversi skor EPT, penandatangan sertifikat, dan keamanan server.
       </p>
     </div>
 
     <button
+      type="button"
       on:click={saveSettings}
       disabled={isSaving || isLoading}
-      class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-medium text-sm shadow-lg shadow-emerald-600/30 transition-all duration-200"
+      class="bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs px-4 py-2.5 hover:bg-primary/90 transition inline-flex items-center gap-2 disabled:opacity-50"
     >
       {#if isSaving}
         <RefreshCw class="w-4 h-4 animate-spin" /> Menyimpan...
@@ -293,47 +294,54 @@
         <Save class="w-4 h-4" /> Simpan Pengaturan
       {/if}
     </button>
-  </div>
+  </header>
 
   <!-- Tab Navigation -->
   <div class="flex items-center gap-2 border-b border-border pb-2 overflow-x-auto">
     <button
+      type="button"
       on:click={() => (activeTab = 'institution')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 whitespace-nowrap {activeTab === 'institution' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
       <Building2 class="w-4 h-4" /> Identitas Lembaga
     </button>
     <button
+      type="button"
       on:click={() => (activeTab = 'exam')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 whitespace-nowrap {activeTab === 'exam' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
       <Sliders class="w-4 h-4" /> Parameter Ujian CBT
     </button>
     <button
+      type="button"
       on:click={() => (activeTab = 'certificate')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 whitespace-nowrap {activeTab === 'certificate' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
       <Award class="w-4 h-4" /> Sertifikat & Tanda Tangan
     </button>
     <button
+      type="button"
       on:click={() => (activeTab = 'conversion')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 whitespace-nowrap {activeTab === 'conversion' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
       <Table class="w-4 h-4" /> Tabel Konversi Nilai
     </button>
     <button
+      type="button"
       on:click={() => (activeTab = 'security')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 whitespace-nowrap {activeTab === 'security' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
       <ShieldAlert class="w-4 h-4" /> Status Keamanan & Server
     </button>
     <button
+      type="button"
       on:click={() => (activeTab = 'notifications')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 whitespace-nowrap {activeTab === 'notifications' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
       <Bell class="w-4 h-4" /> Notifikasi WA & Email
     </button>
     <button
+      type="button"
       on:click={() => (activeTab = 'backup')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 whitespace-nowrap {activeTab === 'backup' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
@@ -614,9 +622,10 @@
               <Table class="w-5 h-5 text-primary" /> Tabel Konversi Nilai EPT (Raw to Scaled Score)
             </h2>
             <button
+              type="button"
               on:click={saveConversions}
               disabled={isSavingConversions}
-              class="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-bold text-xs shadow transition"
+              class="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl font-bold text-xs shadow-xs transition"
             >
               {isSavingConversions ? 'Menyimpan...' : 'Simpan Tabel Konversi'}
             </button>
@@ -972,9 +981,10 @@
       <!-- Bottom Save Action -->
       <div class="pt-4 border-t border-border flex items-center justify-end">
         <button
+          type="button"
           on:click={saveSettings}
           disabled={isSaving || isLoading}
-          class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:opacity-50 text-white font-medium text-sm shadow-md transition-all duration-200"
+          class="bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs px-5 py-2.5 hover:bg-primary/90 transition inline-flex items-center gap-2 disabled:opacity-50"
         >
           <Save class="w-4 h-4" /> Simpan Perubahan Pengaturan
         </button>

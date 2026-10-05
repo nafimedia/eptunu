@@ -12,7 +12,6 @@
     UserCheck,
     Search,
     Shield,
-    Sparkles,
     Sliders,
     Layers,
     Lock
@@ -140,26 +139,27 @@
 
 <div class="space-y-6">
   <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 rounded-2xl border border-indigo-900/50 shadow-xl text-white">
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-500/30 mb-2">
+      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
         <ShieldCheck class="w-3.5 h-3.5" /> Modul RBAC & Akses
       </div>
-      <h1 class="text-2xl font-extrabold tracking-tight">Manajemen Role & Hak Akses</h1>
-      <p class="text-slate-300 text-sm mt-1">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Manajemen Role & Hak Akses</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
         Kelola 7 hirarki role pengguna dan matriks izin akses fitur pada platform EPT UNU Purwokerto.
       </p>
     </div>
 
     <div class="flex items-center gap-3">
       <button
+        type="button"
         on:click={() => { isAssignModalOpen = true; }}
-        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30 transition-all duration-200"
+        class="bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs px-4 py-2.5 hover:bg-primary/90 transition inline-flex items-center gap-2"
       >
         <UserCheck class="w-4 h-4" /> Tetapkan Role User
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Statistics Summary -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -197,7 +197,7 @@
 
     <div class="bg-card p-5 rounded-xl border border-border shadow-sm flex items-center gap-4 text-card-foreground">
       <div class="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center text-purple-600 dark:text-purple-400 font-bold">
-        <Sparkles class="w-6 h-6" />
+        <Shield class="w-6 h-6" />
       </div>
       <div>
         <div class="text-2xl font-extrabold text-foreground">7-Role</div>
@@ -209,12 +209,14 @@
   <!-- View Switcher Tabs -->
   <div class="flex items-center gap-2 border-b border-border pb-2">
     <button
+      type="button"
       on:click={() => (activeTab = 'cards')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 {activeTab === 'cards' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
       <Layers class="w-4 h-4" /> Kartu Overview Role
     </button>
     <button
+      type="button"
       on:click={() => (activeTab = 'matrix')}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all duration-150 {activeTab === 'matrix' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
     >
@@ -267,6 +269,7 @@
           <div class="bg-muted/30 px-6 py-3 border-t border-border flex items-center justify-between">
             <span class="text-xs text-muted-foreground font-medium">Status: Active</span>
             <button
+              type="button"
               on:click={() => {
                 selectedRoleToAssign = r.role;
                 isAssignModalOpen = true;
@@ -350,13 +353,17 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden text-card-foreground">
       <!-- Modal Header -->
-      <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <UserCheck class="w-5 h-5 text-indigo-400" /> Tetapkan Role Pengguna
+      <div class="p-5 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2.5 font-bold text-base">
+          <div class="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
+            <UserCheck class="w-4 h-4" />
+          </div>
+          <span>Tetapkan Role Pengguna</span>
         </div>
         <button
+          type="button"
           on:click={() => (isAssignModalOpen = false)}
-          class="text-slate-400 hover:text-white transition-colors"
+          class="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
         >
           <X class="w-5 h-5" />
         </button>

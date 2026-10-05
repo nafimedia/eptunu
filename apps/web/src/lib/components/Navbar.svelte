@@ -41,12 +41,13 @@
 <header class="h-16 border-b border-border bg-card/60 backdrop-blur-md px-4 lg:px-8 flex items-center justify-between sticky top-0 z-40">
   <!-- Mobile Menu Button & Command Palette trigger -->
   <div class="flex items-center gap-3">
-    <button on:click={toggleMobileSidebar} class="lg:hidden p-2 rounded-lg text-muted-foreground hover:bg-muted">
+    <button type="button" on:click={toggleMobileSidebar} class="lg:hidden p-2 rounded-lg text-muted-foreground hover:bg-muted">
       <Menu class="w-5 h-5" />
     </button>
 
     <!-- Quick Search / Command Palette Bar -->
     <button
+      type="button"
       on:click={toggleCommandPalette}
       class="flex items-center gap-3 px-3 py-1.5 rounded-xl border border-border bg-muted/40 hover:bg-muted text-muted-foreground text-xs transition-colors w-48 sm:w-64"
     >
@@ -60,6 +61,7 @@
   <div class="flex items-center gap-2">
     <!-- Theme Toggle -->
     <button
+      type="button"
       on:click={toggleTheme}
       class="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
       title="Switch Theme"
@@ -74,6 +76,7 @@
     <!-- Notification Dropdown Bell -->
     <div class="relative">
       <button
+        type="button"
         on:click={() => (isNotifOpen = !isNotifOpen)}
         class="relative p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
       >
@@ -88,7 +91,7 @@
           <div class="flex items-center justify-between border-b border-border pb-3 mb-3">
             <h3 class="font-semibold text-sm">Pemberitahuan</h3>
             {#if unreadCount > 0}
-              <button on:click={markAllAsRead} class="text-xs text-primary hover:underline flex items-center gap-1">
+              <button type="button" on:click={markAllAsRead} class="text-xs text-primary hover:underline flex items-center gap-1">
                 <CheckCircle class="w-3.5 h-3.5" /> Tandai Semua Dibaca
               </button>
             {/if}

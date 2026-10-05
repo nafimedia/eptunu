@@ -14,7 +14,6 @@
     FileQuestion,
     Calendar,
     LogOut,
-    Sparkles,
     Award,
     FileCheck,
     BarChart3
@@ -99,7 +98,7 @@
   <div class="h-16 px-6 flex items-center justify-between border-b border-border shrink-0">
     <a href="/dashboard" class="flex items-center gap-3">
       <img src="/logo.png" alt="UNU Purwokerto Logo" class="w-9 h-9 object-contain drop-shadow-sm" />
-      <span class="font-extrabold text-base bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">EPTUNU CBT</span>
+      <span class="font-extrabold text-base bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">EPTUNU</span>
     </a>
   </div>
 
@@ -137,7 +136,7 @@
         <p class="text-xs font-semibold truncate group-hover:text-primary transition-colors">{user?.fullName || user?.name || 'Pengguna'}</p>
         <p class="text-[10px] text-muted-foreground truncate">{user?.email}</p>
       </div>
-      <button on:click|preventDefault={handleLogout} title="Logout" class="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0">
+      <button type="button" on:click|preventDefault={handleLogout} title="Logout" class="p-1.5 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors shrink-0">
         <LogOut class="w-4 h-4" />
       </button>
     </a>
@@ -157,7 +156,7 @@
       <div class="h-16 px-6 flex items-center justify-between border-b border-border shrink-0">
         <a href="/dashboard" class="flex items-center gap-3">
           <img src="/logo.png" alt="UNU Purwokerto Logo" class="w-8 h-8 object-contain drop-shadow-sm" />
-          <span class="font-extrabold text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">EPTUNU CBT</span>
+          <span class="font-extrabold text-sm bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent">EPTUNU</span>
         </a>
       </div>
       <div class="flex-1 py-4 px-3 space-y-4 overflow-y-auto">

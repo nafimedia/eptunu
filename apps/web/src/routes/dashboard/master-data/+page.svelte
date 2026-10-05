@@ -223,13 +223,13 @@
 
 <div class="space-y-6">
   <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-card p-6 rounded-2xl border border-border shadow-xs text-foreground">
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold border border-primary/20 mb-2">
+      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
         <Database class="w-3.5 h-3.5" /> Modul Referensi Utama EPTUNU
       </div>
-      <h1 class="text-2xl font-extrabold tracking-tight">Manajemen Master Data</h1>
-      <p class="text-muted-foreground text-xs mt-1">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Manajemen Master Data</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
         Kelola data referensi Tahun Akademik, Fakultas, Program Studi, Instansi, dan Jenis Peserta.
       </p>
     </div>
@@ -237,50 +237,57 @@
     <!-- Prominent Action Buttons -->
     <div class="flex items-center gap-2 flex-wrap">
       <button
+        type="button"
         on:click={loadAllMasterData}
-        class="inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl border border-border bg-muted/40 hover:bg-muted text-foreground text-xs font-semibold transition"
+        class="border border-border bg-card hover:bg-muted text-foreground font-bold text-xs rounded-xl px-4 py-2.5 transition inline-flex items-center gap-2"
       >
-        <RefreshCw class="w-4 h-4 text-muted-foreground" />
+        <RefreshCw class="w-3.5 h-3.5" />
         <span>Refresh</span>
       </button>
 
       <button
+        type="button"
         on:click={() => openCreateModal(activeTab)}
-        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs shadow-md shadow-primary/20 transition-all transform hover:-translate-y-0.5"
+        class="bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs px-4 py-2.5 hover:bg-primary/90 transition inline-flex items-center gap-2"
       >
         <Plus class="w-4 h-4" />
         <span>Tambah {tabLabels[activeTab]}</span>
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Tab Navigation -->
   <div class="flex items-center gap-2 border-b border-border pb-2 overflow-x-auto">
     <button
+      type="button"
       on:click={() => { activeTab = 'academicYears'; searchQuery = ''; }}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-150 whitespace-nowrap {activeTab === 'academicYears' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
     >
       <Calendar class="w-4 h-4" /> Tahun Akademik ({academicYears.length})
     </button>
     <button
+      type="button"
       on:click={() => { activeTab = 'faculties'; searchQuery = ''; }}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-150 whitespace-nowrap {activeTab === 'faculties' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
     >
       <Building class="w-4 h-4" /> Fakultas ({faculties.length})
     </button>
     <button
+      type="button"
       on:click={() => { activeTab = 'prodis'; searchQuery = ''; }}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-150 whitespace-nowrap {activeTab === 'prodis' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
     >
       <GraduationCap class="w-4 h-4" /> Program Studi ({prodis.length})
     </button>
     <button
+      type="button"
       on:click={() => { activeTab = 'institutions'; searchQuery = ''; }}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-150 whitespace-nowrap {activeTab === 'institutions' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
     >
       <Landmark class="w-4 h-4" /> Instansi ({institutions.length})
     </button>
     <button
+      type="button"
       on:click={() => { activeTab = 'participantTypes'; searchQuery = ''; }}
       class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all duration-150 whitespace-nowrap {activeTab === 'participantTypes' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-muted hover:text-foreground'}"
     >
@@ -302,6 +309,7 @@
 
     <!-- Explicit Tambah Button for Active Tab -->
     <button
+      type="button"
       on:click={() => openCreateModal(activeTab)}
       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 rounded-xl text-xs font-bold transition shadow-xs"
     >
@@ -328,6 +336,7 @@
               Silakan tambahkan tahun akademik baru untuk menentukan periode aktif penyelenggaraan tes EPT.
             </p>
             <button
+              type="button"
               on:click={() => openCreateModal('academicYears')}
               class="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl inline-flex items-center gap-2 shadow"
             >
@@ -357,6 +366,7 @@
                       </span>
                     {:else}
                       <button
+                        type="button"
                         on:click={() => setAcademicYearCurrent(ay.id)}
                         class="px-3 py-1 rounded-full text-xs font-semibold bg-muted hover:bg-primary/10 hover:text-primary text-muted-foreground border border-border transition-colors"
                       >
@@ -367,6 +377,7 @@
                   <td class="p-4 text-center">
                     <div class="inline-flex items-center gap-1">
                       <button
+                        type="button"
                         on:click={() => openEditModal('academicYears', ay)}
                         class="p-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition"
                         title="Edit Tahun Akademik"
@@ -374,6 +385,7 @@
                         <Edit2 class="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         on:click={() => handleDeleteItem('academicYears', ay.id, ay.name)}
                         class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition"
                         title="Hapus Tahun Akademik"
@@ -395,6 +407,7 @@
             <Building class="w-10 h-10 text-muted-foreground mx-auto" />
             <h3 class="text-sm font-bold text-foreground">Tidak Ada Fakultas</h3>
             <button
+              type="button"
               on:click={() => openCreateModal('faculties')}
               class="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl inline-flex items-center gap-2"
             >
@@ -422,12 +435,14 @@
                   <td class="p-4 text-center">
                     <div class="inline-flex items-center gap-1">
                       <button
+                        type="button"
                         on:click={() => openEditModal('faculties', f)}
                         class="p-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition"
                       >
                         <Edit2 class="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         on:click={() => handleDeleteItem('faculties', f.id, f.name)}
                         class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition"
                       >
@@ -448,6 +463,7 @@
             <GraduationCap class="w-10 h-10 text-muted-foreground mx-auto" />
             <h3 class="text-sm font-bold text-foreground">Tidak Ada Program Studi</h3>
             <button
+              type="button"
               on:click={() => openCreateModal('prodis')}
               class="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl inline-flex items-center gap-2"
             >
@@ -473,12 +489,14 @@
                   <td class="p-4 text-center">
                     <div class="inline-flex items-center gap-1">
                       <button
+                        type="button"
                         on:click={() => openEditModal('prodis', p)}
                         class="p-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition"
                       >
                         <Edit2 class="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         on:click={() => handleDeleteItem('prodis', p.id, p.name)}
                         class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition"
                       >
@@ -499,6 +517,7 @@
             <Landmark class="w-10 h-10 text-muted-foreground mx-auto" />
             <h3 class="text-sm font-bold text-foreground">Tidak Ada Instansi</h3>
             <button
+              type="button"
               on:click={() => openCreateModal('institutions')}
               class="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl inline-flex items-center gap-2"
             >
@@ -528,12 +547,14 @@
                   <td class="p-4 text-center">
                     <div class="inline-flex items-center gap-1">
                       <button
+                        type="button"
                         on:click={() => openEditModal('institutions', inst)}
                         class="p-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition"
                       >
                         <Edit2 class="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         on:click={() => handleDeleteItem('institutions', inst.id, inst.name)}
                         class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition"
                       >
@@ -554,6 +575,7 @@
             <UserCheck class="w-10 h-10 text-muted-foreground mx-auto" />
             <h3 class="text-sm font-bold text-foreground">Tidak Ada Jenis Peserta</h3>
             <button
+              type="button"
               on:click={() => openCreateModal('participantTypes')}
               class="px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl inline-flex items-center gap-2"
             >
@@ -579,12 +601,14 @@
                   <td class="p-4 text-center">
                     <div class="inline-flex items-center gap-1">
                       <button
+                        type="button"
                         on:click={() => openEditModal('participantTypes', pt)}
                         class="p-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition"
                       >
                         <Edit2 class="w-4 h-4" />
                       </button>
                       <button
+                        type="button"
                         on:click={() => handleDeleteItem('participantTypes', pt.id, pt.name)}
                         class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition"
                       >
@@ -616,7 +640,7 @@
           {/if}
           <span>{modalTitle}</span>
         </div>
-        <button on:click={() => (isModalOpen = false)} class="text-muted-foreground hover:text-foreground transition-colors">
+        <button type="button" on:click={() => (isModalOpen = false)} class="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
           <X class="w-5 h-5" />
         </button>
       </div>

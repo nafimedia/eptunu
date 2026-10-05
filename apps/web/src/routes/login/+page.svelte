@@ -49,7 +49,7 @@
     <div class="w-20 h-20 bg-slate-900 border border-slate-700/80 rounded-3xl p-2.5 flex items-center justify-center mx-auto mb-4 shadow-2xl">
       <img src="/logo.png" alt="UNU Purwokerto Logo" class="w-full h-full object-contain" />
     </div>
-    <h2 class="text-3xl font-extrabold text-white tracking-tight">EPTUNU CBT Platform</h2>
+    <h2 class="text-3xl font-extrabold text-white tracking-tight">EPTUNU Platform</h2>
     <p class="mt-2 text-sm text-slate-400">English Proficiency Test - Universitas Nahdlatul Ulama Purwokerto</p>
   </div>
 

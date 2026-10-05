@@ -2,7 +2,6 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import {
-    Sparkles,
     CheckCircle2,
     XCircle,
     RotateCcw,
@@ -134,6 +133,7 @@
         <h2 class="text-lg font-bold text-white">Gagal Memuat Soal Database</h2>
         <p class="text-xs text-slate-400 max-w-md mx-auto">{fetchError}</p>
         <button
+          type="button"
           on:click={loadDemoQuestions}
           class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition inline-flex items-center gap-2 shadow"
         >
@@ -158,6 +158,7 @@
           <div class="flex items-center gap-1.5 flex-wrap">
             {#each demoQuestions as item, idx}
               <button
+                type="button"
                 on:click={() => (currentIndex = idx)}
                 class="w-7 h-7 rounded-lg text-xs font-bold transition border {idx === currentIndex ? 'bg-indigo-600 text-white border-indigo-400' : userAnswers[item.id] ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40' : 'bg-slate-950 text-slate-400 border-slate-800'}"
               >
@@ -177,7 +178,10 @@
           {/if}
 
           {#if q.text}
-            <div class="p-4 bg-slate-950 rounded-2xl border border-slate-800/80 text-xs sm:text-sm text-slate-300 leading-relaxed font-serif whitespace-pre-line">
+            <div class="p-4 sm:p-5 bg-slate-950 rounded-2xl border border-slate-800/80 text-xs sm:text-sm text-slate-300 leading-relaxed font-serif whitespace-pre-line max-h-72 overflow-y-auto shadow-inner">
+              <div class="text-[11px] font-sans font-bold uppercase tracking-wider text-emerald-400 mb-2 flex items-center gap-1.5 sticky top-0 bg-slate-950/95 pb-1">
+                <BookOpen class="w-3.5 h-3.5" /> Wacana Bacaan (Reading Passage)
+              </div>
               {q.text}
             </div>
           {/if}
@@ -190,6 +194,7 @@
           {#each Object.entries(q.options) as [key, val]}
             {@const isSelected = userAnswers[q.id] === key}
             <button
+              type="button"
               on:click={() => selectOption(q.id, key)}
               class="p-4 rounded-2xl border text-left text-xs sm:text-sm font-medium transition flex items-start gap-3.5 {isSelected ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-lg shadow-indigo-600/10' : 'bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-950'}"
             >
@@ -204,6 +209,7 @@
         <!-- Card Footer Action Bar -->
         <div class="flex items-center justify-between pt-4 border-t border-slate-800">
           <button
+            type="button"
             on:click={() => (currentIndex = Math.max(0, currentIndex - 1))}
             disabled={currentIndex === 0}
             class="px-4 py-2 bg-slate-950 hover:bg-slate-800 disabled:opacity-40 text-slate-300 rounded-xl text-xs font-bold border border-slate-800 transition"
@@ -213,6 +219,7 @@
 
           {#if currentIndex < demoQuestions.length - 1}
             <button
+              type="button"
               on:click={() => (currentIndex = Math.min(demoQuestions.length - 1, currentIndex + 1))}
               class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold shadow transition flex items-center gap-1.5"
             >
@@ -221,6 +228,7 @@
             </button>
           {:else}
             <button
+              type="button"
               on:click={finishDemoTest}
               class="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-emerald-600/20 transition flex items-center gap-2"
             >
@@ -254,7 +262,7 @@
         <!-- Answer Explanations Review List -->
         <div class="text-left space-y-4 pt-4 border-t border-slate-800">
           <h3 class="text-sm font-extrabold text-white flex items-center gap-2">
-            <Sparkles class="w-4 h-4 text-amber-400" /> Pembahasan Soal & Kunci Jawaban
+            <BookOpen class="w-4 h-4 text-emerald-400" /> Pembahasan Soal & Kunci Jawaban
           </h3>
 
           <div class="space-y-3">
@@ -284,6 +292,7 @@
         <!-- Action Bar -->
         <div class="flex flex-col sm:flex-row justify-center gap-3 pt-4">
           <button
+            type="button"
             on:click={restartDemoTest}
             class="px-5 py-3 bg-slate-950 hover:bg-slate-800 text-slate-200 rounded-xl text-xs font-bold border border-slate-800 transition flex items-center justify-center gap-2"
           >

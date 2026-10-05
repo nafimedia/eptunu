@@ -16,7 +16,10 @@
     ExternalLink,
     FileText,
     Archive,
-    Download
+    Download,
+    X,
+    Maximize2,
+    Minimize2
   } from 'lucide-svelte';
 
   let certificates: any[] = [];
@@ -25,6 +28,7 @@
   let selectedCert: any = null;
   let isPreviewModalOpen = false;
   let isDownloadingBatch = false;
+  let zoomMode: 'fit' | 'full' = 'fit';
 
   $: currentUser = $auth.user;
   $: isAdmin = currentUser?.role && ['SUPER_ADMIN', 'ADMIN_EPT', 'ADMIN', 'PROCTOR', 'EXECUTIVE'].includes(currentUser.role);
@@ -122,37 +126,39 @@
 </svelte:head>
 
 <div class="space-y-6">
-  <!-- Header Banner -->
-  <div class="bg-gradient-to-r from-emerald-700 via-teal-800 to-slate-900 dark:from-emerald-950 dark:via-slate-900 dark:to-indigo-950 p-6 rounded-2xl border border-emerald-500/30 dark:border-emerald-800/40 shadow-xl text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+  <!-- Page Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="flex items-center gap-2 mb-1">
-        <ShieldCheck class="w-6 h-6 text-emerald-300" />
-        <h1 class="text-xl font-extrabold tracking-tight">Manajemen Sertifikat EPT</h1>
+      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 mb-2">
+        <Award class="w-3.5 h-3.5" /> Sertifikasi Resmi
       </div>
-      <p class="text-xs text-emerald-100/90 dark:text-slate-300">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Manajemen Sertifikat EPT</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
         Penerbitan sertifikat digital resmi UPT Bahasa UNU Purwokerto lengkap dengan QR Code, Digital Signature, & Verifikasi Online.
       </p>
     </div>
     <div class="flex items-center gap-2">
       {#if isAdmin}
         <button
+          type="button"
           on:click={handleDownloadBatchZip}
           disabled={isDownloadingBatch}
-          class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-extrabold rounded-xl border border-white/20 transition shadow"
+          class="bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs px-4 py-2.5 hover:bg-primary/90 transition inline-flex items-center gap-2 disabled:opacity-50"
         >
           <Archive class="w-4 h-4" />
           <span>{isDownloadingBatch ? 'Mengunduh ZIP...' : 'Download Batch (ZIP)'}</span>
         </button>
       {/if}
       <button
+        type="button"
         on:click={loadCertificates}
-        class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl border border-white/20 transition shadow"
+        class="border border-border bg-card hover:bg-muted text-foreground font-bold text-xs rounded-xl px-4 py-2.5 transition inline-flex items-center gap-2"
       >
         <RefreshCw class="w-3.5 h-3.5" />
         <span>Refresh</span>
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Search (Admin View) -->
   {#if isAdmin}
@@ -216,6 +222,7 @@
 
           <div class="flex items-center gap-2 pt-2 border-t border-border/70">
             <button
+              type="button"
               on:click={() => openPreviewModal(item)}
               class="flex-1 inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow-xs"
             >
@@ -244,32 +251,71 @@
   {@const session = selectedCert.studentExam?.examSession}
   {@const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(window.location.origin + '/verify/' + selectedCert.certificateNo)}`}
 
-  <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-    <div class="bg-card border border-border rounded-2xl max-w-3xl w-full p-6 shadow-2xl space-y-4 my-8 text-foreground">
-      <!-- Modal Header (Non-printable) -->
-      <div class="flex justify-between items-center border-b border-border pb-3 print:hidden">
-        <h3 class="text-sm font-extrabold text-foreground flex items-center gap-2">
-          <Award class="w-4 h-4 text-emerald-500" />
-          Pratinjau Sertifikat Resmi EPT (Ukuran A4 Portrait)
-        </h3>
-        <div class="flex items-center gap-2">
+  <div class="fixed inset-0 z-50 bg-background/80 backdrop-blur-md flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+    <div class="bg-card border border-border rounded-2xl max-w-4xl w-full max-h-[94vh] shadow-2xl flex flex-col overflow-hidden text-card-foreground">
+      <!-- Fixed Modal Header Toolbar (Always Visible at the Top) -->
+      <div class="p-3.5 sm:p-4 border-b border-border bg-card flex items-center justify-between gap-3 shrink-0 print:hidden z-20">
+        <div class="flex items-center gap-2.5 min-w-0">
+          <div class="p-2 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 shrink-0">
+            <Award class="w-4 h-4" />
+          </div>
+          <div class="min-w-0">
+            <h3 class="text-xs sm:text-sm font-extrabold text-foreground truncate">
+              Pratinjau Sertifikat Resmi EPT (Ukuran A4)
+            </h3>
+            <p class="text-[11px] text-muted-foreground font-mono truncate">
+              {selectedCert.certificateNo} • {student?.fullName || '-'}
+            </p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-2 shrink-0">
+          <!-- Zoom toggle button -->
           <button
-            on:click={printCertificate}
-            class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition shadow"
+            type="button"
+            on:click={() => (zoomMode = zoomMode === 'fit' ? 'full' : 'fit')}
+            class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border bg-muted/40 hover:bg-muted text-foreground text-xs font-semibold transition"
+            title={zoomMode === 'fit' ? 'Perbesar ke Ukuran Nyata' : 'Sesuaikan dengan Layar'}
           >
-            <Printer class="w-3.5 h-3.5" />
-            <span>Cetak Sertifikat A4 / Simpan PDF</span>
+            {#if zoomMode === 'fit'}
+              <Maximize2 class="w-3.5 h-3.5 text-muted-foreground" />
+              <span>Ukuran Penuh</span>
+            {:else}
+              <Minimize2 class="w-3.5 h-3.5 text-muted-foreground" />
+              <span>Fit Layar</span>
+            {/if}
           </button>
-          <button on:click={() => (isPreviewModalOpen = false)} class="text-slate-400 hover:text-white text-lg">✕</button>
+
+          <!-- Primary Print / PDF Button -->
+          <button
+            type="button"
+            on:click={printCertificate}
+            class="inline-flex items-center gap-1.5 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs sm:text-sm font-bold rounded-xl shadow-md shadow-emerald-600/20 transition-all active:scale-95"
+          >
+            <Printer class="w-4 h-4" />
+            <span>Cetak / Simpan PDF</span>
+          </button>
+
+          <!-- Close Modal Button -->
+          <button
+            type="button"
+            on:click={() => (isPreviewModalOpen = false)}
+            class="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            title="Tutup Pratinjau"
+          >
+            <X class="w-5 h-5" />
+          </button>
         </div>
       </div>
 
-      <!-- CERTIFICATE TEMPLATE BODY (EXACT A4 PORTRAIT PRINTABLE AREA MATCHING SAMPLE REDAKSI) -->
-      <div
-        id="certificate-print-area"
-        class="bg-[#faf8f5] text-slate-900 px-8 py-12 sm:px-12 sm:py-16 relative shadow-2xl font-serif print:m-0 print:shadow-none mx-auto w-full aspect-[210/297] flex flex-col justify-between overflow-hidden bg-cover bg-center bg-no-repeat"
-        style="background-image: url('/certificate_bg.jpg');"
-      >
+      <!-- Scrollable Preview Viewport Area -->
+      <div class="flex-1 overflow-y-auto p-4 sm:p-8 bg-muted/30 flex justify-center items-start">
+        <!-- CERTIFICATE TEMPLATE BODY (EXACT A4 PORTRAIT PRINTABLE AREA MATCHING SAMPLE REDAKSI) -->
+        <div
+          id="certificate-print-area"
+          class="bg-[#faf8f5] text-slate-900 px-6 py-8 sm:px-10 sm:py-12 relative shadow-2xl font-serif print:m-0 print:shadow-none mx-auto w-full {zoomMode === 'fit' ? 'max-w-[580px]' : 'max-w-[760px]'} aspect-[210/297] flex flex-col justify-between overflow-hidden bg-cover bg-center bg-no-repeat border border-slate-300/80 rounded-xs shrink-0 transition-all duration-200"
+          style="background-image: url('/certificate_bg.jpg');"
+        >
         <!-- Background Seal Watermark -->
         <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] z-0">
           <img src="/logo.png" alt="Watermark UNU" class="w-80 h-80 object-contain" />
@@ -403,6 +449,7 @@
       </div>
     </div>
   </div>
+</div>
 {/if}
 
 <style>

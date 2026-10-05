@@ -71,7 +71,7 @@ async function main() {
   await app.register(swagger, {
     openapi: {
       info: {
-        title: 'EPTUNU CBT API Documentation',
+        title: 'EPTUNU API Documentation',
         description: 'Fastify + SvelteKit 5 + MySQL EPTUNU Computer-Based Test REST & WebSocket API',
         version: '1.0.0',
       },
@@ -107,7 +107,7 @@ async function main() {
   });
 
   // Health check route
-  app.get('/health', async () => ({ status: 'ok', service: 'EPTUNU CBT API', timestamp: new Date().toISOString() }));
+  app.get('/health', async () => ({ status: 'ok', service: 'EPTUNU API', timestamp: new Date().toISOString() }));
 
   // Helper plugin for registering all EPTUNU modules
   const registerModules = async (fastifyScope: FastifyInstance, prefix: string) => {

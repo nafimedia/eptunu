@@ -3,7 +3,7 @@
   import { apiFetch } from '$api/client';
   import { auth, setAuth } from '$stores/auth';
   import { toast } from 'svelte-sonner';
-  import { User, Mail, Shield, KeyRound, Save, Lock, Sparkles, CheckCircle2, Calendar, Camera, Upload } from 'lucide-svelte';
+  import { User, Mail, Shield, KeyRound, Save, Lock, CheckCircle2, Calendar, Camera, Upload } from 'lucide-svelte';
 
   let name = '';
   let email = '';
@@ -368,7 +368,7 @@
   <!-- Role Permissions Active Overview -->
   <div class="bg-card border border-border rounded-2xl p-6 shadow-sm space-y-4">
     <div class="flex items-center gap-2">
-      <Sparkles class="w-5 h-5 text-indigo-500" />
+      <Shield class="w-5 h-5 text-indigo-500" />
       <h3 class="font-semibold text-base">Hak Akses Matriks Role ({role})</h3>
     </div>
     <div class="flex flex-wrap gap-2 pt-1">

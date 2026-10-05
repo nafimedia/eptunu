@@ -225,24 +225,25 @@
 
 <div class="space-y-6">
   <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 rounded-2xl border border-indigo-900/50 shadow-xl text-white">
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-500/30 mb-2">
+      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
         <Users class="w-3.5 h-3.5" /> Modul Pengolahan Akun
       </div>
-      <h1 class="text-2xl font-extrabold tracking-tight">Manajemen Pengguna (User Management)</h1>
-      <p class="text-slate-300 text-sm mt-1">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Manajemen Pengguna</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
         Kelola akun Mahasiswa, Dosen, Penyusun Soal, Pengawas, dan Operator EPT UNU Purwokerto.
       </p>
     </div>
 
     <button
+      type="button"
       on:click={openCreateModal}
-      class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30 transition-all duration-200"
+      class="bg-primary text-primary-foreground font-bold text-xs rounded-xl shadow-xs px-4 py-2.5 hover:bg-primary/90 transition inline-flex items-center gap-2"
     >
       <UserPlus class="w-4 h-4" /> Tambah Pengguna Baru
     </button>
-  </div>
+  </header>
 
   <!-- Filters & Search Toolbar -->
   <div class="bg-card p-4 rounded-xl border border-border shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4 text-card-foreground">
@@ -334,6 +335,7 @@
                   <div class="flex items-center justify-center gap-1.5">
                     <!-- Edit Button -->
                     <button
+                      type="button"
                       on:click={() => openEditModal(u)}
                       title="Edit Data User"
                       class="p-2 text-muted-foreground hover:text-primary hover:bg-muted rounded-lg transition-colors"
@@ -343,6 +345,7 @@
 
                     <!-- Reset Password Button -->
                     <button
+                      type="button"
                       on:click={() => openResetPasswordModal(u)}
                       title="Reset Password"
                       class="p-2 text-muted-foreground hover:text-amber-500 hover:bg-amber-500/10 rounded-lg transition-colors"
@@ -352,6 +355,7 @@
 
                     <!-- Delete Button -->
                     <button
+                      type="button"
                       on:click={() => handleDeleteUser(u)}
                       title="Hapus User"
                       class="p-2 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
@@ -373,6 +377,7 @@
         </div>
         <div class="flex items-center gap-2">
           <button
+            type="button"
             on:click={() => { if (currentPage > 1) { currentPage--; fetchUsers(); } }}
             disabled={currentPage === 1}
             class="p-2 text-muted-foreground hover:bg-muted rounded-lg disabled:opacity-40 transition-colors"
@@ -380,6 +385,7 @@
             <ChevronLeft class="w-4 h-4" />
           </button>
           <button
+            type="button"
             on:click={() => { if (currentPage < totalPages) { currentPage++; fetchUsers(); } }}
             disabled={currentPage === totalPages}
             class="p-2 text-muted-foreground hover:bg-muted rounded-lg disabled:opacity-40 transition-colors"
@@ -397,11 +403,14 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-lg overflow-hidden text-card-foreground">
       <!-- Modal Header -->
-      <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <UserPlus class="w-5 h-5 text-indigo-400" /> {editingUser ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru'}
+      <div class="p-5 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2.5 font-bold text-base">
+          <div class="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
+            <UserPlus class="w-4 h-4" />
+          </div>
+          <span>{editingUser ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru'}</span>
         </div>
-        <button on:click={() => (isModalOpen = false)} class="text-slate-400 hover:text-white transition-colors">
+        <button type="button" on:click={() => (isModalOpen = false)} class="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
           <X class="w-5 h-5" />
         </button>
       </div>
@@ -536,11 +545,14 @@
 {#if isResetModalOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden text-card-foreground">
-      <div class="p-5 bg-gradient-to-r from-slate-900 to-amber-950 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <KeyRound class="w-5 h-5 text-amber-400" /> Reset Password Pengguna
+      <div class="p-5 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2.5 font-bold text-base">
+          <div class="p-2 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+            <KeyRound class="w-4 h-4" />
+          </div>
+          <span>Reset Password Pengguna</span>
         </div>
-        <button on:click={() => (isResetModalOpen = false)} class="text-slate-400 hover:text-white transition-colors">
+        <button type="button" on:click={() => (isResetModalOpen = false)} class="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
           <X class="w-5 h-5" />
         </button>
       </div>

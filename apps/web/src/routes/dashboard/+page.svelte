@@ -57,25 +57,11 @@
       await fetchRoleDashboardData();
     }
   });
-
-  let activeSimulationToken = 'UJIAN1';
-
   async function fetchHistory() {
     try {
-      const [historyRes, activeSessionsRes] = await Promise.allSettled([
-        apiFetch('/exam/my-exams'),
-        apiFetch('/exam-sessions/active'),
-      ]);
-
-      if (historyRes.status === 'fulfilled' && historyRes.value.success) {
-        examHistory = historyRes.value.data || [];
-      }
-
-      if (activeSessionsRes.status === 'fulfilled' && activeSessionsRes.value.success) {
-        const activeList = activeSessionsRes.value.data || [];
-        if (activeList.length > 0 && activeList[0].token) {
-          activeSimulationToken = activeList[0].token;
-        }
+      const res = await apiFetch('/exam/my-exams');
+      if (res && res.success) {
+        examHistory = res.data || [];
       }
     } catch (e) {
       // ignore
@@ -209,6 +195,7 @@
     </div>
 
     <button
+      type="button"
       on:click={handleLogout}
       class="flex items-center gap-2 px-4 py-2 bg-muted hover:bg-destructive/10 hover:text-destructive text-muted-foreground rounded-xl text-xs font-semibold border border-border transition self-start sm:self-auto"
     >
@@ -267,16 +254,14 @@
           </button>
         </form>
 
-        <div class="p-3 bg-muted/40 rounded-xl border border-border/60 text-xs text-muted-foreground leading-relaxed flex items-center justify-between">
-          <span>💡 Token sesi aktif saat ini:</span>
-          <button
-            type="button"
-            on:click={() => (tokenInput = activeSimulationToken)}
-            class="text-primary font-mono font-bold hover:underline cursor-pointer bg-primary/10 px-2 py-0.5 rounded transition"
-            title="Klik untuk memasukkan token otomatis"
-          >
-            {activeSimulationToken}
-          </button>
+        <div class="p-3.5 bg-muted/40 rounded-xl border border-border/70 text-xs text-muted-foreground leading-relaxed space-y-1.5">
+          <div class="font-semibold text-foreground flex items-center gap-1.5">
+            <ShieldCheck class="w-3.5 h-3.5 text-emerald-500" />
+            <span>Petunjuk Masuk Ujian:</span>
+          </div>
+          <p class="text-[11px]">
+            Token ujian 6 karakter bersifat dinamis dan akan diumumkan secara langsung oleh <strong>Pengawas Ujian (Proctor)</strong> di ruang laboratorium sebelum ujian dimulai.
+          </p>
         </div>
       </div>
 
@@ -500,6 +485,7 @@
               <div class="flex items-center gap-2">
                 {#if s.isActive}
                   <button
+                    type="button"
                     on:click={() => handleStopSession(s)}
                     class="px-3 py-1.5 bg-amber-500/10 text-amber-600 border border-amber-500/20 hover:bg-amber-500/20 text-xs font-semibold rounded-lg transition flex items-center gap-1"
                   >
@@ -507,6 +493,7 @@
                   </button>
                 {:else}
                   <button
+                    type="button"
                     on:click={() => handleStartSession(s)}
                     class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-sm transition flex items-center gap-1"
                   >

@@ -5,7 +5,6 @@
   import { setAuth } from '$stores/auth';
   import { toast } from 'svelte-sonner';
   import {
-    Sparkles,
     User,
     Mail,
     Lock,

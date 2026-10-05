@@ -18,9 +18,7 @@
     ChevronRight,
     AlertTriangle,
     Maximize2,
-    Minimize2,
-    Zap,
-    RotateCcw
+    Zap
   } from 'lucide-svelte';
 
   const studentExamId = $page.params.id;
@@ -34,12 +32,19 @@
   let showSubmitModal = false;
   let submitting = false;
   let violationCount = 0;
+  let showAntiCheatModal = false;
+  let currentViolationReason = '';
   let ws: WebSocket | null = null;
 
   // Features Settings
-  let isAutoNext = true; // Auto Next toggle
+  let isAutoNext = false; // Safe default: off
   let isFullscreen = false;
   let isLoading = true;
+
+  // Live Statistics
+  $: totalAnswered = questions.filter(q => answers[q.id]?.option !== null && answers[q.id]?.option !== undefined).length;
+  $: totalUnanswered = questions.length - totalAnswered;
+  $: totalFlagged = questions.filter(q => answers[q.id]?.isFlagged).length;
 
   // Hydrate exam state from server session & local cache
   onMount(async () => {
@@ -112,7 +117,7 @@
 
         if (res.data.status === 'SUBMITTED' || res.data.status === 'FORCE_SUBMITTED') {
           toast.info('Sesi ujian ini telah diselesaikan.');
-          goto('/dashboard');
+          goto('/dashboard/results');
           return;
         }
 
@@ -158,12 +163,15 @@
 
   function registerViolation(reason: string) {
     const now = Date.now();
-    if (now - lastViolationTime < 3000) return; // Throttle 3s
+    if (now - lastViolationTime < 3000) return; // Throttle 3s debounce
     lastViolationTime = now;
 
     violationCount++;
-    toast.error(`Peringatan Pelanggaran Anti-Cheat #${violationCount}!`, {
-      description: `${reason}. Maksimal 3x pelanggaran sebelum ujian otomatis di-submit.`,
+    currentViolationReason = reason;
+    showAntiCheatModal = true;
+
+    toast.error(`Peringatan Integritas Ujian #${violationCount}!`, {
+      description: `${reason}. Sisa ${Math.max(0, 3 - violationCount)} kesempatan sebelum ujian otomatis dikumpulkan.`,
       duration: 6000,
     });
 
@@ -174,7 +182,7 @@
 
     if (violationCount >= 3) {
       toast.error('Batas Maksimal Pelanggaran Terlampaui!', {
-        description: 'Sistem Anti-Cheat otomatis menghentikan dan mengumpulkan lembar ujian Anda.',
+        description: 'Sistem Integritas otomatis menghentikan dan mengumpulkan lembar ujian Anda.',
       });
       submitExam(true);
     }
@@ -236,7 +244,7 @@
     if (isAutoNext && activeIndex < questions.length - 1) {
       setTimeout(() => {
         activeIndex++;
-      }, 250);
+      }, 400);
     }
   }
 
@@ -307,10 +315,13 @@
       if (res.ok && data.success) {
         localStorage.removeItem(`ept_cache_${studentExamId}`);
         sessionStorage.removeItem('currentExamSession');
-        goto('/dashboard');
+        toast.success('Ujian EPTUNU berhasil dikumpulkan!');
+        goto('/dashboard/results');
+      } else {
+        toast.error(data.message || 'Gagal mengirim ujian. Silakan coba kembali atau panggil pengawas.');
       }
-    } catch (e) {
-      // ignore
+    } catch (err: any) {
+      toast.error('Koneksi terputus: ' + (err.message || 'Gagal menghubungi server') + '. Periksa jaringan Anda.');
     } finally {
       submitting = false;
       showSubmitModal = false;
@@ -349,6 +360,7 @@
         <AlertTriangle class="w-4 h-4" /> Ujian EPT wajib dilaksanakan dalam Mode Fullscreen Layar Penuh.
       </span>
       <button
+        type="button"
         on:click={requestFullscreenMode}
         class="px-3 py-1 bg-slate-950 text-white rounded-lg text-xs font-bold hover:bg-slate-900 transition flex items-center gap-1"
       >
@@ -360,12 +372,12 @@
   <!-- Top CBT Navigation Bar -->
   <header class="bg-slate-900 border-b border-slate-800 px-4 md:px-8 py-3.5 flex items-center justify-between sticky top-0 z-30 shadow-xl">
     <div class="flex items-center gap-3">
-      <div class="w-9 h-9 rounded-xl bg-indigo-600 text-white font-black flex items-center justify-center text-sm shadow-md">
+      <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white font-black flex items-center justify-center text-sm shadow-md">
         EPT
       </div>
       <div>
         <h1 class="text-sm md:text-base font-bold text-white leading-tight">
-          {sessionData?.sessionTitle || 'EPT Regular UNU Purwokerto'}
+          {sessionData?.sessionTitle || 'EPT UNU Purwokerto'}
         </h1>
         <p class="text-[11px] text-slate-400">
           Peserta: {$auth.user?.fullName} ({$auth.user?.identityNumber})
@@ -376,7 +388,7 @@
     <!-- Right Controls: Sync Status, Auto Next Toggle, Timer, Submit Button -->
     <div class="flex items-center gap-3 md:gap-4">
       <!-- Auto Next Toggle -->
-      <label class="hidden lg:flex items-center gap-2 text-xs font-medium text-slate-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 cursor-pointer">
+      <label class="hidden lg:flex items-center gap-2 text-xs font-medium text-slate-300 bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-800 cursor-pointer" title="Otomatis berpindah ke soal berikutnya setelah memilih jawaban">
         <input
           type="checkbox"
           bind:checked={isAutoNext}
@@ -392,10 +404,10 @@
           <span class="text-emerald-400 font-medium">Tersimpan</span>
         {:else if syncStatus === 'PENDING'}
           <div class="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></div>
-          <span class="text-amber-400 font-medium">Auto Saving...</span>
+          <span class="text-amber-400 font-medium">Menyimpan...</span>
         {:else}
           <WifiOff class="w-3.5 h-3.5 text-red-400" />
-          <span class="text-red-400 font-medium">Offline (Auto Resume)</span>
+          <span class="text-red-400 font-medium">Offline (Tersimpan Lokal)</span>
         {/if}
       </div>
 
@@ -407,6 +419,7 @@
 
       <!-- Finish Exam Button -->
       <button
+        type="button"
         on:click={() => (showSubmitModal = true)}
         class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs md:text-sm font-bold rounded-xl transition shadow-lg flex items-center gap-1.5"
       >
@@ -420,7 +433,13 @@
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
     <!-- Question View Area (Cols 1-8) -->
     <div class="lg:col-span-8 space-y-4">
-      <AntiCheatBanner bind:violationCount onViolation={(c) => (violationCount = c)} />
+      <AntiCheatBanner
+        {violationCount}
+        maxViolations={3}
+        showWarningModal={showAntiCheatModal}
+        {currentViolationReason}
+        onCloseModal={() => (showAntiCheatModal = false)}
+      />
 
       {#if questions.length > 0}
         <QuestionCard
@@ -436,6 +455,7 @@
         <!-- Prev / Next Controls -->
         <div class="flex items-center justify-between pt-2">
           <button
+            type="button"
             on:click={() => activeIndex = Math.max(0, activeIndex - 1)}
             disabled={activeIndex === 0}
             class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 disabled:opacity-40 rounded-xl text-xs font-semibold border border-slate-800 transition flex items-center gap-1.5"
@@ -445,6 +465,7 @@
           </button>
 
           <button
+            type="button"
             on:click={() => activeIndex = Math.min(questions.length - 1, activeIndex + 1)}
             disabled={activeIndex === questions.length - 1}
             class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-40 text-white rounded-xl text-xs font-bold transition shadow-md flex items-center gap-1.5"
@@ -491,22 +512,50 @@
   </main>
 </div>
 
-<!-- Submit Confirmation Modal -->
+<!-- Submit Confirmation Modal with Live Statistics -->
 {#if showSubmitModal}
   <div class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl text-white">
-      <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-4 border border-emerald-500/30">
+      <div class="w-12 h-12 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto mb-3 border border-emerald-500/30">
         <CheckCircle2 class="w-6 h-6" />
       </div>
 
-      <h3 class="text-lg font-bold text-center text-white mb-2">Konfirmasi Selesai Ujian</h3>
-      <p class="text-xs text-slate-300 text-center mb-6 leading-relaxed">
-        Apakah Anda yakin ingin menyelesaikan dan mengirim jawaban ujian EPT ini?
-        Jawaban yang sudah dikirim tidak dapat diubah kembali.
+      <h3 class="text-lg font-bold text-center text-white mb-1">Konfirmasi Selesai Ujian</h3>
+      <p class="text-xs text-slate-300 text-center mb-4 leading-relaxed">
+        Pastikan seluruh butir soal telah diperiksa sebelum mengirimkan lembar ujian.
       </p>
+
+      <!-- Live Summary Cards -->
+      <div class="grid grid-cols-3 gap-2 bg-slate-950 p-3 rounded-xl border border-slate-800 text-center mb-4 font-mono">
+        <div class="p-2 rounded-lg bg-emerald-500/10 border border-emerald-500/20">
+          <span class="block text-[10px] text-emerald-400 font-bold uppercase font-sans">Terjawab</span>
+          <span class="text-base font-extrabold text-emerald-300">{totalAnswered} / {questions.length}</span>
+        </div>
+        <div class="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20">
+          <span class="block text-[10px] text-rose-400 font-bold uppercase font-sans">Belum Diisi</span>
+          <span class="text-base font-extrabold text-rose-300">{totalUnanswered}</span>
+        </div>
+        <div class="p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
+          <span class="block text-[10px] text-amber-400 font-bold uppercase font-sans">Ragu-Ragu</span>
+          <span class="text-base font-extrabold text-amber-300">{totalFlagged}</span>
+        </div>
+      </div>
+
+      {#if totalUnanswered > 0}
+        <div class="p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-xs text-rose-300 flex items-start gap-2 mb-4">
+          <AlertTriangle class="w-4 h-4 shrink-0 mt-0.5" />
+          <span>Perhatian: Masih ada <strong>{totalUnanswered} butir soal</strong> yang belum Anda isi. Jawaban kosong tidak mendapatkan poin.</span>
+        </div>
+      {:else if totalFlagged > 0}
+        <div class="p-3 bg-amber-500/10 border border-amber-500/30 rounded-xl text-xs text-amber-300 flex items-start gap-2 mb-4">
+          <AlertTriangle class="w-4 h-4 shrink-0 mt-0.5" />
+          <span>Anda memiliki <strong>{totalFlagged} butir soal</strong> yang masih bertanda ragu-ragu. Jawaban yang sudah dipilih tetap akan dihitung.</span>
+        </div>
+      {/if}
 
       <div class="flex items-center gap-3">
         <button
+          type="button"
           on:click={() => (showSubmitModal = false)}
           disabled={submitting}
           class="flex-1 py-3 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl text-xs transition border border-slate-700"
@@ -515,11 +564,16 @@
         </button>
 
         <button
+          type="button"
           on:click={() => submitExam(false)}
           disabled={submitting}
-          class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-lg"
+          class="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2"
         >
-          {submitting ? 'Mengirim...' : 'Ya, Kirim Ujian'}
+          {#if submitting}
+            <span>Mengirim...</span>
+          {:else}
+            <span>Ya, Kumpulkan Ujian</span>
+          {/if}
         </button>
       </div>
     </div>

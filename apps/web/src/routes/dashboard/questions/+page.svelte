@@ -19,7 +19,6 @@
     Volume2,
     Search,
     SlidersHorizontal,
-    Sparkles,
     AlertCircle,
     FileSpreadsheet,
     MessageSquare,
@@ -438,69 +437,80 @@
 
 <div class="space-y-6">
   <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 rounded-2xl border border-indigo-900/50 shadow-xl text-white">
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-500/30 mb-2">
-        <FileQuestion class="w-3.5 h-3.5" /> Modul Repository & Validasi Soal
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+          <FileQuestion class="w-3 h-3" /> Repositori Bank Soal
+        </span>
       </div>
-      <h1 class="text-2xl font-extrabold tracking-tight">Bank Soal & Media Listening</h1>
-      <p class="text-slate-300 text-sm mt-1">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Bank Soal & Media Listening</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
         Kelola bank soal TOEFL ITP (Listening Part A/B/C, Structure, Reading Passage), validasi reviewer, dan batch import.
       </p>
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2.5 flex-wrap sm:flex-nowrap">
       {#if activeTab === 'reading'}
         <button
+          type="button"
           on:click={() => (isPassageModalOpen = true)}
-          class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-medium text-sm border border-slate-700 transition-all"
+          class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-semibold text-xs border border-border transition shadow-xs"
         >
-          <FileText class="w-4 h-4 text-teal-400" /> + Reading Passage
+          <FileText class="w-4 h-4 text-emerald-500" />
+          <span>+ Reading Passage</span>
         </button>
       {/if}
 
       <button
+        type="button"
         on:click={() => openCreateQuestionModal(activeTab === 'listening' ? 'LISTENING' : (activeTab === 'reading' ? 'READING' : 'STRUCTURE'))}
-        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30 transition-all duration-200"
+        class="inline-flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-xs transition"
       >
-        <Plus class="w-4 h-4" /> Tambah Soal Baru
+        <Plus class="w-4 h-4" />
+        <span>Tambah Soal Baru</span>
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Tab Navigation -->
   <div class="flex items-center gap-2 border-b border-border pb-2 overflow-x-auto">
     <button
+      type="button"
       on:click={() => { activeTab = 'listening'; loadQuestions(); }}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'listening' ? 'bg-indigo-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs sm:text-sm transition-all whitespace-nowrap {activeTab === 'listening' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <Headphones class="w-4 h-4" /> Section 1: Listening
     </button>
 
     <button
+      type="button"
       on:click={() => { activeTab = 'structure'; loadQuestions(); }}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'structure' ? 'bg-indigo-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs sm:text-sm transition-all whitespace-nowrap {activeTab === 'structure' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
-      <FileQuestion class="w-4 h-4" /> Section 2: Structure
+      <BookOpen class="w-4 h-4" /> Section 2: Structure
     </button>
 
     <button
+      type="button"
       on:click={() => { activeTab = 'reading'; loadQuestions(); }}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'reading' ? 'bg-indigo-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs sm:text-sm transition-all whitespace-nowrap {activeTab === 'reading' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <BookOpen class="w-4 h-4" /> Section 3: Reading Passage
     </button>
 
     <button
+      type="button"
       on:click={() => { activeTab = 'review'; loadQuestions(); }}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'review' ? 'bg-purple-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs sm:text-sm transition-all whitespace-nowrap {activeTab === 'review' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <CheckCircle2 class="w-4 h-4" /> Workflow Validasi (Validator)
     </button>
 
     <button
+      type="button"
       on:click={() => (activeTab = 'import')}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'import' ? 'bg-teal-600 text-white shadow-md' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs sm:text-sm transition-all whitespace-nowrap {activeTab === 'import' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <FileSpreadsheet class="w-4 h-4" /> Batch Import (Excel/CSV)
     </button>
@@ -581,7 +591,7 @@
         <div class="p-4 bg-teal-500/10 border border-teal-500/20 rounded-2xl space-y-3">
           <div class="flex items-center justify-between">
             <span class="text-xs font-extrabold text-teal-700 dark:text-teal-300 flex items-center gap-2">
-              <Sparkles class="w-4 h-4 text-teal-600 dark:text-teal-400" />
+              <FileSpreadsheet class="w-4 h-4 text-teal-600 dark:text-teal-400" />
               Pratinjau Hasil Ekstraksi: {parsedPreviewQuestions.length} Soal Siap Diimpor
             </span>
             <button
@@ -833,11 +843,11 @@
 {#if isCreateModalOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card text-card-foreground rounded-2xl border border-border shadow-2xl w-full max-w-2xl overflow-hidden max-h-[90vh] flex flex-col">
-      <div class="p-5 bg-gradient-to-r from-slate-900 to-indigo-950 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <Plus class="w-5 h-5 text-indigo-400" /> Tambah Soal {formData.section}
+      <div class="p-5 sm:p-6 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2 font-bold text-base text-foreground">
+          <Plus class="w-5 h-5 text-primary" /> Tambah Soal {formData.section}
         </div>
-        <button on:click={() => (isCreateModalOpen = false)} class="text-slate-400 hover:text-white transition-colors">
+        <button type="button" on:click={() => (isCreateModalOpen = false)} class="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
           <X class="w-5 h-5" />
         </button>
       </div>
@@ -969,11 +979,13 @@
 {#if isPassageModalOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card text-card-foreground rounded-2xl border border-border shadow-2xl w-full max-w-lg overflow-hidden">
-      <div class="p-5 bg-gradient-to-r from-slate-900 to-teal-950 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <BookOpen class="w-5 h-5 text-teal-400" /> Tambah Reading Passage Baru
+      <div class="p-5 sm:p-6 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2 font-bold text-base text-foreground">
+          <BookOpen class="w-5 h-5 text-emerald-500" /> Tambah Reading Passage Baru
         </div>
-        <button on:click={() => (isPassageModalOpen = false)} class="text-slate-400 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
+        <button type="button" on:click={() => (isPassageModalOpen = false)} class="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+          <X class="w-5 h-5" />
+        </button>
       </div>
 
       <div class="p-6 space-y-4">
@@ -989,7 +1001,7 @@
 
       <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
         <button type="button" on:click={() => (isPassageModalOpen = false)} class="px-4 py-2 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors">Batal</button>
-        <button type="button" on:click={handleSavePassage} class="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-500 rounded-xl shadow-md transition-all">Simpan Passage</button>
+        <button type="button" on:click={handleSavePassage} class="px-4 py-2 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-xs transition-all">Simpan Passage</button>
       </div>
     </div>
   </div>
@@ -999,11 +1011,13 @@
 {#if isReviewModalOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card text-card-foreground rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden">
-      <div class="p-5 bg-gradient-to-r from-slate-900 to-purple-950 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <CheckCircle2 class="w-5 h-5 text-purple-400" /> Validasi Soal (Reviewer)
+      <div class="p-5 sm:p-6 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2 font-bold text-base text-foreground">
+          <CheckCircle2 class="w-5 h-5 text-indigo-500" /> Validasi Soal (Reviewer)
         </div>
-        <button on:click={() => (isReviewModalOpen = false)} class="text-slate-400 hover:text-white transition-colors"><X class="w-5 h-5" /></button>
+        <button type="button" on:click={() => (isReviewModalOpen = false)} class="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+          <X class="w-5 h-5" />
+        </button>
       </div>
 
       <div class="p-6 space-y-4">

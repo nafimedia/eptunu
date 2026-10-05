@@ -225,6 +225,11 @@ export async function examRoutes(fastify: FastifyInstance) {
           answers: true,
         },
       });
+    } else if (studentExam.verificationStatus === 'REJECTED') {
+      return reply.status(403).send({
+        success: false,
+        message: 'Pendaftaran Anda pada sesi ujian ini telah ditolak oleh verifikator. Silakan hubungi administrator UPT Bahasa.',
+      });
     } else if (studentExam.status === 'SUBMITTED' || studentExam.status === 'FORCE_SUBMITTED') {
       return reply.status(403).send({
         success: false,

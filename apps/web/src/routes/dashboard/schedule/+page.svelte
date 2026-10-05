@@ -18,7 +18,7 @@
     Copy,
     Check,
     X,
-    Sparkles,
+    AlertCircle,
     Shield,
     Play,
     Square,
@@ -265,24 +265,28 @@
   <!-- STUDENT DASHBOARD VIEW FOR EXAM SCHEDULES -->
   <div class="space-y-6">
     <!-- Student Header Banner -->
-    <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 p-6 rounded-3xl border border-emerald-800/40 shadow-2xl text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
       <div>
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-semibold border border-emerald-500/30 mb-2">
-          <Calendar class="w-3.5 h-3.5" /> Pelaksanaan Ujian CBT Peserta
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+            <Calendar class="w-3 h-3" /> Pelaksanaan Ujian CBT
+          </span>
         </div>
-        <h1 class="text-2xl font-extrabold tracking-tight">Jadwal Ujian EPT UNU Purwokerto</h1>
-        <p class="text-slate-300 text-xs mt-1">
+        <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Jadwal Ujian EPT UNU Purwokerto</h1>
+        <p class="text-xs sm:text-sm text-muted-foreground mt-1">
           Pantau sesi terdaftar Anda, verifikasi status ruang Lab Komputer, token akses, dan pintu masuk ujian CBT.
         </p>
       </div>
 
       <button
+        type="button"
         on:click={loadSchedules}
-        class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600/80 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl border border-emerald-500/30 transition shadow"
+        class="inline-flex items-center gap-2 px-3.5 py-2 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold rounded-xl border border-border transition shadow-xs"
       >
-        <RefreshCw class="w-3.5 h-3.5" /> Refresh Jadwal
+        <RefreshCw class="w-3.5 h-3.5" />
+        <span>Refresh Jadwal</span>
       </button>
-    </div>
+    </header>
 
     <!-- Section 1: Registered Sessions -->
     <div class="space-y-4">
@@ -298,7 +302,7 @@
       {:else if studentExams.length === 0}
         <div class="p-6 bg-amber-500/10 border border-amber-500/20 rounded-2xl text-amber-900 dark:text-amber-200 space-y-3">
           <div class="flex items-center gap-2 font-bold text-sm">
-            <Sparkles class="w-4 h-4 text-amber-600 dark:text-amber-400" />
+            <AlertCircle class="w-4 h-4 text-amber-600 dark:text-amber-400" />
             <span>Anda belum terdaftar pada sesi ujian aktif</span>
           </div>
           <p class="text-xs text-amber-800 dark:text-amber-300">
@@ -343,20 +347,30 @@
                   <Key class="w-4 h-4 text-primary" />
                   <div>
                     <div class="text-[10px] text-muted-foreground font-semibold uppercase">Token Ujian Anda</div>
-                    <div class="font-mono text-base font-black text-primary tracking-widest">{exam.examSession?.token || '******'}</div>
+                    <div class="font-mono text-base font-black text-primary tracking-widest">
+                      {#if exam.examSession?.isActive || exam.status === 'IN_PROGRESS'}
+                        {exam.examSession?.token || '******'}
+                      {:else}
+                        <span class="text-xs text-muted-foreground font-sans font-medium">Dibagikan di Ruang Lab</span>
+                      {/if}
+                    </div>
                   </div>
                 </div>
-                <button
-                  on:click={() => copyToken(exam.examSession?.token, exam.id)}
-                  class="px-3 py-1.5 bg-background hover:bg-muted text-foreground rounded-lg text-xs font-bold border border-border transition"
-                >
-                  {copiedTokenId === exam.id ? 'Tersalin!' : 'Salin Token'}
-                </button>
+                {#if exam.examSession?.isActive || exam.status === 'IN_PROGRESS'}
+                  <button
+                    type="button"
+                    on:click={() => copyToken(exam.examSession?.token, exam.id)}
+                    class="px-3 py-1.5 bg-background hover:bg-muted text-foreground rounded-lg text-xs font-bold border border-border transition cursor-pointer"
+                  >
+                    {copiedTokenId === exam.id ? 'Tersalin!' : 'Salin Token'}
+                  </button>
+                {/if}
               </div>
 
               <!-- CTA Launch Button -->
               {#if exam.status === 'COMPLETED' || exam.status === 'SUBMITTED' || exam.status === 'FORCE_SUBMITTED'}
                 <button
+                  type="button"
                   on:click={() => goto('/dashboard/results')}
                   class="w-full py-2.5 px-4 rounded-xl bg-muted hover:bg-muted/80 text-foreground font-bold text-xs transition flex items-center justify-center gap-2 border border-border"
                 >
@@ -365,6 +379,7 @@
                 </button>
               {:else if exam.examSession?.isActive || exam.status === 'IN_PROGRESS'}
                 <button
+                  type="button"
                   on:click={() => goto(`/exam/${exam.id}`)}
                   class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-extrabold text-xs shadow-lg shadow-emerald-600/30 transition flex items-center justify-center gap-2 animate-pulse"
                 >
@@ -418,24 +433,28 @@
   <!-- ADMIN / PROCTOR MANAGEMENT VIEW -->
   <div class="space-y-6">
     <!-- Page Header -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 rounded-2xl border border-indigo-900/50 shadow-xl text-white">
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
       <div>
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-500/30 mb-2">
-          <Calendar class="w-3.5 h-3.5" /> Modul Pelaksanaan & Sesi Ujian
+        <div class="flex items-center gap-2 mb-1.5">
+          <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+            <Calendar class="w-3 h-3" /> Modul Pelaksanaan & Sesi Ujian
+          </span>
         </div>
-        <h1 class="text-2xl font-extrabold tracking-tight">Manajemen Jadwal Ujian EPT</h1>
-        <p class="text-slate-300 text-sm mt-1">
-          Kelola Tanggal, Jam, Ruang Lab, Kuota Peserta, Pengawas (Proctor), dan Token Paket Soal.
+        <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Manajemen Jadwal Ujian EPT</h1>
+        <p class="text-xs sm:text-sm text-muted-foreground mt-1">
+          Kelola tanggal, jam, ruang Lab Komputer, kuota peserta, pengawas (proctor), dan token ujian.
         </p>
       </div>
 
       <button
+        type="button"
         on:click={openCreateModal}
-        class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-medium text-sm shadow-lg shadow-indigo-600/30 transition-all duration-200"
+        class="inline-flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-primary-foreground font-bold text-xs rounded-xl shadow-xs transition"
       >
-        <Plus class="w-4 h-4" /> Buat Jadwal Ujian Baru
+        <Plus class="w-4 h-4" />
+        <span>Buat Jadwal Ujian Baru</span>
       </button>
-    </div>
+    </header>
 
   <!-- Stat Summary Cards -->
   <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -646,11 +665,11 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-lg overflow-hidden text-card-foreground">
       <!-- Modal Header -->
-      <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <Calendar class="w-5 h-5 text-indigo-400" /> {modalTitle}
+      <div class="p-5 sm:p-6 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2 font-bold text-base text-foreground">
+          <Calendar class="w-5 h-5 text-primary" /> {modalTitle}
         </div>
-        <button on:click={() => (isModalOpen = false)} class="text-slate-400 hover:text-white transition-colors">
+        <button type="button" on:click={() => (isModalOpen = false)} class="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
           <X class="w-5 h-5" />
         </button>
       </div>

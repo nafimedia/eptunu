@@ -61,25 +61,26 @@
 </svelte:head>
 
 <div class="space-y-6">
-  <!-- Header Banner -->
-  <div class="bg-gradient-to-r from-indigo-900 via-slate-900 to-indigo-950 p-6 rounded-3xl border border-indigo-900/50 shadow-xl text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+  <!-- Page Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="flex items-center gap-2 mb-1">
-        <Activity class="w-6 h-6 text-indigo-400" />
-        <h1 class="text-xl font-extrabold tracking-tight">Audit Log Aktivitas Sistem</h1>
+      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
+        <Activity class="w-3.5 h-3.5" /> Log & Keamanan
       </div>
-      <p class="text-xs text-indigo-200">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Audit Log Aktivitas Sistem</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
         Catatan transparan aktivitas pengguna: Login, Edit Soal, Publish Nilai, Cetak Sertifikat, & Perubahan Data.
       </p>
     </div>
     <button
+      type="button"
       on:click={fetchAuditLogs}
-      class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl border border-white/20 transition shadow"
+      class="border border-border bg-card hover:bg-muted text-foreground font-bold text-xs rounded-xl px-4 py-2.5 transition inline-flex items-center gap-2"
     >
       <RefreshCw class="w-3.5 h-3.5" />
       <span>Refresh Audit Log</span>
     </button>
-  </div>
+  </header>
 
   <!-- Filters & Search -->
   <div class="bg-card p-4 rounded-2xl border border-border shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -112,7 +113,7 @@
   </div>
 
   <!-- Audit Log List -->
-  <div class="bg-card border border-border rounded-3xl shadow-sm overflow-hidden">
+  <div class="bg-card border border-border rounded-2xl shadow-xs overflow-hidden">
     {#if isLoading}
       <div class="p-12 text-center text-xs text-muted-foreground flex items-center justify-center gap-2">
         <RefreshCw class="w-4 h-4 animate-spin text-primary" />
@@ -159,13 +160,13 @@
 <!-- AUDIT DETAIL MODAL -->
 {#if isDetailModalOpen && selectedLog}
   <div class="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-card border border-border rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-card-foreground">
+    <div class="bg-card border border-border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 text-card-foreground">
       <div class="flex justify-between items-center border-b border-border pb-3">
         <h3 class="text-sm font-extrabold text-foreground flex items-center gap-2">
           <Activity class="w-4 h-4 text-primary" />
           Rincian Audit Log
         </h3>
-        <button on:click={() => (isDetailModalOpen = false)} class="text-muted-foreground hover:text-foreground">✕</button>
+        <button type="button" on:click={() => (isDetailModalOpen = false)} class="p-1.5 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">✕</button>
       </div>
 
       <div class="bg-muted/30 p-4 rounded-2xl border border-border space-y-2 text-xs">
@@ -195,6 +196,7 @@
 
       <div class="flex justify-end">
         <button
+          type="button"
           on:click={() => (isDetailModalOpen = false)}
           class="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground text-xs font-bold rounded-xl transition"
         >

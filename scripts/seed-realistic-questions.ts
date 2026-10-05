@@ -1,174 +1,22 @@
-import { PrismaClient } from '@prisma/client';
-import argon2 from 'argon2';
-import dotenv from 'dotenv';
-import path from 'path';
+import { prisma } from '@starter-kit/database';
 
-dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
-
-const prisma = new PrismaClient() as any;
-
-async function hashPassword(password: string): Promise<string> {
-  return argon2.hash(password, {
-    type: argon2.argon2id,
-    memoryCost: 65536,
-    timeCost: 3,
-  });
-}
+const db = prisma as any;
 
 async function main() {
-  console.log('🌱 Starting EPTUNU Participant Registrations & Master Data database seeding...');
+  console.log('🌱 Starting Realistic TOEFL ITP Exam Sample Seeding...');
 
-  const defaultPassword = await hashPassword('password123');
+  // 1. Clean up bad/obsolete sample questions
+  console.log('🧹 Cleaning up bad and dummy questions from database...');
+  const deletedQuestions = await db.question.deleteMany({});
+  console.log(`   -> Deleted ${deletedQuestions.count} old questions.`);
 
-  // 1. Seed Accounts for All 7 Roles
-  const rolesData = [
-    {
-      identityNumber: 'SUPERADMIN01',
-      fullName: 'Super Administrator Utama',
-      email: 'superadmin@unupurwokerto.ac.id',
-      role: 'SUPER_ADMIN',
-      faculty: 'BPTI UNU Purwokerto',
-    },
-    {
-      identityNumber: 'ADMINEPT01',
-      fullName: 'Admin Operator UPT Bahasa',
-      email: 'adminept@unupurwokerto.ac.id',
-      role: 'ADMIN_EPT',
-      faculty: 'UPT Bahasa',
-    },
-    {
-      identityNumber: 'AUTHOR01',
-      fullName: 'Penyusun Soal Bahasa',
-      email: 'author@unupurwokerto.ac.id',
-      role: 'QUESTION_AUTHOR',
-      faculty: 'Pusat Bahasa',
-    },
-    {
-      identityNumber: 'VALIDATOR01',
-      fullName: 'Validator Soal EPT',
-      email: 'validator@unupurwokerto.ac.id',
-      role: 'VALIDATOR',
-      faculty: 'Tim Penjamin Mutu',
-    },
-    {
-      identityNumber: 'PROCTOR01',
-      fullName: 'Pengawas Ujian Utama',
-      email: 'proctor@unupurwokerto.ac.id',
-      role: 'PROCTOR',
-      faculty: 'UPT Bahasa',
-    },
-    {
-      identityNumber: '202601001',
-      fullName: 'Ahmad Fauzi (Mahasiswa)',
-      email: 'ahmad.fauzi@student.unupurwokerto.ac.id',
-      role: 'STUDENT',
-      prodi: 'Teknik Informatika',
-      faculty: 'Sains dan Teknologi',
-    },
-    {
-      identityNumber: 'EXECUTIVE01',
-      fullName: 'Dr. H. Wakil Rektor (Pimpinan)',
-      email: 'pimpinan@unupurwokerto.ac.id',
-      role: 'EXECUTIVE',
-      faculty: 'Rektorat',
-    },
-  ];
+  const deletedPassages = await db.passage.deleteMany({});
+  console.log(`   -> Deleted ${deletedPassages.count} old passages.`);
 
-  for (const u of rolesData) {
-    await prisma.user.upsert({
-      where: { identityNumber: u.identityNumber },
-      update: { role: u.role, fullName: u.fullName },
-      create: {
-        identityNumber: u.identityNumber,
-        fullName: u.fullName,
-        email: u.email,
-        passwordHash: defaultPassword,
-        role: u.role,
-        prodi: u.prodi,
-        faculty: u.faculty,
-      },
-    });
-  }
+  // 2. SEED SECTION 3 PASSAGES FIRST (So we have passage IDs for Reading questions)
+  console.log('📖 Seeding Authentic Academic Reading Passages...');
 
-  // Fetch Proctor user ID
-  const proctor = await prisma.user.findUnique({ where: { identityNumber: 'PROCTOR01' } });
-
-  // 2. Seed Master Data: Faculties & Study Programs
-  const faculties = [
-    {
-      code: 'FST',
-      name: 'Fakultas Sains dan Teknologi',
-      description: 'Fakultas bidang sains, rekayasa, teknologi pangan, dan ilmu komputer.',
-      prodis: [
-        { code: 'TI', name: 'S1 Teknik Informatika' },
-        { code: 'SI', name: 'S1 Sistem Informasi' },
-        { code: 'AGT', name: 'S1 Agroteknologi' },
-        { code: 'TP', name: 'S1 Teknologi Pangan' },
-        { code: 'TS', name: 'S1 Teknik Sipil' },
-        { code: 'BKW', name: 'S1 Bio Kewirausahaan' },
-      ],
-    },
-    {
-      code: 'FIKES',
-      name: 'Fakultas Ilmu Kesehatan',
-      description: 'Fakultas kebidanan, keperawatan, dan profesi ners.',
-      prodis: [
-        { code: 'KEP', name: 'S1 Keperawatan' },
-        { code: 'BID', name: 'D3 Kebidanan' },
-        { code: 'NERS', name: 'Profesi Ners' },
-      ],
-    },
-    {
-      code: 'FISIP',
-      name: 'Fakultas Sosial dan Politik',
-      description: 'Fakultas bidang hubungan internasional dan administrasi publik.',
-      prodis: [
-        { code: 'HI', name: 'S1 Hubungan Internasional' },
-        { code: 'AP', name: 'S1 Administrasi Publik' },
-      ],
-    },
-    {
-      code: 'FEB',
-      name: 'Fakultas Ekonomi dan Bisnis',
-      description: 'Fakultas bidang manajemen dan akuntansi.',
-      prodis: [
-        { code: 'MJ', name: 'S1 Manajemen' },
-        { code: 'AKT', name: 'S1 Akuntansi' },
-      ],
-    },
-    {
-      code: 'FKIP',
-      name: 'Fakultas Keguruan dan Ilmu Pendidikan',
-      description: 'Fakultas bidang pendidikan bahasa Inggris, SD, dan matematika.',
-      prodis: [
-        { code: 'PBI', name: 'S1 Pendidikan Bahasa Inggris' },
-        { code: 'PGSD', name: 'S1 Pendidikan Guru Sekolah Dasar' },
-        { code: 'PMAT', name: 'S1 Pendidikan Matematika' },
-      ],
-    },
-  ];
-
-  for (const f of faculties) {
-    const facultyObj = await prisma.faculty.upsert({
-      where: { code: f.code },
-      update: { name: f.name, description: f.description },
-      create: { code: f.code, name: f.name, description: f.description },
-    });
-
-    for (const p of f.prodis) {
-      await prisma.studyProgram.upsert({
-        where: { code: p.code },
-        update: { name: p.name, facultyId: facultyObj.id },
-        create: { code: p.code, name: p.name, facultyId: facultyObj.id },
-      });
-    }
-  }
-
-  // 3. Seed Authentic Reading Passages
-  await prisma.question.deleteMany({});
-  await prisma.passage.deleteMany({});
-
-  const passage1 = await prisma.passage.create({
+  const passage1 = await db.passage.create({
     data: {
       title: "Continental Drift and Plate Tectonics: From Wegener's Hypothesis to Modern Geophysics",
       content: `In 1912, German meteorologist Alfred Wegener proposed the revolutionary hypothesis of continental drift, asserting that all of Earth's landmasses were once joined in a single primordial supercontinent that he christened Pangaea. According to Wegener, approximately two hundred million years ago, this gigantic landmass began fragmenting into smaller continental blocks that gradually drifted across the oceanic floor to their contemporary positions. To substantiate his contentious conjecture, Wegener marshaled an impressive array of empirical evidence. He highlighted the uncanny jigsaw-puzzle fit of the Atlantic coastlines of South America and Africa, and documented identical fossil remains—such as the freshwater reptile Mesosaurus and the fern Glossopteris—across widely separated continents that today possess drastically disparate climates. Furthermore, he demonstrated that continuous geological strata and ancient glacial deposits in South America, southern Africa, India, and Australia matched seamlessly when the continents were reassembled into a cohesive whole.
@@ -179,7 +27,7 @@ It was not until the 1960s that Wegener's foundational concepts were vindicated 
     },
   });
 
-  const passage2 = await prisma.passage.create({
+  const passage2 = await db.passage.create({
     data: {
       title: 'The Maya Wetland Agroecosystems: Hydraulic Engineering in the Neotropical Lowlands',
       content: `For generations, twentieth-century archaeologists commonly believed that the ancient Maya civilization of Mesoamerica subsisted almost entirely on slash-and-burn, or swidden (milpa), agriculture. In this traditional extensive cultivation model, farmers clear patches of tropical forest, burn the dried vegetation to release nutrients into the thin, leached rainforest soil, cultivate maize and beans for several years, and subsequently leave the land fallow for prolonged periods to regenerate. While swidden farming can sustain modest, dispersed village populations, archaeological demographic reconstructions established that the southern Maya lowlands—encompassing northern Guatemala, Belize, and southeastern Mexico—supported densely populated urban centers such as Tikal and Calakmul, where urban density rivaled that of contemporary medieval European capitals. This glaring demographic paradox compelled researchers to investigate how such fragile tropical ecosystems could maintain millions of inhabitants during the Classic Period (250–900 CE).
@@ -190,9 +38,15 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
     },
   });
 
-  // 4. Seed Questions (Listening, Structure, Reading)
-  const allQuestionsData = [
-    // --- LISTENING PART A (1 - 10) ---
+  console.log(`   -> Created 2 Reading Passages: "${passage1.title}" and "${passage2.title}".`);
+
+  // ==========================================
+  // SECTION 1: LISTENING COMPREHENSION (18 SOAL)
+  // ==========================================
+  console.log('🎧 Seeding Realistic Listening Comprehension Questions with Real Audio...');
+
+  const listeningQuestions = [
+    // PART A: SHORT CONVERSATIONS (1 - 10)
     {
       section: 'LISTENING',
       listeningPart: 'PART_A',
@@ -209,6 +63,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Suggestions & Implied Action',
       difficulty: 'EASY',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Man asks if campus shuttle is running. Woman notes city bus runs until midnight.',
     },
     {
       section: 'LISTENING',
@@ -222,10 +77,11 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
         { id: 'D', text: 'Request private tutoring from the professor' },
       ],
       correctOption: 'C',
-      explanation: 'Pria tersebut mengajak wanita bergabung dengan kelompok belajar yang dibentuk di perpustakaan ("You are more than welcome to join").',
+      explanation: 'Pria tersebut secara eksplisit mengajak wanita bergabung dengan kelompok belajar yang dibentuk di perpustakaan ("You are more than welcome to join").',
       skillTag: 'Invitations & Suggestions',
       difficulty: 'EASY',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Woman worried about midterm. Man invites her to library study group.',
     },
     {
       section: 'LISTENING',
@@ -243,6 +99,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Almost Negative Expressions',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Man asks if extension was granted. Woman replies "Hardly. Deadlines are non-negotiable."',
     },
     {
       section: 'LISTENING',
@@ -260,6 +117,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Agreement Expressions',
       difficulty: 'EASY',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Woman notes long line. Man replies "Tell me about it! Waited nearly an hour."',
     },
     {
       section: 'LISTENING',
@@ -277,6 +135,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Problem Solving & Recommendations',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Book is non-circulating. Woman suggests scanning chapters in the reserve room.',
     },
     {
       section: 'LISTENING',
@@ -294,6 +153,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Idioms & Future Actions',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Forecast shows thunderstorms. Man says "take a rain check on that mountain hike."',
     },
     {
       section: 'LISTENING',
@@ -311,6 +171,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Idioms & Emotional State',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Taking 18 credits and internship. Woman says she bit off more than she could chew.',
     },
     {
       section: 'LISTENING',
@@ -328,6 +189,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Implied Meaning & Idioms',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Woman asks for lecture notes. Man says his messy shorthand cannot be deciphered.',
     },
     {
       section: 'LISTENING',
@@ -345,6 +207,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Idiomatic Expressions',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Woman wanted dorm housing, but deadline closed Friday: "that ship has sailed."',
     },
     {
       section: 'LISTENING',
@@ -362,9 +225,10 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Agreement Expressions',
       difficulty: 'EASY',
       status: 'APPROVED',
+      reviewNotes: 'Dialogue: Lecture was fascinating. Man replies "You can say that again!"',
     },
 
-    // --- LISTENING PART B (11 - 14) ---
+    // PART B: LONGER CONVERSATION (11 - 14)
     {
       section: 'LISTENING',
       listeningPart: 'PART_B',
@@ -381,6 +245,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Main Topic & Purpose',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Part B: Consultation regarding prerequisite override for registration.',
     },
     {
       section: 'LISTENING',
@@ -398,6 +263,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Factual Details',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Part B: Community college transfer credit mapping issue.',
     },
     {
       section: 'LISTENING',
@@ -415,6 +281,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Action Details',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Part B: Required documents for prerequisite waiver override.',
     },
     {
       section: 'LISTENING',
@@ -432,9 +299,10 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Inference & Context',
       difficulty: 'HARD',
       status: 'APPROVED',
+      reviewNotes: 'Part B: Time sensitivity due to class seat quota.',
     },
 
-    // --- LISTENING PART C (15 - 18) ---
+    // PART C: ACADEMIC MINI-LECTURE (15 - 18)
     {
       section: 'LISTENING',
       listeningPart: 'PART_C',
@@ -451,6 +319,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Main Idea / Lecture Topic',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Part C: Lecture on yardangs and aeolian deflation.',
     },
     {
       section: 'LISTENING',
@@ -468,6 +337,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Comparison & Detail',
       difficulty: 'HARD',
       status: 'APPROVED',
+      reviewNotes: 'Part C: Yardangs (erosional) vs sand dunes (depositional).',
     },
     {
       section: 'LISTENING',
@@ -485,6 +355,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Factual Detail / Analogies',
       difficulty: 'MEDIUM',
       status: 'APPROVED',
+      reviewNotes: 'Part C: Morphological resemblance to an inverted boat hull.',
     },
     {
       section: 'LISTENING',
@@ -502,9 +373,22 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       skillTag: 'Academic Inference',
       difficulty: 'HARD',
       status: 'APPROVED',
+      reviewNotes: 'Part C: Studying Martian yardangs to reconstruct paleo-atmospheric wind patterns.',
     },
+  ];
 
-    // --- STRUCTURE PART A: INCOMPLETE SENTENCES (19 - 28) ---
+  for (const q of listeningQuestions) {
+    await db.question.create({ data: q });
+  }
+  console.log(`   -> Created ${listeningQuestions.length} Listening questions.`);
+
+  // ==========================================
+  // SECTION 2: STRUCTURE & WRITTEN EXPRESSION (20 SOAL)
+  // ==========================================
+  console.log('✍️ Seeding Structure & Written Expression Questions...');
+
+  const structureQuestions = [
+    // PART A: SENTENCE COMPLETION (19 - 28)
     {
       section: 'STRUCTURE',
       questionText: 'The dean of the academic faculty, accompanied by several department chairs, _______ currently attending the international higher education symposium in Singapore.',
@@ -656,7 +540,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       status: 'APPROVED',
     },
 
-    // --- STRUCTURE PART B: ERROR IDENTIFICATION (29 - 38) ---
+    // PART B: ERROR IDENTIFICATION (29 - 38)
     {
       section: 'STRUCTURE',
       questionText: 'The human brain is (A) composed of (B) billions of neurons that (C) communicates with one another via (D) electrical impulses.',
@@ -807,8 +691,20 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       difficulty: 'MEDIUM',
       status: 'APPROVED',
     },
+  ];
 
-    // --- READING PASSAGE 1 QUESTIONS (39 - 43) ---
+  for (const q of structureQuestions) {
+    await db.question.create({ data: q });
+  }
+  console.log(`   -> Created ${structureQuestions.length} Structure questions.`);
+
+  // ==========================================
+  // SECTION 3: READING COMPREHENSION (10 SOAL)
+  // ==========================================
+  console.log('📚 Seeding Reading Comprehension Questions tied to Passages...');
+
+  const readingQuestions = [
+    // PASSAGE 1 QUESTIONS (39 - 43)
     {
       section: 'READING',
       passageId: passage1.id,
@@ -890,7 +786,7 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
       status: 'APPROVED',
     },
 
-    // --- READING PASSAGE 2 QUESTIONS (44 - 48) ---
+    // PASSAGE 2 QUESTIONS (44 - 48)
     {
       section: 'READING',
       passageId: passage2.id,
@@ -973,109 +869,21 @@ This hydraulic agroecosystem conferred numerous strategic advantages. First, the
     },
   ];
 
-  for (const q of allQuestionsData) {
-    await prisma.question.create({ data: q });
+  for (const q of readingQuestions) {
+    await db.question.create({ data: q });
   }
+  console.log(`   -> Created ${readingQuestions.length} Reading questions.`);
 
-  console.log(`   -> Seeded ${allQuestionsData.length} authentic questions.`);
-
-  // 5. Seed Score Conversion Tables
-  const listeningScores = [
-    31, 31, 31, 32, 33, 34, 35, 36, 37, 38, 39, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-    50, 51, 51, 52, 52, 53, 54, 54, 55, 56, 57, 57, 58, 59, 60, 61, 62, 63, 64, 65,
-    66, 67, 68, 68, 68, 68, 68, 68, 68, 68, 68
-  ];
-
-  const structureScores = [
-    31, 31, 31, 33, 35, 37, 38, 40, 41, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53,
-    54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 65, 66, 67, 68, 68, 68, 68, 68,
-    68, 68, 68, 68, 68, 68, 68, 68, 68, 68, 68
-  ];
-
-  const readingScores = [
-    31, 31, 31, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
-    48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67,
-    67, 67, 67, 67, 67, 67, 67, 67, 67, 67, 67
-  ];
-
-  for (let raw = 0; raw <= 50; raw++) {
-    await prisma.scoreConversion.upsert({
-      where: { section_rawScore: { section: 'LISTENING', rawScore: raw } },
-      update: { scaledScore: listeningScores[raw] },
-      create: { section: 'LISTENING', rawScore: raw, scaledScore: listeningScores[raw] }
-    });
-
-    await prisma.scoreConversion.upsert({
-      where: { section_rawScore: { section: 'STRUCTURE', rawScore: raw } },
-      update: { scaledScore: structureScores[raw] },
-      create: { section: 'STRUCTURE', rawScore: raw, scaledScore: structureScores[raw] }
-    });
-
-    await prisma.scoreConversion.upsert({
-      where: { section_rawScore: { section: 'READING', rawScore: raw } },
-      update: { scaledScore: readingScores[raw] },
-      create: { section: 'READING', rawScore: raw, scaledScore: readingScores[raw] }
-    });
-  }
-
-  // 6. Seed Exam Sessions (Jadwal Ujian)
-  const session1 = await prisma.examSession.upsert({
-    where: { token: 'EPT2026' },
-    update: {
-      room: 'Lab Komputer 1 (Gedung Rektorat Lt. 2)',
-      quota: 35,
-      proctorId: proctor?.id || null,
-    },
-    create: {
-      title: 'EPT Regular Periode Juli 2026 - Sesi Pagi',
-      token: 'EPT2026',
-      startTime: new Date(),
-      endTime: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-      durationMin: 110,
-      room: 'Lab Komputer 1 (Gedung Rektorat Lt. 2)',
-      quota: 35,
-      proctorId: proctor?.id || null,
-      isActive: true,
-    },
+  // 3. Final Verification Count
+  const total = await db.question.count();
+  const bySection = await db.question.groupBy({
+    by: ['section'],
+    _count: { id: true },
   });
 
-  // 7. Seed Student Exam Record with Registration No & Verification Status
-  const student = await prisma.user.findUnique({ where: { identityNumber: '202601001' } });
-  if (student) {
-    const existingExam = await prisma.studentExam.findUnique({
-      where: {
-        userId_examSessionId: {
-          userId: student.id,
-          examSessionId: session1.id,
-        },
-      },
-    });
-
-    if (existingExam) {
-      await prisma.studentExam.update({
-        where: { id: existingExam.id },
-        data: {
-          verificationStatus: 'VERIFIED',
-          status: 'SCHEDULED',
-        },
-      });
-    } else {
-      const regNo = `REG/2026/07/${Math.floor(1000 + Math.random() * 9000)}`;
-      await prisma.studentExam.create({
-        data: {
-          userId: student.id,
-          examSessionId: session1.id,
-          status: 'SCHEDULED',
-          verificationStatus: 'VERIFIED',
-          registrationNo: regNo,
-          paymentProofUrl: '/storage/payments/sample_payment_proof.jpg',
-          verificationNotes: 'Pembayaran Lunas via Transfer Mandiri UPT Bahasa.',
-        },
-      });
-    }
-  }
-
-  console.log('🎉 EPTUNU Seeding with Participant Registrations completed successfully!');
+  console.log('✅ Realistic Question Seeding Complete!');
+  console.log(`   Total Questions: ${total}`);
+  console.log('   Breakdown by Section:', bySection);
 }
 
 main()
@@ -1084,5 +892,5 @@ main()
     process.exit(1);
   })
   .finally(async () => {
-    await prisma.$disconnect();
+    await db.$disconnect();
   });

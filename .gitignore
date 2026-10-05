@@ -6,10 +6,12 @@ node_modules
 dist
 build
 
-# Ignore internal markdown docs, keep main README.md
+# Ignore internal markdown docs, keep main README.md & AGENTS.md
 *.md
 !README.md
+!AGENTS.md
 
-# Uploads
-apps/api/uploads/*
+# Uploads & Storage
+apps/api/uploads/**
 !apps/api/uploads/.gitkeep
+apps/api/storage/

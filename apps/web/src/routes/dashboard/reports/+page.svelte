@@ -106,33 +106,35 @@
 </svelte:head>
 
 <div class="space-y-6">
-  <!-- Header Banner -->
-  <div class="bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900 p-6 rounded-2xl border border-indigo-500/30 dark:border-indigo-800/40 shadow-xl text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+  <!-- Page Header -->
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="flex items-center gap-2 mb-1">
-        <BarChart3 class="w-6 h-6 text-indigo-300" />
-        <h1 class="text-xl font-extrabold tracking-tight">Laporan & Rekapitulasi EPT</h1>
+      <div class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-2">
+        <BarChart3 class="w-3.5 h-3.5" /> Analitik & Rekapitulasi
       </div>
-      <p class="text-xs text-indigo-100/90 dark:text-slate-300">
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Laporan & Rekapitulasi EPT</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
         Analisis statistik peserta, tingkat kelulusan per Fakultas/Prodi, rekap bulanan & tahunan, serta ekspor CSV.
       </p>
     </div>
     <div class="flex items-center gap-2">
       <button
+        type="button"
         on:click={handleExportCSV}
-        class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition shadow"
+        class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-xs px-4 py-2.5 transition inline-flex items-center gap-2"
       >
         <Download class="w-3.5 h-3.5" />
         <span>Ekspor CSV</span>
       </button>
       <button
+        type="button"
         on:click={loadAnalytics}
-        class="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition border border-white/20"
+        class="border border-border bg-card hover:bg-muted text-foreground p-2.5 rounded-xl transition inline-flex items-center justify-center"
       >
         <RefreshCw class="w-4 h-4" />
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- Filters Bar -->
   <div class="bg-card p-4 rounded-2xl border border-border shadow-xs grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 items-center text-xs">

@@ -191,31 +191,35 @@
 
 <div class="space-y-6">
   <!-- Page Header -->
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 p-6 rounded-2xl border border-indigo-900/50 shadow-xl text-white">
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/20 text-indigo-300 text-xs font-semibold border border-indigo-500/30 mb-2">
-        <UserCheck class="w-3.5 h-3.5" /> Modul Registrasi & Verifikasi Peserta
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+          <UserCheck class="w-3 h-3" /> Registrasi & Verifikasi
+        </span>
       </div>
-      <h1 class="text-2xl font-extrabold tracking-tight">Pendaftaran & Cetak Kartu Peserta Ujian</h1>
-      <p class="text-slate-300 text-sm mt-1">
-        Pendaftaran Sesi Ujian, Upload Bukti Pembayaran, Verifikasi Berkas Operator, dan Cetak Kartu Ujian Resmi.
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Pendaftaran & Cetak Kartu Peserta Ujian</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
+        Pendaftaran sesi ujian, unggah bukti pembayaran, verifikasi berkas operator, dan cetak kartu ujian resmi.
       </p>
     </div>
-  </div>
+  </header>
 
   <!-- Tab Navigation -->
   <div class="flex items-center gap-2 border-b border-border pb-2 overflow-x-auto">
     <button
+      type="button"
       on:click={() => (activeTab = 'myRegistrations')}
-      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'myRegistrations' ? 'bg-primary text-primary-foreground shadow-md' : 'text-muted-foreground hover:bg-muted'}"
+      class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs sm:text-sm transition-all whitespace-nowrap {activeTab === 'myRegistrations' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
     >
       <Calendar class="w-4 h-4" /> Pendaftaran Ujian Saya ({myRegistrations.length})
     </button>
 
     {#if isAdminOrOperator}
       <button
+        type="button"
         on:click={() => (activeTab = 'verifyOperator')}
-        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-sm transition-all whitespace-nowrap {activeTab === 'verifyOperator' ? 'bg-purple-600 text-white shadow-md' : 'text-muted-foreground hover:bg-muted'}"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl font-medium text-xs sm:text-sm transition-all whitespace-nowrap {activeTab === 'verifyOperator' ? 'bg-primary text-primary-foreground shadow-xs' : 'text-muted-foreground hover:text-foreground hover:bg-muted'}"
       >
         <UserCheck class="w-4 h-4" /> Verifikasi Pendaftaran Operator ({allRegistrations.length})
       </button>
@@ -398,6 +402,7 @@
                 </td>
                 <td class="p-3.5 text-center">
                   <button
+                    type="button"
                     on:click={() => { targetRegForVerify = reg; isVerifyModalOpen = true; }}
                     class="px-3 py-1.5 rounded-xl font-bold bg-purple-600 text-white hover:bg-purple-500 shadow-sm transition-all"
                   >
@@ -417,11 +422,14 @@
 {#if isPaymentModalOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden text-card-foreground">
-      <div class="p-5 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <Upload class="w-5 h-5 text-indigo-400" /> Upload Bukti Pembayaran
+      <div class="p-5 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2.5 font-bold text-base">
+          <div class="p-2 rounded-xl bg-primary/10 text-primary border border-primary/20">
+            <Upload class="w-4 h-4" />
+          </div>
+          <span>Upload Bukti Pembayaran</span>
         </div>
-        <button on:click={() => (isPaymentModalOpen = false)} class="text-slate-400 hover:text-white"><X class="w-5 h-5" /></button>
+        <button type="button" on:click={() => (isPaymentModalOpen = false)} class="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"><X class="w-5 h-5" /></button>
       </div>
 
       <div class="p-6 space-y-4">
@@ -447,7 +455,7 @@
 
       <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-end gap-3">
         <button type="button" on:click={() => (isPaymentModalOpen = false)} class="px-4 py-2 text-xs font-semibold text-muted-foreground hover:bg-muted rounded-xl transition-colors">Batal</button>
-        <button type="button" on:click={handleSavePaymentProof} class="px-4 py-2 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded-xl shadow-md transition-all">Kirim Bukti Pembayaran</button>
+        <button type="button" on:click={handleSavePaymentProof} class="px-4 py-2 text-xs font-semibold text-primary-foreground bg-primary hover:bg-primary/90 rounded-xl shadow-xs transition-all">Kirim Bukti Pembayaran</button>
       </div>
     </div>
   </div>
@@ -457,11 +465,14 @@
 {#if isVerifyModalOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-in fade-in duration-200">
     <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-md overflow-hidden text-card-foreground">
-      <div class="p-5 bg-gradient-to-r from-slate-900 to-purple-950 text-white flex items-center justify-between">
-        <div class="flex items-center gap-2 font-bold text-base">
-          <UserCheck class="w-5 h-5 text-purple-400" /> Verifikasi Pendaftaran Operator
+      <div class="p-5 border-b border-border flex items-center justify-between bg-card text-card-foreground">
+        <div class="flex items-center gap-2.5 font-bold text-base">
+          <div class="p-2 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+            <UserCheck class="w-4 h-4" />
+          </div>
+          <span>Verifikasi Pendaftaran Operator</span>
         </div>
-        <button on:click={() => (isVerifyModalOpen = false)} class="text-slate-400 hover:text-white"><X class="w-5 h-5" /></button>
+        <button type="button" on:click={() => (isVerifyModalOpen = false)} class="p-2 rounded-xl text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"><X class="w-5 h-5" /></button>
       </div>
 
       <div class="p-6 space-y-4">
@@ -478,8 +489,8 @@
       </div>
 
       <div class="p-4 bg-muted/30 border-t border-border flex items-center justify-between">
-        <button type="button" on:click={() => handleAdminVerify('REJECTED')} class="px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 rounded-xl shadow-sm">❌ Tolak Berkas</button>
-        <button type="button" on:click={() => handleAdminVerify('VERIFIED')} class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md">✓ Verifikasi (Terima)</button>
+        <button type="button" on:click={() => handleAdminVerify('REJECTED')} class="px-4 py-2 text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 rounded-xl shadow-xs transition-colors">❌ Tolak Berkas</button>
+        <button type="button" on:click={() => handleAdminVerify('VERIFIED')} class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-xs transition-colors">✓ Verifikasi (Terima)</button>
       </div>
     </div>
   </div>
@@ -490,13 +501,16 @@
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-md animate-in fade-in duration-200">
     <div class="bg-card rounded-2xl border border-border shadow-2xl w-full max-w-xl overflow-hidden print:shadow-none print:border-none print:w-full">
       <!-- Modal Toolbar Header (Hidden on Print) -->
-      <div class="p-4 bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white flex items-center justify-between print:hidden">
-        <div class="flex items-center gap-2 font-bold text-sm">
-          <Printer class="w-4 h-4 text-emerald-400" /> Pratinjau Kartu Peserta Ujian
+      <div class="p-4 border-b border-border bg-card text-card-foreground flex items-center justify-between print:hidden">
+        <div class="flex items-center gap-2.5 font-bold text-sm">
+          <div class="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <Printer class="w-4 h-4" />
+          </div>
+          <span>Pratinjau Kartu Peserta Ujian</span>
         </div>
         <div class="flex items-center gap-2">
-          <button on:click={handlePrintCard} class="px-3.5 py-1.5 text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg shadow-sm">Cetak Kartu Ujian</button>
-          <button on:click={() => (isCardModalOpen = false)} class="text-slate-400 hover:text-white p-1"><X class="w-5 h-5" /></button>
+          <button type="button" on:click={handlePrintCard} class="px-3.5 py-1.5 text-xs font-bold bg-primary hover:bg-primary/90 text-primary-foreground rounded-xl shadow-xs transition-colors">Cetak Kartu Ujian</button>
+          <button type="button" on:click={() => (isCardModalOpen = false)} class="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-xl transition-colors"><X class="w-5 h-5" /></button>
         </div>
       </div>
 
@@ -552,7 +566,7 @@
         <!-- Footer Verification QR Code -->
         <div class="flex items-center justify-between border-t border-slate-200 pt-4 text-[10px] text-slate-500">
           <div>
-            <div>Kartu ini dicetak resmi oleh sistem EPTUNU CBT.</div>
+            <div>Kartu ini dicetak resmi oleh sistem EPTUNU.</div>
             <div>Wajib dibawa saat pelaksanaan ujian di ruang lab.</div>
           </div>
           <div class="w-16 h-16 bg-slate-100 border border-slate-300 rounded-lg flex items-center justify-center text-slate-400 font-mono text-[9px] text-center p-1">

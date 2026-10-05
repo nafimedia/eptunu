@@ -13,7 +13,6 @@
     Download,
     Calendar,
     Shield,
-    Sparkles,
     RefreshCw,
     UserCheck,
     BarChart3
@@ -141,24 +140,28 @@
 
 <div class="space-y-6">
   <!-- Header Banner -->
-  <div class="bg-gradient-to-r from-indigo-700 via-indigo-800 to-slate-900 dark:from-indigo-950 dark:via-slate-900 dark:to-emerald-950 p-6 rounded-2xl border border-indigo-500/30 dark:border-indigo-800/40 shadow-xl text-white flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+  <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-5 sm:p-6 rounded-2xl shadow-xs">
     <div>
-      <div class="flex items-center gap-2 mb-1">
-        <Award class="w-6 h-6 text-indigo-300" />
-        <h1 class="text-xl font-extrabold tracking-tight">Hasil Ujian & Penilaian EPT</h1>
+      <div class="flex items-center gap-2 mb-1.5">
+        <span class="inline-flex items-center gap-1.5 text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
+          <Award class="w-3 h-3" /> Penilaian & Sertifikasi
+        </span>
       </div>
-      <p class="text-xs text-indigo-100/90 dark:text-slate-300">
-        Koreksi otomatis TOEFL ITP score conversion, status kelulusan, & penerbitan sertifikat resmi UPT Bahasa UNU Purwokerto.
+      <h1 class="text-xl sm:text-2xl font-extrabold text-foreground tracking-tight">Hasil Ujian & Penilaian EPT</h1>
+      <p class="text-xs sm:text-sm text-muted-foreground mt-1">
+        Koreksi otomatis TOEFL ITP score conversion, status kelulusan, dan penerbitan sertifikat resmi UPT Bahasa UNU Purwokerto.
       </p>
     </div>
+
     <button
+      type="button"
       on:click={loadResults}
-      class="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white text-xs font-bold rounded-xl border border-white/20 transition shadow"
+      class="inline-flex items-center gap-2 px-3.5 py-2 bg-muted hover:bg-muted/80 text-foreground text-xs font-semibold rounded-xl border border-border transition shadow-xs"
     >
       <RefreshCw class="w-3.5 h-3.5" />
       <span>Refresh Data</span>
     </button>
-  </div>
+  </header>
 
   <!-- Filters & Search (Admin View) -->
   {#if isAdmin}
@@ -335,7 +338,7 @@
           <Edit3 class="w-4 h-4 text-primary" />
           Koreksi Manual Nilai EPT
         </h3>
-        <button on:click={() => (isOverrideModalOpen = false)} class="text-muted-foreground hover:text-foreground">✕</button>
+        <button type="button" on:click={() => (isOverrideModalOpen = false)} class="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition">✕</button>
       </div>
 
       {#if selectedExam}
@@ -386,15 +389,17 @@
 
         <div class="flex justify-end gap-2 pt-2 border-t border-border">
           <button
+            type="button"
             on:click={() => (isOverrideModalOpen = false)}
             class="px-4 py-2 bg-muted hover:bg-muted/80 text-foreground text-xs font-bold rounded-xl transition border border-border"
           >
             Batal
           </button>
           <button
+            type="button"
             on:click={handleSaveOverride}
             disabled={isSavingOverride}
-            class="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition shadow"
+            class="px-4 py-2 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold rounded-xl transition shadow-xs"
           >
             {isSavingOverride ? 'Menyimpan...' : 'Simpan Koreksi'}
           </button>
