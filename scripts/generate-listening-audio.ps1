@@ -6,7 +6,7 @@ $apiAudioDir = "c:\Users\user\Documents\laragon\www\eptunu\apps\api\storage\audi
 if (-not (Test-Path $webAudioDir)) { New-Item -ItemType Directory -Force -Path $webAudioDir | Out-Null }
 if (-not (Test-Path $apiAudioDir)) { New-Item -ItemType Directory -Force -Path $apiAudioDir | Out-Null }
 
-function Generate-DialogueAudio {
+function New-DialogueAudio {
     param (
         [string]$Filename,
         [string]$Speaker1Voice, # "Microsoft David Desktop" or "Microsoft Zira Desktop"
@@ -48,7 +48,7 @@ function Generate-DialogueAudio {
     Write-Host " -> OK: $Filename ($size bytes)"
 }
 
-function Generate-LectureAudio {
+function New-LectureAudio {
     param (
         [string]$Filename,
         [string]$NarratorVoice,
@@ -95,7 +95,7 @@ Write-Host "============================================="
 
 # --- PART A (Short Conversations) ---
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_01.wav" `
     -Speaker1Voice "Microsoft David Desktop" `
     -Speaker1Text "Excuse me, do you know if the shuttle to the north campus is still running?" `
@@ -104,7 +104,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What does the woman imply the man should do?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_02.wav" `
     -Speaker1Voice "Microsoft Zira Desktop" `
     -Speaker1Text "I'm really worried about tomorrow's biology midterm. There's just too much terminology to memorize!" `
@@ -113,7 +113,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What does the man suggest the woman do?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_03.wav" `
     -Speaker1Voice "Microsoft David Desktop" `
     -Speaker1Text "Did you manage to get Professor Wilson's permission to submit your research proposal late?" `
@@ -122,7 +122,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What does the woman mean?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_04.wav" `
     -Speaker1Voice "Microsoft Zira Desktop" `
     -Speaker1Text "The line at the financial aid office was out the door this morning." `
@@ -131,7 +131,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What does the man mean?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_05.wav" `
     -Speaker1Voice "Microsoft David Desktop" `
     -Speaker1Text "I was hoping to check out this reference handbook for my literature review, but the desk attendant said it's non-circulating." `
@@ -140,7 +140,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What does the woman suggest?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_06.wav" `
     -Speaker1Voice "Microsoft Zira Desktop" `
     -Speaker1Text "Have you checked the forecast for our geology field trip on Saturday?" `
@@ -149,7 +149,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What does the man indicate?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_07.wav" `
     -Speaker1Voice "Microsoft David Desktop" `
     -Speaker1Text "I heard you accepted an internship at the biotechnology laboratory while taking eighteen credits!" `
@@ -158,7 +158,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What is the woman's problem?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_08.wav" `
     -Speaker1Voice "Microsoft Zira Desktop" `
     -Speaker1Text "Could you lend me your lecture notes from yesterday's macroeconomics class? My laptop battery died right after attendance." `
@@ -167,7 +167,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What does the man imply?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_09.wav" `
     -Speaker1Voice "Microsoft David Desktop" `
     -Speaker1Text "Are you thinking about applying for on-campus housing next academic year?" `
@@ -176,7 +176,7 @@ Generate-DialogueAudio `
     -NarratorVoice "Microsoft David Desktop" `
     -NarratorText "What does the woman mean?"
 
-Generate-DialogueAudio `
+New-DialogueAudio `
     -Filename "listening_part_a_10.wav" `
     -Speaker1Voice "Microsoft Zira Desktop" `
     -Speaker1Text "Dr. Bennett's lecture on cognitive neuroscience was fascinating, don't you think?" `
@@ -237,7 +237,7 @@ Copy-Item -Path $partBPath -Destination $partBApi -Force
 Write-Host " -> OK: listening_part_b_01.wav ($((Get-Item $partBPath).Length) bytes)"
 
 # --- PART C (Academic Mini-Lecture) ---
-Generate-LectureAudio `
+New-LectureAudio `
     -Filename "listening_part_c_01.wav" `
     -NarratorVoice "Microsoft David Desktop" `
     -IntroText "Questions 15 through 18. Listen to a lecture delivered by a geology professor in an earth science course." `
